@@ -4,117 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Noto Sans JP', sans-serif; background-color: #f8fafc; }
-        .sidebar-grad { background: linear-gradient(180deg, #53bdc2 0%, #76b4e9 100%); }
-        .card-shadow { box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-radius: 15px; }
-        .folder-shape { clip-path: polygon(0% 15%, 35% 15%, 45% 0%, 100% 0%, 100% 100%, 0% 100%); }
-        .active-tab { background: white; color: #53bdc2; border-radius: 20px 0 0 20px; box-shadow: -4px 0 10px rgba(0,0,0,0.05); }
+        :root {
+            --menu-grad-top: #6fceca;
+            --menu-grad-bottom: #5eabd5;
+            --bg-color: #f5f7f9;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-color);
+            color: #333;
+        }
+
+        /* 左サイドメニュー */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(to bottom, var(--menu-grad-top), var(--menu-grad-bottom));
+            display: flex;
+            flex-direction: column;
+            padding: 20px 0;
+            color: white;
+        }
+
+        .logo-area {
+            padding: 0 24px 40px;
+        }
+
+        .logo-area img {
+            width: 160px; /* イラレのサイズに合わせて適宜調整してください */
+            height: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            object-fit: contain;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ヘッダー・検索エリア */
+        .header {
+            padding: 30px 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 600px;
+        }
+
+        .search-bar {
+            width: 100%;
+            padding: 12px 12px 12px 45px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 並び替えボタンとプルダウン */
+        .sort-container {
+            position: relative;
+        }
+
+        .sort-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .sort-button img {
+            width: 100px; /* アセットのサイズに合わせて調整 */
+            height: auto;
+        }
+
+        .sort-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 100;
+            min-width: 150px;
+        }
+
+        .sort-options div {
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+
+        .sort-options div:hover {
+            background: #f0f0f0;
+        }
+
+        /* カードグリッド */
+        .card-grid {
+            padding: 0 40px 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
+        }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body>
 
-    <aside class="w-64 sidebar-grad flex flex-col p-6 text-white shrink-0">
-        <div class="mb-2 text-2xl font-bold tracking-wider">名刺くらうど</div>
-        
-        <button onclick="alert('名刺追加フォームを開きます')" class="mt-4 mb-10 bg-[#f7db66] text-black py-3 px-6 rounded-2xl font-bold shadow-md hover:scale-105 transition-transform">
-            ＋ 追加
-        </button>
+    <div class="sidebar">
+        <div class="logo-area">
+            <img src="1.png" alt="Logo">
+        </div>
+        <div class="nav-item">
+            <img src="2.png" class="nav-icon" alt=""> キーワード
+        </div>
+        <div class="nav-item">
+            <img src="3.png" class="nav-icon" alt=""> 部署
+        </div>
+        <div class="nav-item">
+            <img src="4.png" class="nav-icon" alt=""> エリア
+        </div>
+    </div>
 
-        <nav class="space-y-4 flex-1">
-            <div onclick="showPage('keyword')" id="btn-keyword" class="flex items-center p-3 cursor-pointer active-tab">
-                <span class="mr-3 text-xl">🔍</span> キーワード
+    <div class="main-content">
+        <div class="header">
+            <div class="search-container">
+                <img src="6.png" class="search-icon" alt="">
+                <input type="text" class="search-bar" placeholder="検索キーワードを入力">
             </div>
-            <div onclick="showPage('dept')" id="btn-dept" class="flex items-center p-3 cursor-pointer">
-                <span class="mr-3 text-xl">📁</span> 部署
-            </div>
-            <div onclick="showPage('area')" id="btn-area" class="flex items-center p-3 cursor-pointer">
-                <span class="mr-3 text-xl">📍</span> エリア
-            </div>
-        </nav>
-    </aside>
 
-    <main class="flex-1 flex flex-col bg-[#f0f4f8] overflow-y-auto p-8">
-        
-        <section id="page-keyword">
-            <div class="mb-8 flex items-center bg-white rounded-full px-6 py-3 shadow-sm max-w-2xl">
-                <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="キーワードで検索" class="flex-1 outline-none text-gray-600">
-                <span class="text-gray-400">🔍</span>
-            </div>
-            <div id="cardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="sort-container">
+                <button class="sort-button" onclick="toggleSort()">
+                    <img src="5.png" alt="並び替え">
+                </button>
+                <div id="sortOptions" class="sort-options">
+                    <div onclick="selectSort('最新順')">最新順</div>
+                    <div onclick="selectSort('五十音順')">五十音順</div>
+                    <div onclick="selectSort('五十音順（逆）')">五十音順（逆）</div>
                 </div>
-        </section>
-
-        <section id="page-dept" class="hidden grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            <div class="flex flex-col items-center">
-                <div class="w-24 h-20 bg-gray-200 folder-shape flex items-center justify-center space-x-1">
-                    <div class="w-4 h-4 rounded-full bg-orange-400"></div>
-                    <div class="w-4 h-4 rounded-full bg-green-400"></div>
-                </div>
-                <p class="mt-2 font-bold text-gray-600">営業部</p>
             </div>
-            </section>
+        </div>
 
-        <section id="page-area" class="hidden">
-            <h2 class="text-xl font-bold text-gray-600 mb-4 border-l-4 border-[#53bdc2] pl-3">中部地方</h2>
-            <div class="flex flex-wrap gap-3">
-                <button class="bg-white px-6 py-2 rounded-full shadow-sm hover:bg-[#53bdc2] hover:text-white transition">三重</button>
-                <button class="bg-white px-6 py-2 rounded-full shadow-sm">岐阜</button>
-                <button class="bg-white px-6 py-2 rounded-full shadow-sm">愛知</button>
+        <div class="card-grid" id="cardGrid">
             </div>
-        </section>
-
-    </main>
+    </div>
 
     <script>
-        // ダミーデータ
-        const cards = [
-            { name: "中谷 常義", company: "三重テレビ放送", color: "bg-orange-400" },
-            { name: "清水 茉咲", company: "三重テレビ放送", color: "bg-green-400" },
-            { name: "大川 雅生", company: "フリーランス", color: "bg-blue-400" },
-            { name: "田中 太郎", company: "三瀬谷ダム工業", color: "bg-purple-400" },
-        ];
+        // 並び替えメニューの表示切り替え
+        function toggleSort() {
+            const options = document.getElementById('sortOptions');
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
+        }
 
-        function initCards() {
-            const grid = document.getElementById('cardGrid');
-            grid.innerHTML = cards.map(c => `
-                <div class="bg-white p-6 card-shadow flex items-center space-x-4">
-                    <div class="w-10 h-10 rounded-full ${c.color}"></div>
-                    <div>
-                        <div class="font-bold text-lg">${c.name}</div>
-                        <div class="text-sm text-gray-400">${c.company}</div>
-                    </div>
+        function selectSort(type) {
+            console.log(type + 'で並び替え');
+            document.getElementById('sortOptions').style.display = 'none';
+            // ここに並び替えのロジックを後で追加できます
+        }
+
+        // ダミーカードの生成（7〜12のアイコンをランダム配置）
+        const userIcons = ['7.png', '8.png', '9.png', '10.png', '11.png', '12.png'];
+        const cardGrid = document.getElementById('cardGrid');
+
+        // デザイン確認用に6つ表示
+        for (let i = 0; i < 6; i++) {
+            const randomIcon = userIcons[Math.floor(Math.random() * userIcons.length)];
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <img src="${randomIcon}" class="user-thumb" alt="User">
+                <div class="card-info">
+                    <div style="font-weight:bold; font-size:1.1em;">サンプル 氏名</div>
+                    <div style="color:#666; font-size:0.9em;">サンプル 部署名</div>
                 </div>
-            `).join('');
+            `;
+            cardGrid.appendChild(card);
         }
 
-        function showPage(pageId) {
-            ['keyword', 'dept', 'area'].forEach(p => {
-                document.getElementById('page-' + p).classList.add('hidden');
-                document.getElementById('btn-' + p).classList.remove('active-tab');
-            });
-            document.getElementById('page-' + pageId).classList.remove('hidden');
-            document.getElementById('btn-' + pageId).classList.add('active-tab');
+        // メニュー以外をクリックしたら閉じる
+        window.onclick = function(event) {
+            if (!event.target.matches('.sort-button img')) {
+                document.getElementById('sortOptions').style.display = 'none';
+            }
         }
-
-        function filterCards() {
-            const val = document.getElementById('searchInput').value.toLowerCase();
-            const grid = document.getElementById('cardGrid');
-            const filtered = cards.filter(c => c.name.toLowerCase().includes(val) || c.company.toLowerCase().includes(val));
-            grid.innerHTML = filtered.map(c => `
-                <div class="bg-white p-6 card-shadow flex items-center space-x-4">
-                    <div class="w-10 h-10 rounded-full ${c.color}"></div>
-                    <div>
-                        <div class="font-bold text-lg">${c.name}</div>
-                        <div class="text-sm text-gray-400">${c.company}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        initCards();
     </script>
 </body>
 </html>
