@@ -16,37 +16,46 @@
 
         /* 左サイドメニュー */
         .sidebar {
-            width: 260px; /* 少し広げました */
+            width: 260px;
             background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%);
             display: flex;
             flex-direction: column;
-            padding: 40px 0; /* 全体的に位置を少し下げるため上部余白を確保 */
+            padding: 60px 0 0 0; /* 全体的に位置を下げるため上部余白をさらに追加 */
             color: white;
         }
 
         .logo-area {
-            padding: 0 24px 60px; /* 下との間隔を広げました */
+            padding: 0 24px 80px; /* ロゴと下のメニューの間隔をさらに広げる */
             text-align: center;
         }
 
         .logo-area img {
-            width: 85%; /* 1.5倍程度の存在感に調整 */
+            width: 95%; /* さらに大きく調整 */
             height: auto;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 18px 30px; /* 間隔を広げて位置を調整 */
+            padding: 20px 30px; /* 上下の空き加減を調整 */
             cursor: pointer;
-            font-size: 17px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8); /* 通常時は少し透過 */
+            transition: 0.2s;
+        }
+
+        /* キーワードページなので「キーワード」を白く強調 */
+        .nav-item.active {
+            color: #ffffff;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.15); /* 選択されている感のデザイン */
         }
 
         .nav-icon {
-            width: 32px; /* アイコンを大きくしました */
-            height: 32px;
-            margin-right: 15px;
-            object-fit: contain; /* 縦潰れ防止 */
+            width: 38px; /* アイコンをさらに大きく */
+            height: 38px;
+            margin-right: 18px;
+            object-fit: contain;
         }
 
         /* メインコンテンツ */
@@ -60,37 +69,34 @@
             padding: 40px 50px;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* 両端に配置 */
-            gap: 20px;
+            justify-content: space-between;
         }
 
         .search-container {
             position: relative;
             flex: 1;
-            max-width: 600px; /* 検索窓を少し広めに */
+            max-width: 600px;
         }
 
         .search-bar {
             width: 100%;
-            padding: 15px 15px 15px 55px;
-            border-radius: 35px;
+            padding: 15px 15px 15px 60px;
+            border-radius: 40px;
             border: 1px solid #e0e0e0;
             font-size: 16px;
             outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .search-icon {
             position: absolute;
-            left: 20px;
+            left: 22px;
             top: 50%;
             transform: translateY(-50%);
-            width: 24px; /* 虫眼鏡を調整 */
-            height: 24px;
-            object-fit: contain; /* 縦潰れを防止 */
+            width: 26px;
+            height: 26px;
+            object-fit: contain;
         }
 
-        /* 並び替えボタンエリア */
         .sort-container {
             position: relative;
         }
@@ -100,47 +106,40 @@
             border: none;
             cursor: pointer;
             padding: 0;
-            display: block;
         }
 
         .sort-button img {
-            height: 45px; /* ボタンを少し大きく */
+            height: 50px; /* 並び替えボタンも少し大きく */
             width: auto;
         }
 
-        /* 並び替えプルダウン（最初は隠す） */
         .sort-options {
             display: none; 
             position: absolute;
-            top: 55px;
+            top: 60px;
             right: 0;
             background: white;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             z-index: 1000;
-            min-width: 180px;
+            min-width: 200px;
             border: 1px solid #eee;
-            overflow: hidden;
         }
 
         .sort-options div {
             padding: 15px 20px;
-            font-size: 15px;
             cursor: pointer;
-            color: #444;
-            transition: background 0.2s;
         }
 
         .sort-options div:hover {
             background: #f0faff;
-            color: #5eabd5;
         }
 
         /* カードグリッド */
         .card-grid {
             padding: 0 50px 50px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 25px;
             overflow-y: auto;
         }
@@ -157,14 +156,11 @@
         }
 
         .user-thumb {
-            width: 65px;
-            height: 65px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             object-fit: cover;
         }
-
-        .card-name { font-weight: bold; font-size: 18px; margin-bottom: 4px; }
-        .card-dept { color: #888; font-size: 14px; }
     </style>
 </head>
 <body>
@@ -173,7 +169,7 @@
         <div class="logo-area">
             <img src="logo.png" alt="Logo">
         </div>
-        <div class="nav-item">
+        <div class="nav-item active">
             <img src="icon-keyword.png" class="nav-icon"> キーワード
         </div>
         <div class="nav-item">
@@ -207,25 +203,20 @@
     </div>
 
     <script>
-        // 並び替えリストの表示/非表示切り替え
         function toggleSort(event) {
-            event.stopPropagation(); // ボタンクリックが他に伝わらないようにする
+            event.stopPropagation();
             const options = document.getElementById('sortOptions');
-            const isVisible = options.style.display === 'block';
-            options.style.display = isVisible ? 'none' : 'block';
+            options.style.display = options.style.display === 'block' ? 'none' : 'block';
         }
 
         function selectSort(type) {
-            console.log(type + 'を選択しました');
             document.getElementById('sortOptions').style.display = 'none';
         }
 
-        // 画面のどこかをクリックしたらリストを閉じる
         window.onclick = function() {
             document.getElementById('sortOptions').style.display = 'none';
         }
 
-        // ダミーカード生成
         const userIcons = ['user-1.png', 'user-2.png', 'user-3.png', 'user-4.png', 'user-5.png', 'user-6.png'];
         const cardGrid = document.getElementById('cardGrid');
 
@@ -236,8 +227,8 @@
             card.innerHTML = `
                 <img src="${randomIcon}" class="user-thumb">
                 <div class="card-info">
-                    <div class="card-name">氏名サンプル</div>
-                    <div class="card-dept">部署・役職サンプル</div>
+                    <div style="font-weight:bold; font-size:18px;">氏名サンプル</div>
+                    <div style="color:#888; font-size:14px;">部署・役職サンプル</div>
                 </div>
             `;
             cardGrid.appendChild(card);
