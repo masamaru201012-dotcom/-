@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど</title>
+    <title>名刺くらうど - キーワード</title>
     <style>
         body {
             margin: 0;
@@ -14,7 +14,7 @@
             overflow: hidden;
         }
 
-        /* --- 左サイドメニュー --- */
+        /* 左サイドメニュー */
         .sidebar {
             width: 280px;
             background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%);
@@ -43,8 +43,11 @@
             cursor: pointer;
             font-size: 18px;
             color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: 0.2s;
         }
 
+        /* キーワードページなのでここをActiveに */
         .nav-item.active {
             color: #ffffff;
             font-weight: bold;
@@ -60,7 +63,7 @@
             object-fit: contain;
         }
 
-        /* --- メインコンテンツ --- */
+        /* メインコンテンツ */
         .main-content {
             flex: 1;
             display: flex;
@@ -71,7 +74,8 @@
             padding: 40px 50px;
             display: flex;
             align-items: center;
-            gap: 20px; /* 要素間の隙間 */
+            justify-content: space-between; /* 左右に振り分け */
+            gap: 20px;
         }
 
         .search-container {
@@ -100,7 +104,13 @@
             object-fit: contain;
         }
 
-        /* ＋追加ボタン（可愛い丸みのあるデザイン） */
+        /* ヘッダー右側（追加と並び替え） */
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .add-button {
             background-color: #ffffff;
             border: 2px solid #6fceca;
@@ -110,8 +120,8 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
             white-space: nowrap;
+            transition: all 0.2s;
         }
 
         .add-button:hover {
@@ -119,7 +129,6 @@
             color: white;
         }
 
-        /* 並び替えエリア */
         .sort-container {
             position: relative;
         }
@@ -138,7 +147,6 @@
             width: auto;
         }
 
-        /* 並び替えプルダウン */
         .sort-options {
             display: none;
             position: absolute;
@@ -158,7 +166,6 @@
             font-size: 15px;
             cursor: pointer;
             color: #444;
-            transition: background 0.2s;
         }
 
         .sort-options div:hover {
@@ -166,7 +173,7 @@
             color: #5eabd5;
         }
 
-        /* --- カードグリッド --- */
+        /* カード一覧 */
         .card-grid {
             padding: 0 50px 50px;
             display: grid;
@@ -188,67 +195,156 @@
             transition: transform 0.2s;
         }
 
-        .card:hover { transform: translateY(-5px); }
+        .card:hover {
+            transform: translateY(-5px);
+        }
 
         .user-thumb {
-            width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #f0faff;
+        }
+
+        .card-info {
+            display: flex;
+            flex-direction: column;
         }
 
         .card-name { font-weight: bold; font-size: 20px; color: #333; margin-bottom: 5px; }
-        .card-dept { color: #888; font-size: 15px; }
+        .card-company { color: #666; font-size: 14px; margin-bottom: 2px; }
+        .card-title { color: #888; font-size: 14px; }
 
-        /* --- 詳細モーダル --- */
+        /* 詳細モーダル */
         .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); z-index: 4000; justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s;
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
         }
-        .modal-overlay.open { display: flex; opacity: 1; }
+
+        .modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
         .modal-content {
-            background-color: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2); position: relative; transform: scale(0.9); transition: transform 0.3s;
+            background-color: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s;
         }
-        .modal-overlay.open .modal-content { transform: scale(1); }
-        .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; background: none; border: none; color: #ccc; cursor: pointer; }
 
-        .modal-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f0faff; padding-bottom: 20px; }
-        .modal-thumb { width: 120px; height: 120px; border-radius: 50%; border: 5px solid #f0faff; margin-bottom: 15px; }
-        .modal-name { font-size: 28px; font-weight: bold; color: #333; }
-        .modal-title { font-size: 18px; color: #5eabd5; }
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
 
-        .modal-body { display: flex; flex-direction: column; gap: 15px; }
-        .info-group { display: flex; flex-direction: column; }
-        .info-label { font-size: 12px; color: #aaa; margin-bottom: 4px; font-weight: bold; }
-        .info-value { font-size: 16px; color: #444; background-color: #f8f9fa; padding: 10px 15px; border-radius: 10px; }
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 30px;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+        }
 
+        .modal-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f0faff;
+            padding-bottom: 20px;
+        }
+
+        .modal-thumb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 5px solid #f0faff;
+            margin-bottom: 15px;
+        }
+
+        .modal-name {
+            font-size: 26px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* 会社名 > 部署 > 役職 の順 */
+        .modal-info-sub {
+            text-align: center;
+            color: #444;
+            font-size: 16px;
+        }
+
+        .modal-info-sub div {
+            margin-bottom: 4px;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #aaa;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #444;
+            background-color: #f8f9fa;
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
-        <div class="nav-item active"><img src="icon-keyword.png" class="nav-icon"> キーワード</div>
-        <div class="nav-item"><img src="icon-dept.png" class="nav-icon"> 部署</div>
-        <div class="nav-item"><img src="icon-area.png" class="nav-icon"> エリア</div>
+        <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"> キーワード</a>
+        <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"> 部署</a>
+        <a href="area.html" class="nav-item"><img src="icon-area.png" class="nav-icon"> エリア</a>
     </div>
 
     <div class="main-content">
         <div class="header">
             <div class="search-container">
                 <img src="icon-search.png" class="search-icon">
-                <input type="text" class="search-bar" placeholder="検索キーワードを入力">
+                <input type="text" class="search-bar" placeholder="キーワードを入力">
             </div>
 
-            <button class="add-button">＋ 追加</button>
-
-            <div class="sort-container">
-                <button class="sort-button" id="sortBtn">
-                    <img src="btn-sort.png" alt="並び替え">
-                </button>
-                <div id="sortOptions" class="sort-options">
-                    <div onclick="selectSort('最新順')">最新順</div>
-                    <div onclick="selectSort('五十音順')">五十音順</div>
-                    <div onclick="selectSort('五十音順（逆）')">五十音順（逆）</div>
+            <div class="header-right">
+                <button class="add-button">＋ 追加</button>
+                <div class="sort-container">
+                    <button class="sort-button" id="sortBtn">
+                        <img src="btn-sort.png" alt="並び替え">
+                    </button>
+                    <div id="sortOptions" class="sort-options">
+                        <div onclick="selectSort('最新順')">最新順</div>
+                        <div onclick="selectSort('五十音順')">五十音順</div>
+                        <div onclick="selectSort('五十音順（逆）')">五十音順（逆）</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -262,22 +358,34 @@
             <div class="modal-header">
                 <img src="" id="modalThumb" class="modal-thumb">
                 <div id="modalName" class="modal-name"></div>
-                <div id="modalTitle" class="modal-title"></div>
+                <div class="modal-info-sub">
+                    <div id="modalCompany" style="font-weight: 500;"></div>
+                    <div id="modalDept"></div>
+                    <div id="modalTitle" style="color: #5eabd5;"></div>
+                </div>
             </div>
             <div class="modal-body">
-                <div class="info-group"><div class="info-label">会社名</div><div id="modalCompany" class="info-value"></div></div>
-                <div class="info-group"><div class="info-label">メールアドレス</div><div id="modalEmail" class="info-value"></div></div>
-                <div class="info-group"><div class="info-label">電話番号</div><div id="modalPhone" class="info-value"></div></div>
-                <div class="info-group"><div class="info-label">備考</div><div id="modalNotes" class="info-value"></div></div>
+                <div class="info-group">
+                    <div class="info-label">メールアドレス</div>
+                    <div id="modalEmail" class="info-value"></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">電話番号</div>
+                    <div id="modalPhone" class="info-value"></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">備考</div>
+                    <div id="modalNotes" class="info-value"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const userData = [
-            { id: 1, name: '田中 太郎', dept: '営業部', title: '部長', company: '株式会社サンプル', email: 'tanaka@example.com', phone: '090-1234-5678', notes: '趣味はゴルフ。', icon: 'user-1.png' },
-            { id: 2, name: '佐藤 花子', dept: '企画部', title: '課長', company: '企画プロデュース有限会社', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクト相談。', icon: 'user-2.png' },
-            { id: 3, name: '鈴木 一郎', dept: '開発部', title: 'リーダー', company: 'テックソリューションズ', email: 'suzuki@tech.io', phone: '080-5555-7777', notes: 'API連携について。', icon: 'user-3.png' }
+            { id: 1, name: '田中 太郎', company: '株式会社サンプル', dept: '営業第一チーム', title: 'マネージャー', email: 'tanaka@example.com', phone: '090-1111-2222', notes: '以前の展示会で名刺交換。趣味はゴルフ。', icon: 'user-1.png' },
+            { id: 2, name: '佐藤 花子', company: '企画プロデュース有限会社', dept: 'クリエイティブ部', title: 'アートディレクター', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクト相談中。', icon: 'user-2.png' },
+            { id: 3, name: '鈴木 一郎', company: 'テックソリューションズ', dept: 'システム開発課', title: 'エンジニア', email: 'suzuki@tech.io', phone: '080-5555-7777', notes: 'API連携について確認済み。', icon: 'user-3.png' }
         ];
 
         const cardGrid = document.getElementById('cardGrid');
@@ -291,13 +399,14 @@
                 <img src="${user.icon}" class="user-thumb">
                 <div class="card-info">
                     <div class="card-name">${user.name}</div>
-                    <div class="card-dept">${user.dept}・${user.title}</div>
+                    <div class="card-company">${user.company}</div>
+                    <div class="card-title">${user.title}</div>
                 </div>
             `;
             cardGrid.appendChild(card);
         });
 
-        // 並び替えボタンの挙動を復活
+        // 並び替えボタンの挙動
         const sortBtn = document.getElementById('sortBtn');
         const sortOptions = document.getElementById('sortOptions');
         sortBtn.onclick = (e) => {
@@ -311,26 +420,22 @@
         }
 
         // モーダル操作
+        const modalOverlay = document.getElementById('modalOverlay');
         function openModal(user) {
             document.getElementById('modalThumb').src = user.icon;
             document.getElementById('modalName').textContent = user.name;
-            document.getElementById('modalTitle').textContent = `${user.dept}・${user.title}`;
             document.getElementById('modalCompany').textContent = user.company;
+            document.getElementById('modalDept').textContent = user.dept;
+            document.getElementById('modalTitle').textContent = user.title;
             document.getElementById('modalEmail').textContent = user.email;
             document.getElementById('modalPhone').textContent = user.phone;
             document.getElementById('modalNotes').textContent = user.notes;
-            document.getElementById('modalOverlay').classList.add('open');
+            modalOverlay.classList.add('open');
         }
 
-        const closeBtn = document.getElementById('closeBtn');
-        const modalOverlay = document.getElementById('modalOverlay');
-
-        function closeModal() { modalOverlay.classList.remove('open'); }
-        closeBtn.onclick = closeModal;
-        modalOverlay.onclick = closeModal;
+        document.getElementById('closeBtn').onclick = () => modalOverlay.classList.remove('open');
+        modalOverlay.onclick = () => modalOverlay.classList.remove('open');
         document.querySelector('.modal-content').onclick = (e) => e.stopPropagation();
-
-        // どこかをクリックしたら並び替えを閉じる
         window.onclick = () => { sortOptions.style.display = 'none'; };
     </script>
 </body>
