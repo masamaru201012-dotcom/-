@@ -11,41 +11,42 @@
             display: flex;
             height: 100vh;
             background-color: #f5f7f9;
+            overflow: hidden;
         }
 
-        /* 左サイドメニュー：グラデーション */
+        /* 左サイドメニュー */
         .sidebar {
-            width: 240px;
+            width: 260px; /* 少し広げました */
             background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%);
             display: flex;
             flex-direction: column;
-            padding: 30px 0;
+            padding: 40px 0; /* 全体的に位置を少し下げるため上部余白を確保 */
             color: white;
         }
 
         .logo-area {
-            padding: 0 24px 50px;
+            padding: 0 24px 60px; /* 下との間隔を広げました */
             text-align: center;
         }
 
         .logo-area img {
-            width: 100%;
+            width: 85%; /* 1.5倍程度の存在感に調整 */
             height: auto;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 15px 30px;
+            padding: 18px 30px; /* 間隔を広げて位置を調整 */
             cursor: pointer;
-            font-size: 16px;
+            font-size: 17px;
         }
 
         .nav-icon {
-            width: 22px;
-            height: 22px;
+            width: 32px; /* アイコンを大きくしました */
+            height: 32px;
             margin-right: 15px;
-            object-fit: contain;
+            object-fit: contain; /* 縦潰れ防止 */
         }
 
         /* メインコンテンツ */
@@ -56,34 +57,42 @@
         }
 
         .header {
-            padding: 40px;
+            padding: 40px 50px;
             display: flex;
             align-items: center;
+            justify-content: space-between; /* 両端に配置 */
             gap: 20px;
         }
 
         .search-container {
             position: relative;
             flex: 1;
-            max-width: 500px;
+            max-width: 600px; /* 検索窓を少し広めに */
         }
 
         .search-bar {
             width: 100%;
-            padding: 12px 12px 12px 48px;
-            border-radius: 30px;
+            padding: 15px 15px 15px 55px;
+            border-radius: 35px;
             border: 1px solid #e0e0e0;
-            font-size: 15px;
+            font-size: 16px;
             outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .search-icon {
             position: absolute;
-            left: 18px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
+            width: 24px; /* 虫眼鏡を調整 */
+            height: 24px;
+            object-fit: contain; /* 縦潰れを防止 */
+        }
+
+        /* 並び替えボタンエリア */
+        .sort-container {
+            position: relative;
         }
 
         .sort-button {
@@ -91,75 +100,144 @@
             border: none;
             cursor: pointer;
             padding: 0;
+            display: block;
         }
 
         .sort-button img {
-            height: 40px;
+            height: 45px; /* ボタンを少し大きく */
             width: auto;
         }
 
-        /* カード一覧 */
+        /* 並び替えプルダウン（最初は隠す） */
+        .sort-options {
+            display: none; 
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 180px;
+            border: 1px solid #eee;
+            overflow: hidden;
+        }
+
+        .sort-options div {
+            padding: 15px 20px;
+            font-size: 15px;
+            cursor: pointer;
+            color: #444;
+            transition: background 0.2s;
+        }
+
+        .sort-options div:hover {
+            background: #f0faff;
+            color: #5eabd5;
+        }
+
+        /* カードグリッド */
         .card-grid {
-            padding: 0 40px 40px;
+            padding: 0 50px 50px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
             overflow-y: auto;
         }
 
         .card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
             display: flex;
             align-items: center;
-            gap: 15px;
-            border: 1px solid #eee;
+            gap: 20px;
+            border: 1px solid #f0f0f0;
         }
 
         .user-thumb {
-            width: 60px;
-            height: 60px;
+            width: 65px;
+            height: 65px;
             border-radius: 50%;
             object-fit: cover;
         }
+
+        .card-name { font-weight: bold; font-size: 18px; margin-bottom: 4px; }
+        .card-dept { color: #888; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="logo-area"><img src="logo.png"></div>
-        <div class="nav-item"><img src="icon-keyword.png" class="nav-icon"> キーワード</div>
-        <div class="nav-item"><img src="icon-dept.png" class="nav-icon"> 部署</div>
-        <div class="nav-item"><img src="icon-area.png" class="nav-icon"> エリア</div>
+        <div class="logo-area">
+            <img src="logo.png" alt="Logo">
+        </div>
+        <div class="nav-item">
+            <img src="icon-keyword.png" class="nav-icon"> キーワード
+        </div>
+        <div class="nav-item">
+            <img src="icon-dept.png" class="nav-icon"> 部署
+        </div>
+        <div class="nav-item">
+            <img src="icon-area.png" class="nav-icon"> エリア
+        </div>
     </div>
 
     <div class="main-content">
         <div class="header">
             <div class="search-container">
                 <img src="icon-search.png" class="search-icon">
-                <input type="text" class="search-bar" placeholder="検索">
+                <input type="text" class="search-bar" placeholder="検索キーワードを入力">
             </div>
-            <button class="sort-button"><img src="btn-sort.png"></button>
+
+            <div class="sort-container">
+                <button class="sort-button" onclick="toggleSort(event)">
+                    <img src="btn-sort.png" alt="並び替え">
+                </button>
+                <div id="sortOptions" class="sort-options">
+                    <div onclick="selectSort('最新順')">最新順</div>
+                    <div onclick="selectSort('五十音順')">五十音順</div>
+                    <div onclick="selectSort('五十音順（逆）')">五十音順（逆）</div>
+                </div>
+            </div>
         </div>
 
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
     <script>
+        // 並び替えリストの表示/非表示切り替え
+        function toggleSort(event) {
+            event.stopPropagation(); // ボタンクリックが他に伝わらないようにする
+            const options = document.getElementById('sortOptions');
+            const isVisible = options.style.display === 'block';
+            options.style.display = isVisible ? 'none' : 'block';
+        }
+
+        function selectSort(type) {
+            console.log(type + 'を選択しました');
+            document.getElementById('sortOptions').style.display = 'none';
+        }
+
+        // 画面のどこかをクリックしたらリストを閉じる
+        window.onclick = function() {
+            document.getElementById('sortOptions').style.display = 'none';
+        }
+
+        // ダミーカード生成
         const userIcons = ['user-1.png', 'user-2.png', 'user-3.png', 'user-4.png', 'user-5.png', 'user-6.png'];
         const cardGrid = document.getElementById('cardGrid');
 
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 8; i++) {
             const randomIcon = userIcons[Math.floor(Math.random() * userIcons.length)];
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
                 <img src="${randomIcon}" class="user-thumb">
                 <div class="card-info">
-                    <div style="font-weight:bold;">氏名サンプル</div>
-                    <div style="color:#999; font-size:13px;">部署・役職</div>
+                    <div class="card-name">氏名サンプル</div>
+                    <div class="card-dept">部署・役職サンプル</div>
                 </div>
             `;
             cardGrid.appendChild(card);
