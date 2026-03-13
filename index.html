@@ -5,56 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど</title>
     <style>
-        :root {
-            --menu-grad-top: #6fceca;
-            --menu-grad-bottom: #5eabd5;
-            --bg-color: #f5f7f9;
-        }
-
+        /* 全体の設定 */
         body {
             margin: 0;
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
             display: flex;
             height: 100vh;
-            background-color: var(--bg-color);
+            background-color: #f5f7f9;
             color: #333;
         }
 
-        /* 左サイドメニュー */
+        /* 左サイドメニュー：指定のグラデーションを適用 */
         .sidebar {
             width: 240px;
-            background: linear-gradient(to bottom, var(--menu-grad-top), var(--menu-grad-bottom));
+            /* 上から下へ #6fceca → #5eabd5 */
+            background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%) !important;
             display: flex;
             flex-direction: column;
             padding: 20px 0;
             color: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
         }
 
         .logo-area {
-            padding: 0 24px 40px;
+            padding: 10px 24px 40px;
+            text-align: center;
         }
 
         .logo-area img {
-            width: 160px; /* イラレのサイズに合わせて適宜調整してください */
+            width: 100%;
+            max-width: 180px;
             height: auto;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 12px 24px;
+            padding: 15px 24px;
             cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.1);
+            font-size: 15px;
+            font-weight: 500;
         }
 
         .nav-icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            margin-right: 15px;
             object-fit: contain;
         }
 
@@ -71,21 +67,22 @@
             padding: 30px 40px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
         .search-container {
             position: relative;
             flex: 1;
-            max-width: 600px;
+            max-width: 500px;
         }
 
         .search-bar {
             width: 100%;
             padding: 12px 12px 12px 45px;
             border-radius: 25px;
-            border: 1px solid #ddd;
-            font-size: 16px;
+            border: 1px solid #e0e0e0;
+            background-color: white;
+            font-size: 14px;
             outline: none;
         }
 
@@ -94,11 +91,11 @@
             left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
         }
 
-        /* 並び替えボタンとプルダウン */
+        /* 並び替えボタン */
         .sort-container {
             position: relative;
         }
@@ -107,58 +104,66 @@
             background: none;
             border: none;
             cursor: pointer;
-            padding: 0;
+            padding: 5px;
+            display: flex;
+            align-items: center;
         }
 
         .sort-button img {
-            width: 100px; /* アセットのサイズに合わせて調整 */
-            height: auto;
+            height: 35px; /* サイズは適宜調整してください */
+            width: auto;
         }
 
+        /* プルダウンメニュー */
         .sort-options {
             display: none;
             position: absolute;
-            top: 100%;
+            top: 45px;
             right: 0;
             background: white;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             z-index: 100;
-            min-width: 150px;
+            min-width: 160px;
+            overflow: hidden;
         }
 
         .sort-options div {
-            padding: 10px 15px;
+            padding: 12px 20px;
+            font-size: 14px;
             cursor: pointer;
+            color: #333;
         }
 
         .sort-options div:hover {
-            background: #f0f0f0;
+            background: #f8f9fa;
+            color: #5eabd5;
         }
 
-        /* カードグリッド */
+        /* カード一覧 */
         .card-grid {
-            padding: 0 40px 40px;
+            padding: 10px 40px 40px;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
             overflow-y: auto;
         }
 
         .card {
             background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
             display: flex;
             align-items: center;
             gap: 15px;
+            border: 1px solid #f0f0f0;
         }
 
         .user-thumb {
-            width: 60px;
-            height: 60px;
+            width: 55px;
+            height: 55px;
             border-radius: 50%;
             object-fit: cover;
         }
@@ -166,6 +171,17 @@
         .card-info {
             display: flex;
             flex-direction: column;
+            gap: 4px;
+        }
+
+        .card-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .card-dept {
+            color: #888;
+            font-size: 13px;
         }
     </style>
 </head>
@@ -173,29 +189,29 @@
 
     <div class="sidebar">
         <div class="logo-area">
-            <img src="1.png" alt="Logo">
+            <img src="アセット%201.png" alt="Logo">
         </div>
         <div class="nav-item">
-            <img src="2.png" class="nav-icon" alt=""> キーワード
+            <img src="アセット%202.png" class="nav-icon" alt=""> キーワード
         </div>
         <div class="nav-item">
-            <img src="3.png" class="nav-icon" alt=""> 部署
+            <img src="アセット%203.png" class="nav-icon" alt=""> 部署
         </div>
         <div class="nav-item">
-            <img src="4.png" class="nav-icon" alt=""> エリア
+            <img src="アセット%204.png" class="nav-icon" alt=""> エリア
         </div>
     </div>
 
     <div class="main-content">
         <div class="header">
             <div class="search-container">
-                <img src="6.png" class="search-icon" alt="">
-                <input type="text" class="search-bar" placeholder="検索キーワードを入力">
+                <img src="アセット%206.png" class="search-icon" alt="">
+                <input type="text" class="search-bar" placeholder="検索">
             </div>
 
             <div class="sort-container">
                 <button class="sort-button" onclick="toggleSort()">
-                    <img src="5.png" alt="並び替え">
+                    <img src="アセット%205.png" alt="並び替え">
                 </button>
                 <div id="sortOptions" class="sort-options">
                     <div onclick="selectSort('最新順')">最新順</div>
@@ -210,40 +226,44 @@
     </div>
 
     <script>
-        // 並び替えメニューの表示切り替え
+        // 並び替えメニューの切り替え
         function toggleSort() {
             const options = document.getElementById('sortOptions');
             options.style.display = options.style.display === 'block' ? 'none' : 'block';
         }
 
         function selectSort(type) {
-            console.log(type + 'で並び替え');
             document.getElementById('sortOptions').style.display = 'none';
-            // ここに並び替えのロジックを後で追加できます
+            // 並び替え処理はここ
         }
 
-        // ダミーカードの生成（7〜12のアイコンをランダム配置）
-        const userIcons = ['7.png', '8.png', '9.png', '10.png', '11.png', '12.png'];
+        // カード生成（7〜12のアイコンをランダム配置）
+        // スペースを %20 に変換して指定
+        const userIcons = [
+            'アセット%207.png', 'アセット%208.png', 'アセット%209.png', 
+            'アセット%2010.png', 'アセット%2011.png', 'アセット%2012.png'
+        ];
+        
         const cardGrid = document.getElementById('cardGrid');
 
-        // デザイン確認用に6つ表示
-        for (let i = 0; i < 6; i++) {
+        // 配置確認用にいくつか表示
+        for (let i = 0; i < 8; i++) {
             const randomIcon = userIcons[Math.floor(Math.random() * userIcons.length)];
             const card = document.createElement('div');
             card.className = 'card';
             card.innerHTML = `
                 <img src="${randomIcon}" class="user-thumb" alt="User">
                 <div class="card-info">
-                    <div style="font-weight:bold; font-size:1.1em;">サンプル 氏名</div>
-                    <div style="color:#666; font-size:0.9em;">サンプル 部署名</div>
+                    <div class="card-name">氏名サンプル</div>
+                    <div class="card-dept">部署・役職サンプル</div>
                 </div>
             `;
             cardGrid.appendChild(card);
         }
 
-        // メニュー以外をクリックしたら閉じる
+        // 外側クリックでメニューを閉じる
         window.onclick = function(event) {
-            if (!event.target.matches('.sort-button img')) {
+            if (!event.target.closest('.sort-container')) {
                 document.getElementById('sortOptions').style.display = 'none';
             }
         }
