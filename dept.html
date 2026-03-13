@@ -2,98 +2,60 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - 部署</title>
     <style>
-        /* Sidebar/Base CSS (Same as index.html) */
-        body { margin: 0; font-family: "Helvetica Neue", sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding-top: 60px; color: white; }
-        .logo-area { padding: 0 20px 80px; text-align: center; }
-        .logo-area img { width: 100%; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255,255,255,0.8); text-decoration: none; }
-        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255,255,255,0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .nav-icon { width: 38px; height: 38px; margin-right: 18px; }
+        /* 基本スタイルは共通 */
+        body { margin: 0; font-family: sans-serif; display: flex; height: 100vh; background: #f5f7f9; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca, #5eabd5); color: white; padding-top: 60px; }
+        .nav-item { padding: 25px 30px; display: block; color: white; text-decoration: none; opacity: 0.7; }
+        .nav-item.active { opacity: 1; font-weight: bold; background: rgba(255,255,255,0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .main-content { flex: 1; padding: 50px; }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; }
-        .header { padding: 40px 50px; font-size: 24px; font-weight: bold; color: #333; }
-        
-        /* ファイル型UIのスタイル */
-        .file-grid {
-            padding: 0 50px 50px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 30px;
-            overflow-y: auto;
-        }
+        /* ファイル型デザイン */
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 40px; }
+        .file-box { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; }
+        .file-box:hover { transform: translateY(-5px); }
 
-        .file-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .file-item:hover { transform: scale(1.05); }
-
-        .file-icon {
-            width: 120px;
-            height: 100px;
-            background-color: #ffd863; /* ファイルっぽい黄色 */
-            border-radius: 10px 40px 10px 10px;
+        .file-shape {
+            width: 140px; height: 100px;
+            background: #ffd863;
+            border-radius: 0 15px 10px 10px;
             position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .file-icon::before {
-            content: "";
-            position: absolute;
-            top: -10px;
-            left: 0;
-            width: 50px;
-            height: 10px;
-            background-color: #ffd863;
-            border-radius: 5px 5px 0 0;
+        .file-shape::before {
+            content: ""; position: absolute; top: -12px; left: 0;
+            width: 60px; height: 15px; background: #ffd863; border-radius: 8px 8px 0 0;
         }
-
-        .file-name {
-            font-size: 16px;
-            font-weight: bold;
-            color: #555;
-            text-align: center;
-        }
-
+        .file-label { margin-top: 15px; font-weight: bold; color: #555; text-align: center; }
+        .dept-text { font-size: 12px; color: #8a732d; font-weight: bold; padding: 5px; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div class="logo-area"><img src="logo.png"></div>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png" class="nav-icon"> キーワード</a>
-        <a href="dept.html" class="nav-item active"><img src="icon-dept.png" class="nav-icon"> 部署</a>
-        <a href="area.html" class="nav-item"><img src="icon-area.png" class="nav-icon"> エリア</a>
+        <a href="index.html" class="nav-item">🔍 キーワード</a>
+        <a href="dept.html" class="nav-item active">📁 部署</a>
+        <a href="area.html" class="nav-item">📍 エリア</a>
     </div>
     <div class="main-content">
-        <div class="header">部署を選択</div>
+        <h1 style="color:#555; margin-bottom:40px;">部署から探す</h1>
         <div class="file-grid">
-            <div class="file-item" onclick="alert('制作技術部の名刺を表示します')">
-                <div class="file-icon"></div>
-                <div class="file-name">制作技術部</div>
+            <div class="file-box">
+                <div class="file-shape"><span class="dept-text">制作技術部</span></div>
+                <div class="file-label">制作技術部</div>
             </div>
-            <div class="file-item" onclick="alert('報道制作部の名刺を表示します')">
-                <div class="file-icon"></div>
-                <div class="file-name">報道制作部</div>
+            <div class="file-box">
+                <div class="file-shape"><span class="dept-text">報道制作部</span></div>
+                <div class="file-label">報道制作部</div>
             </div>
-            <div class="file-item" onclick="alert('スポーツ局の名刺を表示します')">
-                <div class="file-icon"></div>
-                <div class="file-name">スポーツ局</div>
+            <div class="file-box">
+                <div class="file-shape"><span class="dept-text">スポーツ制作部</span></div>
+                <div class="file-label">スポーツ制作部</div>
             </div>
-            <div class="file-item" onclick="alert('営業局の名刺を表示します')">
-                <div class="file-icon"></div>
-                <div class="file-name">営業局</div>
+            <div class="file-box">
+                <div class="file-shape"><span class="dept-text">営業部</span></div>
+                <div class="file-label">営業部</div>
             </div>
         </div>
     </div>
