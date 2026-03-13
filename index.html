@@ -5,60 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど</title>
     <style>
+        /* --- 全体の可愛いデザインを維持 --- */
         body {
             margin: 0;
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
             display: flex;
             height: 100vh;
-            background-color: #f5f7f9;
+            background-color: #f5f7f9; /* 優しいグレー */
             overflow: hidden;
         }
 
-        /* 左サイドメニュー */
+        /* --- 左サイドメニュー --- */
         .sidebar {
-            width: 260px;
-            background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%);
+            width: 280px; /* ロゴ拡大に合わせて少し広く */
+            background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); /* パステルグラデーション */
             display: flex;
             flex-direction: column;
-            padding: 60px 0 0 0; /* 全体的に位置を下げるため上部余白をさらに追加 */
+            padding: 60px 0 0 0;
             color: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
         }
 
         .logo-area {
-            padding: 0 24px 80px; /* ロゴと下のメニューの間隔をさらに広げる */
+            padding: 0 20px 80px; /* 下との間隔を広く */
             text-align: center;
         }
 
         .logo-area img {
-            width: 95%; /* さらに大きく調整 */
+            width: 100%; /* ロゴを最大限大きく */
             height: auto;
+            transform: scale(1.1); /* さらに1.1倍に強調 */
         }
 
         .nav-item {
             display: flex;
             align-items: center;
-            padding: 20px 30px; /* 上下の空き加減を調整 */
+            padding: 30px 30px; /* 上下の間隔を広げて離しました */
             cursor: pointer;
             font-size: 18px;
-            color: rgba(255, 255, 255, 0.8); /* 通常時は少し透過 */
+            color: rgba(255, 255, 255, 0.8);
             transition: 0.2s;
         }
 
-        /* キーワードページなので「キーワード」を白く強調 */
         .nav-item.active {
             color: #ffffff;
             font-weight: bold;
-            background: rgba(255, 255, 255, 0.15); /* 選択されている感のデザイン */
+            background: rgba(255, 255, 255, 0.15); /* 可愛い丸角の選択背景 */
+            border-radius: 0 30px 30px 0;
+            margin-right: 20px;
         }
 
         .nav-icon {
-            width: 38px; /* アイコンをさらに大きく */
+            width: 38px;
             height: 38px;
             margin-right: 18px;
             object-fit: contain;
         }
 
-        /* メインコンテンツ */
+        /* --- メインコンテンツ --- */
         .main-content {
             flex: 1;
             display: flex;
@@ -80,25 +84,23 @@
 
         .search-bar {
             width: 100%;
-            padding: 15px 15px 15px 60px;
-            border-radius: 40px;
+            padding: 18px 15px 18px 65px;
+            border-radius: 40px; /* 丸みのある検索窓 */
             border: 1px solid #e0e0e0;
+            background-color: white;
             font-size: 16px;
             outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
 
         .search-icon {
             position: absolute;
-            left: 22px;
+            left: 25px;
             top: 50%;
             transform: translateY(-50%);
-            width: 26px;
-            height: 26px;
+            width: 28px;
+            height: 28px;
             object-fit: contain;
-        }
-
-        .sort-container {
-            position: relative;
         }
 
         .sort-button {
@@ -109,33 +111,11 @@
         }
 
         .sort-button img {
-            height: 50px; /* 並び替えボタンも少し大きく */
+            height: 55px; /* ボタンも少し大きく */
             width: auto;
         }
 
-        .sort-options {
-            display: none; 
-            position: absolute;
-            top: 60px;
-            right: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            z-index: 1000;
-            min-width: 200px;
-            border: 1px solid #eee;
-        }
-
-        .sort-options div {
-            padding: 15px 20px;
-            cursor: pointer;
-        }
-
-        .sort-options div:hover {
-            background: #f0faff;
-        }
-
-        /* カードグリッド */
+        /* --- カードグリッド --- */
         .card-grid {
             padding: 0 50px 50px;
             display: grid;
@@ -146,21 +126,138 @@
 
         .card {
             background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border-radius: 20px; /* もっと丸く */
+            padding: 30px;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.04); /* 柔らかい影 */
             display: flex;
             align-items: center;
             gap: 20px;
             border: 1px solid #f0f0f0;
+            cursor: pointer; /* クリックできることを示す */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px); /* 少し浮く可愛いアニメーション */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.06);
         }
 
         .user-thumb {
-            width: 70px;
-            height: 70px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%; /* 丸いアイコン */
+            object-fit: cover;
+            border: 3px solid #f0faff; /* 可愛い水色の枠 */
+        }
+
+        .card-name { font-weight: bold; font-size: 20px; color: #333; margin-bottom: 5px; }
+        .card-dept { color: #888; font-size: 15px; }
+
+        /* --- 詳細表示（モーダル）の可愛いデザイン --- */
+        .modal-overlay {
+            display: none; /* 通常は隠す */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 背景を少し暗く */
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 30px; /* とても丸い角 */
+            padding: 40px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            position: relative;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 30px;
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover { color: #5eabd5; }
+
+        .modal-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0faff;
+            padding-bottom: 20px;
+        }
+
+        .modal-thumb {
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
             object-fit: cover;
+            border: 5px solid #f0faff;
+            margin-bottom: 15px;
         }
+
+        .modal-name { font-size: 28px; font-weight: bold; color: #333; }
+        .modal-title { font-size: 18px; color: #5eabd5; font-weight: 500; }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 14px;
+            color: #aaa;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .info-value {
+            font-size: 17px;
+            color: #444;
+            background-color: #f8f9fa; /* 薄いグレーの背景で可愛い枠 */
+            padding: 12px 15px;
+            border-radius: 10px;
+        }
+
+        .info-notes {
+            min-height: 80px;
+            line-height: 1.6;
+        }
+
     </style>
 </head>
 <body>
@@ -186,52 +283,90 @@
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" placeholder="検索キーワードを入力">
             </div>
+            <button class="sort-button">
+                <img src="btn-sort.png" alt="並び替え">
+            </button>
+        </div>
 
-            <div class="sort-container">
-                <button class="sort-button" onclick="toggleSort(event)">
-                    <img src="btn-sort.png" alt="並び替え">
-                </button>
-                <div id="sortOptions" class="sort-options">
-                    <div onclick="selectSort('最新順')">最新順</div>
-                    <div onclick="selectSort('五十音順')">五十音順</div>
-                    <div onclick="selectSort('五十音順（逆）')">五十音順（逆）</div>
+        <div class="card-grid" id="cardGrid">
+            </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="close-button" onclick="closeModal()">×</button>
+            
+            <div class="modal-header">
+                <img src="" id="modalThumb" class="modal-thumb">
+                <div id="modalName" class="modal-name"></div>
+                <div id="modalTitle" class="modal-title"></div>
+            </div>
+
+            <div class="modal-body">
+                <div class="info-group">
+                    <div class="info-label">会社名</div>
+                    <div id="modalCompany" class="info-value"></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">メールアドレス</div>
+                    <div id="modalEmail" class="info-value"></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">電話番号</div>
+                    <div id="modalPhone" class="info-value"></div>
+                </div>
+                <div class="info-group">
+                    <div class="info-label">備考</div>
+                    <div id="modalNotes" class="info-value info-notes"></div>
                 </div>
             </div>
         </div>
-
-        <div class="card-grid" id="cardGrid"></div>
     </div>
 
     <script>
-        function toggleSort(event) {
-            event.stopPropagation();
-            const options = document.getElementById('sortOptions');
-            options.style.display = options.style.display === 'block' ? 'none' : 'block';
-        }
+        // サンプルデータ（後でAirtableと連携させます）
+        const userData = [
+            { id: 1, name: '田中 太郎', dept: '営業部', title: '部長', company: '株式会社サンプル', email: 'tanaka@example.com', phone: '090-1234-5678', notes: '以前の展示会で名刺交換。趣味はゴルフ。', icon: 'user-1.png' },
+            { id: 2, name: '佐藤 花子', dept: '企画部', title: '課長', company: '企画プロデュース有限会社', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクトの相談。', icon: 'user-2.png' },
+            { id: 3, name: '鈴木 一郎', dept: '開発部', title: 'リーダー', company: 'テックソリューションズ', email: 'suzuki@tech.io', phone: '080-5555-7777', notes: 'API連携について確認。', icon: 'user-3.png' },
+            { id: 4, name: '高橋 エリ', dept: 'デザイン部', title: 'デザイナー', company: 'クリエイティブ・ラボ', email: 'takahashi@design.com', phone: '050-1111-2222', notes: 'UIデザインのフィードバック待ち。', icon: 'user-4.png' },
+            { id: 5, name: '伊藤 健太', dept: '人事部', title: '採用担当', company: 'グローバルキャリア', email: 'ito@global.net', phone: '090-8888-9999', notes: '来月の採用イベント。', icon: 'user-5.png' },
+            { id: 6, name: '渡辺 真由', dept: '広報部', title: '広報', company: 'ニュースリリースJAPAN', email: 'watanabe@news.jp', phone: '03-3333-4444', notes: 'プレスリリースの件。', icon: 'user-6.png' }
+        ];
 
-        function selectSort(type) {
-            document.getElementById('sortOptions').style.display = 'none';
-        }
-
-        window.onclick = function() {
-            document.getElementById('sortOptions').style.display = 'none';
-        }
-
-        const userIcons = ['user-1.png', 'user-2.png', 'user-3.png', 'user-4.png', 'user-5.png', 'user-6.png'];
         const cardGrid = document.getElementById('cardGrid');
 
-        for (let i = 0; i < 8; i++) {
-            const randomIcon = userIcons[Math.floor(Math.random() * userIcons.length)];
+        // カードを生成して表示
+        userData.forEach(user => {
             const card = document.createElement('div');
             card.className = 'card';
+            card.onclick = () => openModal(user); // クリックでモーダルを開く
             card.innerHTML = `
-                <img src="${randomIcon}" class="user-thumb">
+                <img src="${user.icon}" class="user-thumb" alt="${user.name}">
                 <div class="card-info">
-                    <div style="font-weight:bold; font-size:18px;">氏名サンプル</div>
-                    <div style="color:#888; font-size:14px;">部署・役職サンプル</div>
+                    <div class="card-name">${user.name}</div>
+                    <div class="card-dept">${user.dept}・${user.title}</div>
                 </div>
             `;
             cardGrid.appendChild(card);
+        });
+
+        // モーダルを開く関数
+        function openModal(user) {
+            document.getElementById('modalThumb').src = user.icon;
+            document.getElementById('modalName').textContent = user.name;
+            document.getElementById('modalTitle').textContent = `${user.dept}・${user.title}`;
+            document.getElementById('modalCompany').textContent = user.company;
+            document.getElementById('modalEmail').textContent = user.email;
+            document.getElementById('modalPhone').textContent = user.phone;
+            document.getElementById('modalNotes').textContent = user.notes;
+
+            document.getElementById('modalOverlay').classList.add('open');
+        }
+
+        // モーダルを閉じる関数
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('open');
         }
     </script>
 </body>
