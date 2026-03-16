@@ -6,9 +6,9 @@
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
-        /* 【修正】ログイン画面：ロゴを白枠の外へ */
+        /* ログイン画面：ロゴは外側、入力欄は完全に空 */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .logo-login { width: 280px; margin-bottom: 40px; } /* 白背景の外側で白文字が映える */
+        .logo-login { width: 280px; margin-bottom: 40px; }
         .login-card { background: white; padding: 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 400px; text-align: center; }
         .input-group { margin-bottom: 25px; text-align: left; }
         .input-group label { display: block; font-size: 14px; color: #666; margin-bottom: 10px; font-weight: bold; }
@@ -17,7 +17,7 @@
         .login-btn { width: 100%; padding: 18px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .login-btn:hover { background: #5dbdb9; transform: translateY(-2px); }
 
-        /* サイドバー・メイン画面（ロジック維持） */
+        /* サイドバー（ロジック維持） */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -27,6 +27,7 @@
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
+        /* メイン画面（ロジック維持） */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
         .header-left { display: flex; align-items: center; gap: 15px; }
@@ -34,7 +35,7 @@
         .header-title { font-size: 20px; font-weight: bold; color: #444; }
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 20px; }
         .search-bar { width: 100%; padding: 12px 25px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; }
-        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
 
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
@@ -42,7 +43,7 @@
         .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; flex-shrink: 0; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
         .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; }
     </style>
 </head>
@@ -52,7 +53,7 @@
         <div class="login-card">
             <div class="input-group">
                 <label>メールアドレス</label>
-                <input type="email" id="emailInput" placeholder="m.shimizu@mietv.co.jp">
+                <input type="email" id="emailInput" value="">
             </div>
             <button class="login-btn" onclick="doLogin()">ログイン</button>
         </div>
@@ -72,7 +73,7 @@
     <div class="main-content">
         <div class="header">
             <div class="header-left"><img src="icon-keyword.png" class="header-title-icon"><div class="header-title">キーワード検索</div></div>
-            <div class="search-container"><input type="text" class="search-bar" id="searchInput" placeholder="氏名や会社名で検索..." oninput="renderCards()"></div>
+            <div class="search-container"><input type="text" class="search-bar" id="searchInput" oninput="renderCards()"></div>
             <button class="add-button">新規追加</button>
         </div>
         <div class="card-grid" id="cardGrid"></div>
@@ -81,12 +82,9 @@
     <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
 
     <script>
-        // 名刺データとロジック（しっかり維持）
         const cardData = [
-            { id: 1, name: "佐藤 健二", company: "株式会社三重デジタル", dept: "営業部", area: "三重県", icon: "user-1.png" },
-            { id: 2, name: "田中 美咲", company: "東海放送システム", dept: "技術部", area: "愛知県", icon: "user-2.png" },
-            { id: 3, name: "鈴木 一郎", company: "津シティ広告", dept: "企画部", area: "三重県", icon: "user-3.png" },
-            { id: 4, name: "伊藤 恵", company: "メ～テレ関連社", dept: "総務部", area: "愛知県", icon: "user-4.png" }
+            { id: 1, name: "佐藤 健二", company: "株式会社三重デジタル", icon: "user-1.png" },
+            { id: 2, name: "田中 美咲", company: "東海放送システム", icon: "user-2.png" }
         ];
 
         function renderCards() {
@@ -100,15 +98,7 @@
                     document.getElementById('modalImg').src = c.icon;
                     document.getElementById('imageModal').style.display = 'flex';
                 };
-                div.innerHTML = `
-                    <div class="thumb-box"><img src="${c.icon}"></div>
-                    <div>
-                        <div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div>
-                        <div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div>
-                        <div style="display:flex; gap:8px; margin-top:8px;">
-                            <span style="font-size:10px; background:#f0faff; color:#5eabd5; padding:2px 8px; border-radius:10px;">${c.dept}</span>
-                        </div>
-                    </div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
@@ -120,11 +110,11 @@
         }
         function doLogin() {
             const email = document.getElementById('emailInput').value;
-            if(email.includes('@')) { // メアド形式ならパスワードなしでOK
+            if(email.trim() !== "") {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 document.getElementById('loginOverlay').style.display = 'none';
             } else {
-                alert("正しいメールアドレスを入力してください");
+                alert("入力してください");
             }
         }
         function doLogout() {
