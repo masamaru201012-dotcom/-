@@ -4,48 +4,35 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - エリア</title>
     <style>
-        body { margin: 0; font-family: sans-serif; display: flex; height: 100vh; background: #f5f7f9; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca, #5eabd5); color: white; padding-top: 60px; }
-        .nav-item { padding: 25px 30px; display: block; color: white; text-decoration: none; opacity: 0.7; }
-        .nav-item.active { opacity: 1; font-weight: bold; background: rgba(255,255,255,0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .main-content { flex: 1; padding: 50px; overflow-y: auto; }
-
-        .area-card { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .area-title { color: #6fceca; border-left: 5px solid #6fceca; padding-left: 15px; margin-bottom: 20px; font-size: 20px; }
-        .pref-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
-        .pref-item { padding: 12px; background: #f0faff; border: 1px solid #d0efff; border-radius: 10px; text-align: center; cursor: pointer; color: #5eabd5; font-weight: bold; transition: 0.2s; }
-        .pref-item:hover { background: #6fceca; color: white; border-color: #6fceca; }
+        body { margin: 0; font-family: "Helvetica Neue", sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; }
+        .logo-area { padding: 0 20px 80px; text-align: center; }
+        .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
+        .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255, 255, 255, 0.8); text-decoration: none; }
+        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
+        .main-content { flex: 1; padding: 50px; }
+        .area-section { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .area-title { color: #6fceca; border-left: 5px solid #6fceca; padding-left: 15px; margin-bottom: 20px; font-weight: bold; }
+        .pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
+        .pref-btn { padding: 12px; background: #f0faff; border: 1px solid #d0efff; border-radius: 10px; text-align: center; cursor: pointer; color: #5eabd5; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <a href="index.html" class="nav-item">🔍 キーワード</a>
-        <a href="dept.html" class="nav-item">📁 部署</a>
-        <a href="area.html" class="nav-item active">📍 エリア</a>
+        <div class="logo-area"><img src="logo.png"></div>
+        <a href="index.html" class="nav-item"><img src="icon-keyword.png" class="nav-icon"> キーワード</a>
+        <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"> 部署</a>
+        <a href="area.html" class="nav-item active"><img src="icon-area.png" class="nav-icon"> エリア</a>
     </div>
     <div class="main-content">
-        <h1 style="color:#555; margin-bottom:40px;">エリアから探す</h1>
-        
-        <div class="area-card">
+        <div class="area-section">
             <div class="area-title">東海</div>
-            <div class="pref-list">
-                <div class="pref-item">三重県</div>
-                <div class="pref-item">愛知県</div>
-                <div class="pref-item">岐阜県</div>
-                <div class="pref-item">静岡県</div>
-            </div>
-        </div>
-
-        <div class="area-card">
-            <div class="area-title">関東</div>
-            <div class="pref-list">
-                <div class="pref-item">東京都</div>
-                <div class="pref-item">神奈川県</div>
-                <div class="pref-item">千葉県</div>
-                <div class="pref-item">埼玉県</div>
-                <div class="pref-item">茨城県</div>
-                <div class="pref-item">栃木県</div>
-                <div class="pref-item">群馬県</div>
+            <div class="pref-grid">
+                <div class="pref-btn">三重県</div>
+                <div class="pref-btn">愛知県</div>
+                <div class="pref-btn">岐阜県</div>
+                <div class="pref-btn">静岡県</div>
             </div>
         </div>
     </div>
