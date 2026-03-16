@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - 部署</title>
     <style>
-        /* 共通レイアウト */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; transition: 0.3s; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
@@ -13,42 +12,35 @@
         .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-
         .main-container { flex: 1; display: flex; overflow: hidden; }
-        
-        /* スマホ用ヘッダー */
         .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; }
         .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
         .mobile-logo { height: 30px; }
         .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
-
-        /* コンテンツエリア */
         .dept-selector { flex: 1; padding: 40px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
         .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
         .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 15px; border-radius: 15px; transition: 0.2s; }
-        .dept-folder:hover { background: #f0faff; }
+        .dept-folder:hover { background: #f0faff; transform: translateY(-3px); }
         .folder-icon { width: 60px; height: 45px; margin-bottom: 10px; position: relative; border-radius: 4px 10px 4px 4px; }
         .folder-icon::before { content: ""; position: absolute; top: -6px; left: 0; width: 22px; height: 10px; background: inherit; border-radius: 4px 4px 0 0; }
         .dept-name { font-size: 13px; font-weight: bold; color: #555; text-align: center; }
-
-        /* フォルダカラー */
         .f-aqua { background: linear-gradient(135deg, #a2d9ce, #76d7c4); }
         .f-sky { background: linear-gradient(135deg, #aed6f1, #85c1e9); }
         .f-lavender { background: linear-gradient(135deg, #d2b4de, #bb8fce); }
         .f-mint { background: linear-gradient(135deg, #abebc6, #82e0aa); }
         .f-ash { background: linear-gradient(135deg, #d5dbdb, #aeb6bf); }
-
         .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background: #f8fafc; }
-        .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 10px; }
-        .user-thumb { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #f0faff; background-color: #eee; }
-
+        .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #6fceca; }
+        .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 15px; }
+        .thumb-box { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #5eabd5; overflow: hidden; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; }
             .sidebar.open { left: 0; }
             .mobile-header { display: flex; position: sticky; top: 0; }
-            .main-container { flex-direction: column; height: calc(100vh - 60px); }
-            .dept-selector, .result-view { flex: none; height: 50%; width: 100%; padding: 20px; box-sizing: border-box; }
+            .main-container { flex-direction: column; height: auto; }
+            .dept-selector, .result-view { flex: none; width: 100%; padding: 20px; }
         }
     </style>
 </head>
@@ -66,11 +58,12 @@
     </div>
     <div class="main-container">
         <div class="dept-selector">
-            <h2 style="color:#5eabd5; font-size:18px;">部署から探す</h2>
+            <h2 style="color:#5eabd5; margin-bottom:30px; font-size: 20px;">部署から探す</h2>
             <div class="dept-grid" id="deptGrid"></div>
         </div>
-        <div class="result-view" id="resultView">
-            <div style="color:#bbb; text-align:center; padding-top:50px;">部署を選択してください</div>
+        <div class="result-view">
+            <div id="selectedDeptName" class="result-header">部署を選択してください</div>
+            <div id="cardGrid"></div>
         </div>
     </div>
     <script>
@@ -81,21 +74,25 @@
             o.style.display = open ? 'block' : 'none';
         }
         const depts = [
-            {n:'報道制作部', c:'f-sky'}, {n:'制作技術部', c:'f-aqua'}, {n:'本社営業部', c:'f-ash'}, 
-            {n:'名古屋支社', c:'f-lavender'}, {n:'東京支社', c:'f-sky'}, {n:'業務部', c:'f-mint'}
+            {n:'報道制作部', c:'f-sky'}, {n:'制作技術部', c:'f-aqua'}, {n:'本社営業部', c:'f-ash'}, {n:'名古屋支社', c:'f-lavender'},
+            {n:'東京支社', c:'f-sky'}, {n:'大阪支社', c:'f-aqua'}, {n:'総務部', c:'f-ash'}, {n:'業務部', c:'f-mint'},
+            {n:'放送部', c:'f-sky'}, {n:'事業部', c:'f-lavender'}, {n:'編成部', c:'f-mint'}
         ];
-        const grid = document.getElementById('deptGrid');
+        const dGrid = document.getElementById('deptGrid');
         depts.forEach(d => {
-            grid.innerHTML += `<div class="dept-folder" onclick="showDept('${d.n}')"><div class="folder-icon ${d.c}"></div><div class="dept-name">${d.n}</div></div>`;
+            const folder = document.createElement('div');
+            folder.className = 'dept-folder';
+            folder.onclick = () => selectDept(d.n);
+            folder.innerHTML = `<div class="folder-icon ${d.c}"></div><div class="dept-name">${d.n}</div>`;
+            dGrid.appendChild(folder);
         });
-        function showDept(name) {
+        function selectDept(name) {
+            document.getElementById('selectedDeptName').innerText = name;
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            const filtered = data.filter(u => u.dept === name);
-            const view = document.getElementById('resultView');
-            view.innerHTML = `<h3 style="color:#5eabd5; font-size:16px; border-bottom:2px solid #6fceca; padding-bottom:10px;">${name}</h3>`;
-            if(filtered.length === 0) view.innerHTML += `<p style="color:#999; font-size:14px;">名刺が見つかりません</p>`;
-            filtered.forEach(u => {
-                view.innerHTML += `<div class="card"><img src="${u.icon}" class="user-thumb"><div><div style="font-weight:bold;">${u.name}</div><div style="font-size:12px; color:#888;">${u.title}</div></div></div>`;
+            data.filter(u => u.dept === name).forEach(user => {
+                grid.innerHTML += `<div class="card"><div class="thumb-box">${user.name.charAt(0)}${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}</div><div><div style="font-weight:bold; font-size:17px;">${user.name}</div><div style="font-size:12px; color:#888;">${user.title || ''}</div></div></div>`;
             });
         }
     </script>
