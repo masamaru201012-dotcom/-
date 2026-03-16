@@ -25,70 +25,33 @@
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; }
         .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
-        /* 【修正】名刺カード：縦伸び徹底防止 */
-        .card-grid { 
-            flex: 1; 
-            padding: 40px; 
-            overflow-y: auto; 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
-            grid-auto-rows: 130px; /* カードの高さを一律固定 */
-            gap: 25px; 
-            align-items: start; /* 上揃えにして縦に伸ばさない */
-        }
-        .card { 
-            background: white; 
-            border-radius: 20px; 
-            padding: 25px; 
-            display: flex; 
-            align-items: center; 
-            gap: 20px; 
-            border: 1px solid #eef2f6; 
-            cursor: pointer; 
-            height: 130px; /* カード自体の高さを固定 */
-            box-sizing: border-box;
-            overflow: hidden;
-            transition: 0.3s;
-        }
+        /* 名刺カード */
+        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        
-        /* 画像を絶対に変形させない設定 */
-        .thumb-box { 
-            width: 80px; 
-            height: 80px; 
-            min-width: 80px; /* 縮小防止 */
-            min-height: 80px; /* 縮小防止 */
-            border-radius: 50%; 
-            overflow: hidden; 
-            background: #e0f4f3; 
-            border: 2px solid #fff; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        .thumb-box img { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; 
-            display: block;
-        }
+        .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル関連（維持） */
+        /* モーダル共通スタイル */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
-        .add-modal-card { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; }
-        .add-modal-header { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center; }
-        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; }
+        .modal-card { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; z-index: 10; }
+        .modal-header { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 25px; text-align: center; }
+
+        /* 共通フォームレイアウト */
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; text-align: left; }
-        .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: bold; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; font-size: 14px; box-sizing: border-box; outline: none; }
-        .form-group textarea { height: 80px; resize: none; }
-        .image-preview-area { width: 100px; height: 100px; border-radius: 15px; border: 2px dashed #e2e8f0; background: #f8fafc; margin: 0 auto 20px auto; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer; position: relative; }
-        .image-preview-area img { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .image-preview-area.has-image img { display: block; }
-        .image-label { text-align: center; font-size: 12px; color: #888; margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 13px; color: #6fceca; margin-bottom: 6px; font-weight: bold; }
+        
+        /* 入力用と表示用で使い分けるスタイル */
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
+        .display-value { width: 100%; padding: 12px; background: #fdfdfd; border-bottom: 1px solid #eee; font-size: 15px; color: #333; min-height: 45px; display: flex; align-items: center; }
+
+        .img-container { width: 120px; height: 120px; border-radius: 15px; background: #f8fafc; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #eef2f6; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
+        
         .save-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        #imageModal img { max-width: 95%; max-height: 95%; border-radius: 8px; }
     </style>
 </head>
 <body>
@@ -120,17 +83,41 @@
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
-    <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
+    <div id="detailModal" class="modal">
+        <div class="modal-card">
+            <button class="close-modal" onclick="closeModal('detailModal')">×</button>
+            <div class="modal-header">名刺詳細</div>
+            <div class="img-container"><img id="viewImg" src=""></div>
+            
+            <div class="form-row">
+                <div class="form-group"><label>名前</label><div class="display-value" id="viewName"></div></div>
+                <div class="form-group"><label>ふりがな</label><div class="display-value" id="viewKana"></div></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>会社名</label><div class="display-value" id="viewCompany"></div></div>
+                <div class="form-group"><label>部署名</label><div class="display-value" id="viewDept"></div></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>役職</label><div class="display-value" id="viewTitle"></div></div>
+                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
+            </div>
+            <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
+        </div>
+    </div>
 
     <div id="addModal" class="modal">
-        <div class="add-modal-card">
-            <button class="close-modal" onclick="closeAddModal()">×</button>
-            <div class="add-modal-header">新規名刺追加</div>
-            <div class="image-preview-area" id="imagePreviewArea" onclick="document.getElementById('imageInput').click()">
-                <img id="previewImg" src="">
+        <div class="modal-card">
+            <button class="close-modal" onclick="closeModal('addModal')">×</button>
+            <div class="modal-header">新規名刺追加</div>
+            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0;" onclick="document.getElementById('imageInput').click()">
+                <img id="previewImg" src="" style="display: none;">
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択</span>
             </div>
-            <div class="image-label">名刺をクリックして画像を選択</div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
+            
             <div class="form-row">
                 <div class="form-group"><label>名前</label><input type="text" id="newName"></div>
                 <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
@@ -153,9 +140,7 @@
 
     <script>
         let cardData = [
-            { id: 3, name: "浅井 拓也", company: "津シティ広告", icon: "user-3.png" },
-            { id: 2, name: "田中 美咲", company: "東海放送システム", icon: "user-2.png" },
-            { id: 1, name: "佐藤 健二", company: "株式会社三重デジタル", icon: "user-1.png" }
+            { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
         ];
 
         function renderCards() {
@@ -164,43 +149,62 @@
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
             let filtered = cardData.filter(c => c.name.toLowerCase().includes(term) || c.company.toLowerCase().includes(term));
+            
             filtered.sort((a, b) => {
                 if (sortBy === "new") return b.id - a.id;
                 if (sortBy === "asc") return a.name.localeCompare(b.name, 'ja');
                 if (sortBy === "desc") return b.name.localeCompare(a.name, 'ja');
                 return 0;
             });
+
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.onclick = () => {
-                    document.getElementById('modalImg').src = c.icon;
-                    document.getElementById('imageModal').style.display = 'flex';
-                };
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px; line-height:1.2;">${c.company}</div></div>`;
+                div.onclick = () => openDetailModal(c);
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
 
+        // 詳細表示（新規追加のデザインを踏襲）
+        function openDetailModal(data) {
+            document.getElementById('viewImg').src = data.icon;
+            document.getElementById('viewName').innerText = data.name;
+            document.getElementById('viewKana').innerText = data.kana || "-";
+            document.getElementById('viewCompany').innerText = data.company;
+            document.getElementById('viewDept').innerText = data.dept || "-";
+            document.getElementById('viewTitle').innerText = data.title || "-";
+            document.getElementById('viewEmail').innerText = data.email || "-";
+            document.getElementById('viewTel').innerText = data.tel || "-";
+            document.getElementById('viewNote').innerText = data.note || "-";
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // 新規追加
         let currentImageDataUrl = "";
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('imageInput').value = "";
-            document.getElementById('imagePreviewArea').classList.remove('has-image');
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
             document.getElementById('addModal').style.display = 'flex';
         }
-        function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+        
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => {
                     currentImageDataUrl = e.target.result;
                     document.getElementById('previewImg').src = currentImageDataUrl;
-                    document.getElementById('imagePreviewArea').classList.add('has-image');
+                    document.getElementById('previewImg').style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
+
         function saveNewCard() {
             const name = document.getElementById('newName').value;
             if (!name || !currentImageDataUrl) { alert("名前と画像は必須です"); return; }
@@ -208,12 +212,19 @@
             cardData.unshift({
                 id: newId,
                 name: name,
+                kana: document.getElementById('newKana').value,
                 company: document.getElementById('newCompany').value,
+                dept: document.getElementById('newDept').value,
+                title: document.getElementById('newTitle').value,
+                email: document.getElementById('newEmail').value,
+                tel: document.getElementById('newTel').value,
+                note: document.getElementById('newNote').value,
                 icon: currentImageDataUrl
             });
-            closeAddModal();
+            closeModal('addModal');
             renderCards();
         }
+
         function doLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         window.onload = () => { renderCards(); };
     </script>
