@@ -2,92 +2,83 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>名刺くらうど - キーワード</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名刺くらうど - キーワード検索</title>
     <style>
-        body { margin: 0; font-family: sans-serif; display: flex; height: 100vh; background: #f5f7f9; }
-        /* ログイン画面のスタイル */
-        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        
-        /* メイン画面のスタイル */
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); color: white; display: flex; flex-direction: column; padding-top: 60px; flex-shrink: 0; }
+        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: white; text-decoration: none; opacity: 0.8; }
-        .nav-item img { width: 24px; margin-right: 15px; }
-        .nav-item.active { opacity: 1; font-weight: bold; background: rgba(255,255,255,0.1); }
-        .user-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; opacity: 0.8; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .nav-item.active img { opacity: 1; }
         
-        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { background: white; padding: 20px 40px; display: flex; align-items: center; border-bottom: 1px solid #eee; }
-        .search-bar { flex: 1; margin: 0 20px; padding: 12px 40px; border-radius: 30px; border: 1px solid #ddd; background: #f8fafc; }
-        .card-grid { padding: 40px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; overflow-y: auto; }
-        .card { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .thumb { width: 70px; height: 70px; border-radius: 50%; background: #eee; object-fit: cover; }
+        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
+        .logout-link { font-size: 12px; color: rgba(255,255,255,0.6); cursor: pointer; text-decoration: underline; }
+
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header-title-icon { width: 32px; height: 32px; }
+        .header-title { font-size: 20px; font-weight: bold; color: #444; }
+        
+        .search-container { position: relative; flex: 1; max-width: 400px; margin: 0 20px; }
+        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 20px; opacity: 0.3; }
+        .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
+        
+        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; align-content: start; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; cursor: pointer; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-color: #6fceca; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #fff; flex-shrink: 0; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
-    <div id="loginOverlay" style="display:none;">
-        <div class="login-box">
-            <img src="logo.png" style="width:150px; margin-bottom:20px;">
-            <input type="text" id="loginName" placeholder="名前を入力" style="width:100%; padding:12px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px;">
-            <select id="loginDept" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:8px;">
-                <option value="報道制作部">報道制作部</option>
-                <option value="制作技術部">制作技術部</option>
-                <option value="放送技術部">放送技術部</option>
-                <option value="本社営業部">本社営業部</option>
-            </select>
-            <button onclick="doLogin()" style="width:100%; padding:12px; background:#6fceca; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">ログイン</button>
-        </div>
-    </div>
-
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png"></div>
-        <a href="index.html" class="nav-item active"><img src="icon-keyword.png">キーワード</a>
-        <a href="dept.html" class="nav-item"><img src="icon-dept.png">部署</a>
-        <a href="area.html" class="nav-item"><img src="icon-area.png">エリア</a>
-        <div class="user-area">
-            <div id="uName" style="font-weight:bold;">---</div>
-            <div onclick="doLogout()" style="font-size:12px; cursor:pointer; text-decoration:underline; opacity:0.7;">ログアウト</div>
+        <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
+        <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
+        <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
+        <div class="user-profile-area">
+            <div class="user-name" id="displayUserName">清水 (報道制作部)</div>
+            <div class="logout-link" onclick="location.href='login.html'">ログアウト</div>
         </div>
     </div>
-    <div class="main">
+    <div class="main-content">
         <div class="header">
-            <img src="icon-keyword.png" style="width:32px;">
-            <input type="text" id="sInput" class="search-bar" placeholder="名刺を検索..." oninput="show()">
-            <button style="background:#6fceca; color:white; border:none; padding:10px 20px; border-radius:20px; font-weight:bold;">新規追加</button>
+            <div class="header-left">
+                <img src="icon-keyword.png" class="header-title-icon">
+                <div class="header-title">キーワード検索</div>
+            </div>
+            <div class="search-container">
+                <img src="icon-search.png" class="search-icon">
+                <input type="text" class="search-bar" id="searchInput" placeholder="社外の名刺を検索..." oninput="searchCards()">
+            </div>
+            <button style="background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer;">新規追加</button>
         </div>
-        <div id="grid" class="card-grid"></div>
+        <div class="card-grid" id="cardGrid"></div>
     </div>
-
     <script>
-        function doLogin() {
-            const n = document.getElementById('loginName').value;
-            const d = document.getElementById('loginDept').value;
-            if(!n) return alert('名前を入力してください');
-            localStorage.setItem('currentUser', JSON.stringify({name:n, dept:d}));
-            location.reload();
-        }
-        function doLogout() {
-            localStorage.removeItem('currentUser');
-            location.reload();
-        }
-        function show() {
-            const query = document.getElementById('sInput').value.toLowerCase();
-            const grid = document.getElementById('grid'); grid.innerHTML = "";
-            const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            data.filter(u => u.name.toLowerCase().includes(query) || u.company.toLowerCase().includes(query)).forEach(u => {
-                grid.innerHTML += `<div class="card"><img src="${u.icon||'user-1.png'}" class="thumb"><div><b>${u.name}</b><br><small>${u.company}</small></div></div>`;
+        function searchCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = "";
+            let data = JSON.parse(localStorage.getItem('myCards')) || [];
+            let filtered = data.filter(u => u.name.toLowerCase().includes(query) || u.company.toLowerCase().includes(query));
+            filtered.forEach(user => {
+                const card = document.createElement('div'); card.className = 'card';
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon || 'user-1.png'}"></div>
+                <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company}</div></div>`;
+                grid.appendChild(card);
             });
         }
         window.onload = () => {
             const user = JSON.parse(localStorage.getItem('currentUser'));
-            if(!user) {
-                document.getElementById('loginOverlay').style.display = 'flex';
-            } else {
-                document.getElementById('uName').innerText = user.name + " (" + user.dept + ")";
-                show();
-            }
+            if(user) document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")";
+            searchCards();
         };
     </script>
 </body>
