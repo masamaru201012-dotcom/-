@@ -25,7 +25,7 @@
         .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
         .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); transition: 0.2s; }
 
-        /* 並び替えボタン */
+        /* 並び替え */
         .sort-container { position: relative; min-width: 150px; display: flex; justify-content: flex-end; }
         .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; padding: 5px 0; cursor: pointer; }
         .sort-trigger img { height: 44px; width: auto; }
@@ -38,10 +38,8 @@
         /* カードグリッド */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
         .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+        .card:hover { transform: translateY(-3px); }
         .card-name { font-weight: bold; font-size: 20px; color: #333; }
-        
-        /* アイコン表示部分 */
         .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; background-color: #eee; flex-shrink: 0; }
 
         /* モーダル */
@@ -50,14 +48,20 @@
         .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
         .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
 
-        /* 詳細・フォームスタイル */
+        /* 入力/表示スタイル */
         .form-group, .info-group { margin-bottom: 15px; text-align: left; }
         .form-label, .info-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; font-weight: bold; }
-        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
-        .info-value { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; box-sizing: border-box; font-size: 15px; background: #f8f9fa; color: #444; display: block; word-break: break-all; text-decoration: none; }
+        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-input:focus { border-color: #6fceca; background: #fff; }
+        .info-value { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; box-sizing: border-box; font-size: 15px; background: #f8f9fa; color: #444; display: block; word-break: break-all; }
         .submit-btn { width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
 
-        /* スマホ対応 */
+        /* アイコンアップロード部分 */
+        .upload-container { text-align: center; margin-bottom: 20px; position: relative; cursor: pointer; }
+        .upload-container:hover .upload-overlay { opacity: 1; }
+        .upload-thumb { width: 110px; height: 110px; border-radius: 50%; border: 4px solid #f0faff; object-fit: cover; }
+        .upload-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.4); color: white; padding: 5px 10px; border-radius: 20px; font-size: 10px; opacity: 0; transition: 0.3s; pointer-events: none; }
+
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
             .sidebar { width: 100%; height: auto; padding: 0; flex-direction: row; justify-content: center; position: sticky; top: 0; border-radius: 0 0 20px 20px; }
@@ -69,9 +73,7 @@
             .header { padding: 20px; flex-direction: column; gap: 15px; }
             .search-container { width: 100%; }
             .action-controls { width: 100%; justify-content: space-between; gap: 10px; }
-            .sort-container { min-width: auto; }
             .card-grid { padding: 0 15px 30px; grid-template-columns: 1fr; gap: 15px; }
-            .modal-content { width: 95%; padding: 25px; }
         }
     </style>
 </head>
@@ -89,7 +91,6 @@
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" id="searchInput" placeholder="名前や部署で検索">
             </div>
-            
             <div class="action-controls">
                 <button class="add-button" onclick="openAddModal()">新規追加</button>
                 <div class="sort-container">
@@ -115,17 +116,12 @@
         </div>
     </div>
 
+    <input type="file" id="iconFileInput" style="display:none" accept="image/*" onchange="handleFileSelect(event)">
+
     <script>
-        // 初期データ（アイコン名は清水さんのファイル名に合わせて調整してください）
-        const defaultData = [
-            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ放送', area: '三重県', email: 'tanaka@mietv.example.com', phone: '059-225-1234', icon: 'user-default.png', notes: '技術局長' },
-            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '報道制作部', title: '課長', company: '三重テレビ放送', area: '三重県', email: 'sato@mietv.example.com', phone: '059-225-5678', icon: 'user-default.png', notes: 'ニュースキャスター' }
-        ];
-
-        let userData = JSON.parse(localStorage.getItem('myCards')) || defaultData;
-        if (!localStorage.getItem('myCards')) localStorage.setItem('myCards', JSON.stringify(userData));
-
+        let userData = JSON.parse(localStorage.getItem('myCards')) || [];
         let currentSortMode = 'newest';
+        let tempIconData = 'user-default.png'; // 新規追加用の一時画像保持
 
         function toggleSortMenu() { document.getElementById('sortMenu').classList.toggle('open'); }
         window.addEventListener('click', (e) => { if (!e.target.closest('.sort-container')) document.getElementById('sortMenu').classList.remove('open'); });
@@ -135,7 +131,6 @@
             const labels = { 'newest': '最新順', 'az': '五十音順', 'za': '五十音順（逆）' };
             document.getElementById('currentSortLabel').textContent = labels[mode];
             document.querySelectorAll('.sort-option').forEach(opt => opt.classList.toggle('active', opt.textContent === labels[mode]));
-            document.getElementById('sortMenu').classList.remove('open');
             updateDisplay();
         }
 
@@ -153,49 +148,63 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetailModal(user);
-                // アイコン画像を表示。読み込めない場合はonerrorで対策可能
-                card.innerHTML = `
-                    <img src="${user.icon}" class="user-thumb" alt="${user.name}" onerror="this.src='user-default.png'">
-                    <div class="card-name">${user.name}</div>
-                `;
+                card.innerHTML = `<img src="${user.icon}" class="user-thumb" onerror="this.src='user-default.png'"><div class="card-name">${user.name}</div>`;
                 grid.appendChild(card);
             });
         }
 
+        // --- 新規登録モーダル (詳細画面風) ---
         function openAddModal() {
+            tempIconData = 'user-default.png'; 
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
-                <h2 style="color:#5eabd5; margin-bottom:20px; font-size:20px;">名刺の新規登録</h2>
-                <div class="form-group"><label class="form-label">名前</label><input type="text" id="newName" class="form-input"></div>
-                <div class="form-group"><label class="form-label">ふりがな</label><input type="text" id="newKana" class="form-input"></div>
-                <div class="form-group"><label class="form-label">会社名</label><input type="text" id="newCompany" class="form-input"></div>
-                <div class="form-group"><label class="form-label">部署</label><input type="text" id="newDept" class="form-input"></div>
+                <div class="upload-container" onclick="document.getElementById('iconFileInput').click()">
+                    <img src="${tempIconData}" id="previewIcon" class="upload-thumb">
+                    <div class="upload-overlay">写真を変更</div>
+                </div>
+                <div class="form-group"><label class="form-label">名前</label><input type="text" id="newName" class="form-input" placeholder="三重 太郎"></div>
+                <div class="form-group"><label class="form-label">ふりがな</label><input type="text" id="newKana" class="form-input" placeholder="みえ たろう"></div>
+                <div class="form-group"><label class="form-label">会社名</label><input type="text" id="newCompany" class="form-input" value="三重テレビ放送"></div>
+                <div class="form-group"><label class="form-label">部署</label><input type="text" id="newDept" class="form-input" placeholder="制作技術部"></div>
                 <div class="form-group"><label class="form-label">役職</label><input type="text" id="newTitle" class="form-input"></div>
-                <div class="form-group"><label class="form-label">エリア</label><input type="text" id="newArea" class="form-input"></div>
+                <div class="form-group"><label class="form-label">エリア</label><input type="text" id="newArea" class="form-input" value="三重県"></div>
                 <div class="form-group"><label class="form-label">メールアドレス</label><input type="email" id="newEmail" class="form-input"></div>
                 <div class="form-group"><label class="form-label">電話番号</label><input type="text" id="newPhone" class="form-input"></div>
                 <div class="form-group"><label class="form-label">備考</label><input type="text" id="newNotes" class="form-input"></div>
-                <div class="form-group"><label class="form-label">アイコンファイル名</label><input type="text" id="newIcon" class="form-input" placeholder="user-1.png など"></div>
-                <button class="submit-btn" onclick="addNewCard()">登録する</button>
+                <button class="submit-btn" onclick="addNewCard()">名刺を登録する</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
 
+        // ファイル選択時の処理
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                tempIconData = event.target.result; // Base64形式で保存
+                if(document.getElementById('previewIcon')) {
+                    document.getElementById('previewIcon').src = tempIconData;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
         function addNewCard() {
             const name = document.getElementById('newName').value;
-            if(!name) return;
+            if(!name) { alert("名前を入力してください"); return; }
             const newData = {
                 id: Date.now(), 
                 name: name, 
                 kana: document.getElementById('newKana').value || "ん",
-                company: document.getElementById('newCompany').value || "三重テレビ放送",
+                company: document.getElementById('newCompany').value,
                 dept: document.getElementById('newDept').value || "未設定", 
-                title: document.getElementById('newTitle').value || "",
-                area: document.getElementById('newArea').value || "三重県", 
-                email: document.getElementById('newEmail').value || "", 
-                phone: document.getElementById('newPhone').value || "", 
-                notes: document.getElementById('newNotes').value || "", 
-                icon: document.getElementById('newIcon').value || 'user-default.png'
+                title: document.getElementById('newTitle').value,
+                area: document.getElementById('newArea').value, 
+                email: document.getElementById('newEmail').value, 
+                phone: document.getElementById('newPhone').value, 
+                notes: document.getElementById('newNotes').value, 
+                icon: tempIconData
             };
             userData.push(newData);
             localStorage.setItem('myCards', JSON.stringify(userData));
@@ -207,23 +216,23 @@
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
                 <div style="text-align:center; border-bottom:2px solid #f0faff; padding-bottom:15px; margin-bottom:20px;">
-                    <img src="${user.icon}" style="width:100px; height:100px; border-radius:50%; border:4px solid #f0faff; margin-bottom:10px; object-fit:cover;" onerror="this.src='user-default.png'">
-                    <div style="font-size:24px; font-weight:bold;">${user.name}</div>
+                    <img src="${user.icon}" class="upload-thumb" onerror="this.src='user-default.png'">
+                    <div style="font-size:24px; font-weight:bold; margin-top:10px;">${user.name}</div>
                 </div>
                 <div class="info-group"><div class="info-label">部署</div><div class="info-value">${user.dept || '---'}</div></div>
                 <div class="info-group"><div class="info-label">役職</div><div class="info-value">${user.title || '---'}</div></div>
                 <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${user.company}</div></div>
                 <div class="info-group"><div class="info-label">エリア</div><div class="info-value">${user.area}</div></div>
-                <div class="info-group"><div class="info-label">メールアドレス</div><a href="mailto:${user.email}" class="info-value" style="color:#5eabd5; text-decoration:underline;">${user.email || '---'}</a></div>
-                <div class="info-group"><div class="info-label">電話番号</div><a href="tel:${user.phone}" class="info-value" style="color:#5eabd5; text-decoration:underline;">${user.phone || '---'}</a></div>
+                <div class="info-group"><div class="info-label">メールアドレス</div><div class="info-value">${user.email || '---'}</div></div>
+                <div class="info-group"><div class="info-label">電話番号</div><div class="info-value">${user.phone || '---'}</div></div>
                 <div class="info-group"><div class="info-label">備考</div><div class="info-value">${user.notes || '---'}</div></div>
-                <button onclick="deleteCard(${user.id})" style="width:100%; background:#ff7675; color:white; border:none; padding:10px; border-radius:10px; margin-top:20px; cursor:pointer; font-weight:bold;">この名刺を削除する</button>
+                <button onclick="deleteCard(${user.id})" style="width:100%; background:#f5f7f9; color:#ff7675; border:none; padding:10px; border-radius:10px; margin-top:20px; cursor:pointer; font-size:12px;">この名刺を削除する</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
 
         function deleteCard(id) {
-            if(!confirm("本当に削除しますか？")) return;
+            if(!confirm("削除してもよろしいですか？")) return;
             userData = userData.filter(u => u.id !== id);
             localStorage.setItem('myCards', JSON.stringify(userData));
             closeModal();
