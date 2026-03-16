@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- 共通レイアウト（PC） --- */
+        /* --- 共通レイアウト --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
-        /* サイドバー（スマホでは初期状態を隠す） */
         .sidebar { 
             width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); 
             display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; 
@@ -16,58 +15,42 @@
         }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.2s; }
+        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-        
+
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        /* スマホ用ヘッダー（PCでは隠す） */
-        .mobile-header { 
-            display: none; width: 100%; height: 60px; background: white; 
-            align-items: center; padding: 0 20px; box-sizing: border-box;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000;
-        }
+        /* スマホ用ヘッダー */
+        .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; }
         .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
         .mobile-logo { height: 30px; }
-
-        /* PCヘッダー */
-        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
-        .search-container { position: relative; flex: 0 1 450px; }
-        .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-sizing: border-box; }
-        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; }
-
-        .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; }
-        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
-
-        /* 並び替えボタン（右端固定） */
-        .sort-container { position: relative; min-width: 140px; display: flex; justify-content: flex-end; }
-        .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; }
-        .sort-trigger img { height: 44px; width: auto; }
-        .sort-current-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
-
-        /* カードグリッド */
-        .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
-        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; }
-        .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; background-color: #eee; }
-        .card-name { font-weight: bold; font-size: 20px; color: #333; }
-
-        /* オーバーレイ（スマホ用メニューが開いた時の背景） */
         .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
 
-        /* --- スマートフォン対応 --- */
+        /* カードデザインとアイコン表示の修正 */
+        .card-grid { padding: 40px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
+        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
+        .card:hover { transform: translateY(-3px); border-color: #6fceca; }
+
+        /* アイコン画像の設定 */
+        .user-thumb { 
+            width: 70px; height: 70px; border-radius: 50%; 
+            object-fit: cover; border: 3px solid #f0faff; 
+            background-color: #e0f4f3; /* 画像がない時の背景色 */
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; color: #5eabd5; font-size: 24px;
+        }
+
+        .card-name { font-weight: bold; font-size: 18px; color: #333; }
+
+        /* スマートフォン対応 */
         @media (max-width: 768px) {
-            body { flex-direction: column; overflow-y: auto; }
-            .sidebar { 
-                position: fixed; left: -280px; top: 0; height: 100%; 
-                width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.1); 
-            }
+            body { flex-direction: column; }
+            .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; }
             .sidebar.open { left: 0; }
             .mobile-header { display: flex; position: sticky; top: 0; }
-            .header { padding: 20px; flex-direction: column; gap: 15px; }
-            .search-container { width: 100%; }
-            .action-controls { width: 100%; justify-content: space-between; }
-            .card-grid { padding: 0 15px 30px; grid-template-columns: 1fr; gap: 15px; }
+            .card-grid { padding: 20px 15px; grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -76,7 +59,6 @@
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
         <img src="logo.png" alt="名刺くらうど" class="mobile-logo">
     </div>
-
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
 
     <div class="sidebar" id="sidebar">
@@ -87,21 +69,6 @@
     </div>
 
     <div class="main-content">
-        <div class="header">
-            <div class="search-container">
-                <img src="icon-search.png" class="search-icon">
-                <input type="text" class="search-bar" id="searchInput" placeholder="名前や部署で検索">
-            </div>
-            <div class="action-controls">
-                <button class="add-button" onclick="openAddModal()">新規追加</button>
-                <div class="sort-container">
-                    <div class="sort-trigger" onclick="toggleSortMenu()">
-                        <div id="currentSortLabel" class="sort-current-label">最新順</div>
-                        <img src="btn-sort.png" alt="並び替え">
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
@@ -113,19 +80,33 @@
             overlay.style.display = isOpen ? 'block' : 'none';
         }
 
-        // --- データ表示ロジックは以前のものを維持 ---
         const defaultData = [
-            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ放送', area: '三重県', email: 'tanaka@mietv.example.com', phone: '059-225-1234', icon: 'user-default.png', notes: '技術局長' }
+            { id: 1, name: '田中 太郎', icon: '' },
+            { id: 2, name: '佐藤 花子', icon: '' }
         ];
         let userData = JSON.parse(localStorage.getItem('myCards')) || defaultData;
-        
+
         function updateDisplay() {
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
             userData.forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.innerHTML = `<img src="${user.icon || 'user-default.png'}" class="user-thumb"><div class="card-name">${user.name}</div>`;
+                
+                // アイコンのロジック：画像があればimg、なければ名前の1文字目を表示
+                const initial = user.name.charAt(0);
+                const iconHtml = user.icon 
+                    ? `<img src="${user.icon}" class="user-thumb" onerror="this.style.display='none'; this.nextSibling.style.display='flex'">` 
+                    : '';
+                const placeholderHtml = `<div class="user-thumb">${initial}</div>`;
+
+                card.innerHTML = `
+                    <div style="position:relative;">
+                        ${placeholderHtml}
+                        <div style="position:absolute; top:0; left:0;">${iconHtml}</div>
+                    </div>
+                    <div class="card-name">${user.name}</div>
+                `;
                 grid.appendChild(card);
             });
         }
