@@ -2,123 +2,107 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>名刺くらうど - 部署検索</title>
+    <title>名刺くらうど - 部署別フォルダ</title>
     <style>
+        /* ベースデザイン継承 */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        
-        /* サイドバー：ホバー時の色変化を完全に撤廃 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
-        .logo-area { padding: 0 20px 80px; text-align: center; }
-        .logo-area img { width: 100%; transform: scale(1.1); }
-        
-        .nav-item { 
-            display: flex; 
-            align-items: center; 
-            padding: 20px 30px; 
-            color: rgba(255, 255, 255, 0.7); 
-            text-decoration: none; 
-            font-size: 18px; 
-            transition: none; /* アニメーションも不要 */
-        }
+        .logo-area { padding: 0 20px 80px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 2px; }
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
 
-        /* 【修正】カーソルを合わせても色が変わらないように設定 */
-        .nav-item:hover { 
-            color: rgba(255, 255, 255, 0.7); /* 通常時と同じ色 */
-            background: transparent; /* 背景も変えない */
-            cursor: pointer; 
-        }
-
-        /* 部署ページなので、ここが active */
-        .nav-item.active { 
-            color: #ffffff; 
-            font-weight: bold; 
-            background: rgba(255, 255, 255, 0.2); 
-            border-radius: 0 30px 30px 0; 
-            margin-right: 20px; 
-        }
-        .nav-item.active:hover {
-            background: rgba(255, 255, 255, 0.2); /* active時もホバーで変化させない */
-        }
-        
-        .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
-        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
-        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
-
-        /* メインコンテンツ */
+        /* メインビュー */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; border-bottom: 1px solid #eef2f6; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; }
 
-        /* 部署選択エリア */
-        .dept-selector { padding: 20px 40px; background: white; display: flex; gap: 10px; overflow-x: auto; border-bottom: 1px solid #eef2f6; }
-        .dept-btn { padding: 8px 20px; border-radius: 20px; border: 1px solid #e2e8f0; background: #f8fafc; cursor: pointer; white-space: nowrap; font-size: 14px; color: #666; }
-        .dept-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
+        /* フォルダグリッド：ここがこだわりポイント */
+        .content-view { flex: 1; padding: 40px; overflow-y: auto; }
+        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px; }
+        
+        .folder {
+            background: white; border-radius: 16px; padding: 25px 15px;
+            display: flex; flex-direction: column; align-items: center;
+            border: 1px solid #eef2f6; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .folder:hover { 
+            transform: translateY(-5px); border-color: #6fceca; 
+            box-shadow: 0 12px 20px rgba(111, 206, 202, 0.15); 
+        }
 
-        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
-        /* カードのデザインはキーワードページと共通（省略可ですが構造維持のため） */
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; height: 130px; box-sizing: border-box; }
+        /* フォルダアイコンの視覚化 */
+        .icon-wrap {
+            width: 70px; height: 50px; background: #e0f2f1; border-radius: 4px 12px 4px 4px;
+            position: relative; margin-bottom: 15px; transition: 0.3s;
+        }
+        .folder:hover .icon-wrap { background: #6fceca; }
+        .icon-wrap::before {
+            content: ""; position: absolute; top: -6px; left: 0;
+            width: 30px; height: 10px; background: inherit; border-radius: 4px 4px 0 0;
+            filter: brightness(0.9);
+        }
+
+        .dept-label { font-size: 14px; font-weight: bold; color: #444; text-align: center; }
+        .dept-meta { font-size: 11px; color: #999; margin-top: 5px; }
+
+        /* ロック状態の表現 */
+        .folder.locked { opacity: 0.7; cursor: not-allowed; background: #fafbfc; }
+        .folder.locked:hover { transform: none; border-color: #eef2f6; }
     </style>
 </head>
 <body>
-
     <div class="sidebar">
-        <div class="logo-area"><img src="logo.png"></div>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
-        <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
-        <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
+        <div class="logo-area">名刺くらうど</div>
+        <a href="index.html" class="nav-item"><span>キーワード</span></a>
+        <a href="dept.html" class="nav-item active"><span>部署</span></a>
+        <a href="area.html" class="nav-item"><span>エリア</span></a>
         <div class="user-profile-area">
-            <div class="user-name">清水　茉咲 (制作技術部)</div>
-            <a href="#" style="color:rgba(255,255,255,0.6); font-size:12px; text-decoration:none;">ログアウト</a>
+            <div style="font-size: 14px;">清水　茉咲</div>
+            <div style="font-size: 11px; opacity: 0.7;">制作技術部</div>
         </div>
     </div>
 
     <div class="main-content">
-        <div class="header">
-            <div class="header-title">部署検索</div>
+        <div class="header"><div class="header-title">部署別アーカイブ</div></div>
+        
+        <div class="content-view">
+            <div class="folder-grid" id="folderGrid">
+                </div>
         </div>
-
-        <div class="dept-selector" id="deptSelector">
-            <button class="dept-btn active" onclick="filterByDept('すべて')">すべて</button>
-            <button class="dept-btn" onclick="filterByDept('制作技術部')">制作技術部</button>
-            <button class="dept-btn" onclick="filterByDept('営業部')">営業部</button>
-            <button class="dept-btn" onclick="filterByDept('報道部')">報道部</button>
-        </div>
-
-        <div class="card-grid" id="cardGrid">
-            </div>
     </div>
 
     <script>
-        // キーワードページと共通のデータ（本来はDBですが、一旦localStorageから）
-        let cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
+        const depts = [
+            "総務部", "本社営業部", "東京支社", "大阪支社", 
+            "名古屋支社", "事業部", "編成部", "放送部", 
+            "業務部", "報道制作部", "制作技術部", "放送技術部"
+        ];
 
-        function renderCards(filterDept = 'すべて') {
-            const grid = document.getElementById('cardGrid');
-            grid.innerHTML = "";
+        const grid = document.getElementById('folderGrid');
+        depts.forEach(d => {
+            const f = document.createElement('div');
+            f.className = 'folder';
+            // 自分の部署以外は「ロック」っぽく見せる演出（任意）
+            if (d !== "制作技術部") f.classList.add('locked');
 
-            let filtered = cardData;
-            if (filterDept !== 'すべて') {
-                filtered = cardData.filter(c => c.dept === filterDept);
-            }
-
-            filtered.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `<div style="width:80px;height:80px;border-radius:50%;overflow:hidden;background:#e0f4f3;border:2px solid #fff;display:flex;justify-content:center;align-items:center;min-width:80px;"><img src="${c.icon}" style="width:100%;height:100%;object-fit:cover;"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
-                grid.appendChild(div);
-            });
-        }
-
-        function filterByDept(deptName) {
-            // ボタンの見た目切り替え
-            const btns = document.querySelectorAll('.dept-btn');
-            btns.forEach(btn => {
-                btn.classList.toggle('active', btn.innerText === deptName);
-            });
-            renderCards(deptName);
-        }
-
-        window.onload = () => renderCards('すべて');
+            f.innerHTML = `
+                <div class="icon-wrap"></div>
+                <div class="dept-label">${d}</div>
+                <div class="dept-meta">${d === "制作技術部" ? "閲覧可能" : "要・メアド登録"}</div>
+            `;
+            
+            f.onclick = () => {
+                if(f.classList.contains('locked')) {
+                    alert('m.shimizu@mietv.co.jp の登録が完了するまで、このフォルダは開けません。');
+                } else {
+                    alert(d + 'の名刺一覧を表示します');
+                }
+            };
+            grid.appendChild(f);
+        });
     </script>
 </body>
 </html>
