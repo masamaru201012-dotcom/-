@@ -4,39 +4,36 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - 部署別</title>
     <style>
-        /* index.htmlと完全に共通化 */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
-        .nav-item img { width: 24px; margin-right: 15px; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; opacity: 0.8; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .nav-item.active img { opacity: 1; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
-        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
-        .logout-link { font-size: 12px; color: rgba(255,255,255,0.6); cursor: pointer; text-decoration: underline; }
-
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
-        .header-left { display: flex; align-items: center; gap: 15px; width: 250px; }
-        .header-title-icon { width: 32px; height: 32px; }
-        .header-title { font-size: 20px; font-weight: bold; color: #444; }
-        .search-placeholder { flex: 1; max-width: 400px; height: 40px; } /* ヘッダーの配置を揃えるための空白 */
-        .header-right { width: 250px; display: flex; justify-content: flex-end; }
-        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
-
-        /* 2ペインレイアウト */
-        .content-container { flex: 1; display: flex; overflow: hidden; }
-        .side-list { width: 300px; background: white; border-right: 1px solid #eef2f6; padding: 20px; overflow-y: auto; }
-        .list-item { padding: 15px; cursor: pointer; border-radius: 12px; transition: 0.2s; font-weight: bold; color: #555; }
-        .list-item:hover { background: #f0faff; color: #5eabd5; }
-        
-        .main-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
-        .view-title { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #6fceca; }
-        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 480px; }
-        .card { background: white; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .thumb-box { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #eee; flex-shrink: 0; }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
+        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+        .main-container { flex: 1; display: flex; overflow: hidden; }
+        .dept-selector { flex: 1; padding: 30px 40px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
+        /* 最高の状態のグリッドレイアウト（横並びフォルダ）を維持 */
+        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
+        .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 15px; border-radius: 15px; transition: 0.2s; text-align: center; }
+        .dept-folder:hover { background: #f0faff; transform: translateY(-3px); }
+        .folder-icon { width: 60px; height: 45px; background: #85c1e9; border-radius: 4px 10px 4px 4px; position: relative; margin-bottom: 10px; }
+        .folder-icon::before { content: ""; position: absolute; top: -6px; left: 0; width: 22px; height: 10px; background: inherit; border-radius: 4px 4px 0 0; }
+        .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background: #f8fafc; }
+        .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
+        /* 名刺リストを縦1列にする設定を維持 */
+        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 400px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .card:hover { transform: translateY(-5px); border-color: #6fceca; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; border: 2px solid #fff; flex-shrink: 0; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; }
+        .modal-img { max-width: 95%; max-height: 90%; border-radius: 12px; }
     </style>
 </head>
 <body>
@@ -46,41 +43,49 @@
         <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
         <div class="user-profile-area">
-            <div class="user-name">清水 (報道制作部)</div>
-            <div class="logout-link">ログアウト</div>
+            <div class="user-name">清水　茉咲 (制作技術部)</div>
+            <button class="logout-btn">ログアウト</button>
         </div>
     </div>
-    <div class="main-content">
-        <div class="header">
-            <div class="header-left">
-                <img src="icon-dept.png" class="header-title-icon">
-                <div class="header-title">部署別</div>
+    <div class="main-container">
+        <div class="dept-selector">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:30px;">
+                <img src="icon-dept.png" style="width:32px;">
+                <h2 style="font-size:20px; color:#5eabd5; margin:0;">部署別ファイル</h2>
             </div>
-            <div class="search-placeholder"></div> <div class="header-right"><button class="add-button">新規追加</button></div>
+            <div class="dept-grid" id="deptGrid"></div>
         </div>
-        <div class="content-container">
-            <div class="side-list" id="deptList"></div>
-            <div class="main-view">
-                <div id="viewTitle" class="view-title">部署を選択してください</div>
-                <div id="cardGrid" class="card-list"></div>
+        <div class="result-view">
+            <div class="result-header">
+                <img src="icon-dept.png" style="width:32px; height:32px;">
+                <div id="selectedDeptName" style="display:inline; margin-left:10px;">部署を選択してください</div>
             </div>
+            <div id="cardGrid" class="card-list"></div>
         </div>
     </div>
+    <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" class="modal-img"></div>
     <script>
-        const depts = ["報道制作部", "制作技術部", "放送技術部", "本社営業部", "名古屋支社", "東京支社", "大阪支社"];
-        const dContainer = document.getElementById('deptList');
+        // 元通りの部署リスト
+        const depts = ["報道制作部", "制作技術部", "放送技術部", "本社営業部", "名古屋支社", "東京支社", "大阪支社", "放送部", "事業部", "編成部", "総務部"];
+        const dGrid = document.getElementById('deptGrid');
         depts.forEach(d => {
-            const div = document.createElement('div'); div.className = 'list-item'; div.innerText = d;
-            div.onclick = () => {
-                document.getElementById('viewTitle').innerText = d + "の名刺一覧";
-                const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
-                const data = JSON.parse(localStorage.getItem('myCards')) || [];
-                data.filter(u => u.ownerDept === d).forEach(u => {
-                    grid.innerHTML += `<div class="card"><div class="thumb-box"><img src="${u.icon||'user-1.png'}"></div><div><b>${u.name}</b><br><small>${u.company}</small></div></div>`;
-                });
-            };
-            dContainer.appendChild(div);
+            const folder = document.createElement('div'); folder.className = 'dept-folder'; folder.onclick = () => selectDept(d);
+            folder.innerHTML = `<div class="folder-icon"></div><div style="font-size:13px; font-weight:bold; color:#555;">${d}</div>`;
+            dGrid.appendChild(folder);
         });
+        function selectDept(deptName) {
+            document.getElementById('selectedDeptName').innerText = deptName + "が登録した名刺";
+            const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
+            const data = JSON.parse(localStorage.getItem('myCards')) || [];
+            data.filter(u => u.ownerDept === deptName).forEach(user => {
+                const card = document.createElement('div'); card.className = 'card';
+                // 名刺クリックでの画像表示機能を維持
+                card.onclick = () => { if(user.icon){ document.getElementById('imageModal').style.display='flex'; document.getElementById('modalImg').src = user.icon; } };
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon || 'user-1.png'}"></div>
+                <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company}</div></div>`;
+                grid.appendChild(card);
+            });
+        }
     </script>
 </body>
 </html>
