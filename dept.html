@@ -2,23 +2,26 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>名刺くらうど - 部署別</title>
+    <title>名刺くらうど - 部署別アーカイブ</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* サイドバー：キーワードページと完全一致 */
+        /* 左サイドバー：清水さんのオリジナルを完全再現 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
+        
+        /* ユーザープロフエリア */
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
+        .logout-link { color: rgba(255, 255, 255, 0.6); font-size: 12px; text-decoration: none; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* ヘッダー：キーワードページと完全一致 */
+        /* ヘッダー：キーワードページと全く同じ記述 */
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .header-left { display: flex; align-items: center; min-width: 180px; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; margin: 0; }
@@ -29,17 +32,18 @@
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; font-size: 14px; }
         .sort-select { padding: 10px 35px 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 15px center; font-size: 14px; color: #666; cursor: pointer; outline: none; appearance: none; }
 
-        /* 部署フォルダ固有のグリッド表示 */
-        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; align-items: start; }
+        /* 部署フォルダエリア：スクリーンショットのフォルダデザインを維持 */
+        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; align-items: start; }
         .folder-card { 
-            background: white; border-radius: 20px; padding: 30px 20px; 
+            background: white; border-radius: 30px; padding: 40px 20px; 
             display: flex; flex-direction: column; align-items: center; gap: 15px; 
             border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
         .folder-card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .folder-icon { width: 64px; height: 64px; }
-        .folder-name { font-weight: bold; font-size: 16px; color: #333; }
-        .folder-count { font-size: 12px; color: #888; background: #f0f4f8; padding: 4px 12px; border-radius: 10px; }
+        .folder-icon { width: 80px; height: auto; opacity: 0.8; }
+        .folder-name { font-weight: bold; font-size: 18px; color: #444; }
+        .folder-subtext { font-size: 13px; color: #bbb; }
 
         #mainApp { display: none; width: 100%; height: 100%; }
     </style>
@@ -54,18 +58,18 @@
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
             <div class="user-profile-area">
                 <div class="user-name">清水　茉咲 (制作技術部)</div>
-                <a href="#" onclick="doLogout()" style="color:rgba(255,255,255,0.6); font-size:12px; text-decoration:none;">ログアウト</a>
+                <a href="#" onclick="doLogout()" class="logout-link">ログアウト</a>
             </div>
         </div>
 
         <div class="main-content">
             <div class="header">
-                <div class="header-left"><h1 class="header-title">部署別フォルダ</h1></div>
+                <div class="header-left"><h1 class="header-title">部署別アーカイブ</h1></div>
                 <div class="search-container">
                     <input type="text" class="search-bar" id="searchInput" placeholder="部署名を検索..." oninput="renderFolders()">
                 </div>
                 <div class="header-actions">
-                    <button class="add-button" onclick="alert('部署追加機能')">＋ 部署追加</button>
+                    <button class="add-button" onclick="alert('部署追加')">＋ 新規追加</button>
                     <select class="sort-select" id="sortSelect" onchange="renderFolders()">
                         <option value="name">名前順</option>
                         <option value="count">名刺数順</option>
@@ -78,7 +82,6 @@
     </div>
 
     <script>
-        // ログインチェック
         function checkLogin() {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('mainApp').style.display = 'flex';
@@ -93,8 +96,8 @@
             window.location.href = 'index.html';
         }
 
-        // データ連携と描画
-        let cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
+        // ダミーデータ
+        const depts = ["総務部", "名古屋支社", "業務部", "制作部", "技術部"];
 
         function renderFolders() {
             const grid = document.getElementById('folderGrid');
@@ -102,21 +105,13 @@
             const term = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = "";
 
-            const deptCounts = {};
-            cardData.forEach(card => {
-                const d = card.dept || "未分類";
-                deptCounts[d] = (deptCounts[d] || 0) + 1;
-            });
-
-            const depts = Object.keys(deptCounts).filter(d => d.toLowerCase().includes(term));
-
-            depts.forEach(deptName => {
+            depts.filter(d => d.includes(term)).forEach(deptName => {
                 const div = document.createElement('div');
                 div.className = 'folder-card';
                 div.innerHTML = `
-                    <img src="icon-dept.png" class="folder-icon" style="filter: brightness(0) saturate(100%) invert(84%) sepia(16%) recover(20%) hue-rotate(125deg) brightness(92%) contrast(85%);">
+                    <img src="icon-dept.png" class="folder-icon">
                     <div class="folder-name">${deptName}</div>
-                    <div class="folder-count">${deptCounts[deptName]} 枚</div>
+                    <div class="folder-subtext">要・メアド登録</div>
                 `;
                 grid.appendChild(div);
             });
