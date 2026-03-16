@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- 共通デザイン --- */
+        /* レイアウト・デザイン（既存を維持） */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
@@ -25,17 +25,21 @@
         .sort-trigger { display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .sort-trigger img { height: 44px; }
 
-        /* カードとアイコン */
+        /* カードとアイコン（ここが重要！） */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
         .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; flex-shrink: 0; overflow: hidden; }
+        
+        /* 枠が確実に丸くなり、画像が中に入るように指定 */
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+
         .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* モーダル */
+        /* モーダル共通スタイル */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; max-height: 85vh; overflow-y: auto; box-sizing: border-box; position: relative; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
+        
         .info-group { margin-bottom: 18px; }
         .info-label { font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: bold; }
         .info-value, .info-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f8f9fa; box-sizing: border-box; color: #444; }
@@ -45,7 +49,7 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"><span>部署</span></a>
@@ -74,15 +78,30 @@
     </div>
 
     <script>
+        // --- データ管理 ---
+        // 初回ロード時に清水さんのアイコンが確実に出るように相対パスで設定
         let userData = JSON.parse(localStorage.getItem('myCards')) || [
-            { id: 1, name: '清水 真輝', company: '三重テレビ放送', dept: '制作技術部', title: '係長', email: 'shimizu@mietv.example.com', phone: '059-123-4567', memo: '本人。', icon: 'user-1.png', date: Date.now() }
+            { 
+                id: 1, 
+                name: '清水 真輝', 
+                company: '三重テレビ放送', 
+                dept: '制作技術部', 
+                title: '係長', 
+                email: 'shimizu@mietv.example.com', 
+                phone: '059-123-4567', 
+                memo: '本人', 
+                icon: './user-1.png', // ドットスラッシュを付けてカレントディレクトリを明示
+                date: Date.now() 
+            }
         ];
+
         let currentSort = 'newest';
 
         function updateDisplay() {
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
+
             let data = [...userData];
             if (currentSort === 'newest') data.sort((a,b) => b.date - a.date);
             else data.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
@@ -91,7 +110,16 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(user);
-                card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div class="card-name">${user.name}</div>`;
+                
+                // アイコンパスの指定。ブラウザによって解釈が揺れないよう補正
+                const iconPath = user.icon.startsWith('./') ? user.icon : `./${user.icon}`;
+
+                card.innerHTML = `
+                    <div class="thumb-box">
+                        <img src="${iconPath}" alt="" onerror="this.src=''; console.error('画像が見つかりません: ${iconPath}'); this.parentElement.innerHTML='<span style=\'font-size:10px; color:#aaa;\'>ERR</span>'">
+                    </div>
+                    <div class="card-name">${user.name}</div>
+                `;
                 grid.appendChild(card);
             });
         }
@@ -104,10 +132,11 @@
 
         function openDetail(u) {
             const inner = document.getElementById('modalInner');
+            const iconPath = u.icon.startsWith('./') ? u.icon : `./${u.icon}`;
             inner.innerHTML = `
                 <div style="text-align:center; padding-bottom:20px; border-bottom:2px solid #f0faff; margin-bottom:25px;">
-                    <div class="thumb-box" style="margin:0 auto 15px; width:100px; height:100px;"><img src="${u.icon}"></div>
-                    <div style="font-size:24px; font-weight:bold;">${u.name}</div>
+                    <div class="thumb-box" style="margin: 0 auto 15px; width:100px; height:100px;"><img src="${iconPath}"></div>
+                    <div style="font-size:24px; font-weight:bold; color:#333;">${u.name}</div>
                 </div>
                 <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${u.company || '---'}</div></div>
                 <div class="info-group"><div class="info-label">部署名</div><div class="info-value">${u.dept || '---'}</div></div>
@@ -123,7 +152,7 @@
         function openAddModal() {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
-                <h2 style="color:#5eabd5; text-align:center;">新規名刺登録</h2>
+                <h2 style="color:#5eabd5; margin-bottom:20px; text-align:center;">新規名刺登録</h2>
                 <div class="info-group"><div class="info-label">氏名</div><input type="text" id="add-name" class="info-input"></div>
                 <div class="info-group"><div class="info-label">会社名</div><input type="text" id="add-company" class="info-input"></div>
                 <div class="info-group"><div class="info-label">部署名</div><input type="text" id="add-dept" class="info-input"></div>
@@ -144,7 +173,9 @@
                 id: nextId, name, company: document.getElementById('add-company').value,
                 dept: document.getElementById('add-dept').value, title: document.getElementById('add-title').value,
                 email: document.getElementById('add-email').value, phone: document.getElementById('add-phone').value,
-                memo: document.getElementById('add-memo').value, icon: `user-${(nextId % 6) + 1}.png`, date: Date.now()
+                memo: document.getElementById('add-memo').value, 
+                icon: `./user-${(nextId % 6) + 1}.png`, // アイコンを割り当て
+                date: Date.now()
             };
             userData.push(newCard);
             localStorage.setItem('myCards', JSON.stringify(userData));
@@ -152,7 +183,7 @@
         }
 
         function deleteCard(id) {
-            if (!confirm('削除しますか？')) return;
+            if (!confirm('本当に削除しますか？')) return;
             userData = userData.filter(u => u.id !== id);
             localStorage.setItem('myCards', JSON.stringify(userData));
             closeModal(); updateDisplay();
