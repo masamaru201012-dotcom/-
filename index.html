@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード検索</title>
     <style>
-        /* デザイン完全復元 */
         body { margin: 0; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
@@ -13,29 +12,35 @@
         .nav-item { display: flex; align-items: center; padding: 25px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
         .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
         .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { background: white; padding: 30px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .search-container { position: relative; flex: 1; max-width: 600px; }
-        /* 自作アイコン復元 */
+        .search-container { position: relative; flex: 1; max-width: 500px; }
         .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 22px; opacity: 0.3; }
         .search-bar { width: 100%; padding: 15px 25px 15px 55px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 16px; outline: none; transition: 0.3s; }
         .search-bar:focus { border-color: #6fceca; background-color: white; box-shadow: 0 0 15px rgba(111,206,202,0.2); }
-        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-left: 25px; transition: 0.3s; box-shadow: 0 4px 15px rgba(111,206,202,0.3); }
+
+        /* 並び替えセレクトボックスのスタイル */
+        .sort-select { padding: 12px 20px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; color: #555; font-size: 14px; outline: none; cursor: pointer; margin-left: 20px; }
+
+        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-left: 20px; transition: 0.3s; box-shadow: 0 4px 15px rgba(111,206,202,0.3); }
         .add-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(111,206,202,0.4); }
+
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; align-content: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #6fceca; }
-        /* サムネイルの枠を白く復元 */
         .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #5eabd5; flex-shrink: 0; overflow: hidden; position: relative; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
         .card-owner-tag { font-size: 11px; color: #5eabd5; background: #e0f4f3; padding: 4px 12px; border-radius: 15px; display: inline-block; font-weight: bold; margin-top: 8px; }
-        /* ログイン画面：真っ白仕様 */
+
         #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: none; justify-content: center; align-items: center; }
         .login-card { background: white; padding: 50px; border-radius: 30px; text-align: center; width: 360px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
         .login-input { width: 100%; padding: 15px; margin: 30px 0; border: 1px solid #e2e8f0; border-radius: 12px; box-sizing: border-box; font-size: 16px; outline: none; text-align: center; }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; }
         .modal-img { max-width: 95%; max-height: 90%; border-radius: 12px; }
     </style>
@@ -48,6 +53,7 @@
             <button onclick="handleLogin()" style="width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px;">ログイン</button>
         </div>
     </div>
+
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
         <a href="index.html" class="nav-item active"><span>キーワード</span></a>
@@ -58,53 +64,71 @@
             <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
         </div>
     </div>
+
     <div class="main-content">
         <div class="header">
             <div class="search-container">
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" id="searchInput" placeholder="社外の名刺を検索..." oninput="searchCards()">
             </div>
+            <select id="sortOrder" class="sort-select" onchange="searchCards()">
+                <option value="new">登録が新しい順</option>
+                <option value="name">名前順 (あいうえお)</option>
+                <option value="company">会社名順</option>
+            </select>
             <button class="add-button" onclick="alert('準備中')">新規追加</button>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
+
     <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" class="modal-img"></div>
+
     <script>
-        // 社員リスト復元
         const staffList = { "m.shimizu@mietv.co.jp": { name: "清水　茉咲", dept: "制作技術部" }, "nakatani@mietv.co.jp": { name: "中谷　常義", dept: "放送技術部" }, "konishi@mietv.co.jp": { name: "小西　正晃", dept: "制作技術部" } };
         function checkLogin() { const user = JSON.parse(localStorage.getItem('currentUser')); if (!user) { document.getElementById('loginOverlay').style.display = 'flex'; } else { document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")"; } }
         function handleLogin() { const emailInput = document.getElementById('userEmail').value.trim().toLowerCase(); if (staffList[emailInput]) { localStorage.setItem('currentUser', JSON.stringify(staffList[emailInput])); location.reload(); } else { alert("登録されていないアドレスです。"); } }
         function handleLogout() { localStorage.removeItem('currentUser'); location.reload(); }
-        
+
         function searchCards() {
             const query = document.getElementById('searchInput').value.toLowerCase();
+            const sortOrder = document.getElementById('sortOrder').value;
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
-            const data = JSON.parse(localStorage.getItem('myCards')) || [];
             
-            data.filter(u => 
+            let data = JSON.parse(localStorage.getItem('myCards')) || [];
+            
+            // 検索フィルタ
+            let filtered = data.filter(u => 
                 (u.name && u.name.toLowerCase().includes(query)) ||
                 (u.company && u.company.toLowerCase().includes(query)) ||
                 (u.registeredBy && u.registeredBy.toLowerCase().includes(query))
-            ).forEach(user => {
-                // ★ここが重要：1から6のランダムな数字を生成
+            );
+
+            // ★並び替えロジック
+            if (sortOrder === "name") {
+                filtered.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+            } else if (sortOrder === "company") {
+                filtered.sort((a, b) => (a.company || "").localeCompare((b.company || ""), 'ja'));
+            } else {
+                // デフォルト：新しい順（逆順）
+                filtered.reverse();
+            }
+
+            filtered.forEach(user => {
                 const randomIconId = Math.floor(Math.random() * 6) + 1;
-                // その数字を使って、user-x.png という画像パスを作る
                 const randomIconPath = `user-${randomIconId}.png`;
 
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => { if(user.icon){ document.getElementById('imageModal').style.display='flex'; document.getElementById('modalImg').src=user.icon; }};
-                
-                card.innerHTML = `
-                    <div class="thumb-box">
-                        <img src="${user.icon ? user.icon : randomIconPath}" onerror="this.style.display='none'">
-                    </div>
-                    <div>
-                        <div style="font-weight:bold; font-size:18px; color:#333;">${user.name}</div>
-                        <div style="font-size:14px; color:#888;">${user.company || ''} / ${user.dept || ''}</div>
-                        <div class="card-owner-tag">👤 登録者: ${user.registeredBy}</div>
-                    </div>`;
+                card.innerHTML = `<div class="thumb-box">
+                    <img src="${user.icon ? user.icon : randomIconPath}" onerror="this.style.display='none'">
+                </div>
+                <div>
+                    <div style="font-weight:bold; font-size:18px; color:#333;">${user.name}</div>
+                    <div style="font-size:14px; color:#888;">${user.company || ''} / ${user.dept || ''}</div>
+                    <div class="card-owner-tag">👤 登録者: ${user.registeredBy}</div>
+                </div>`;
                 grid.appendChild(card);
             });
         }
