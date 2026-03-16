@@ -5,48 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - エリア検索</title>
     <style>
-        /* --- 基本デザイン（index.htmlを継承） --- */
+        /* --- 共通デザイン（サイドバー等） --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255, 255, 255, 0.8); text-decoration: none; transition: 0.2s; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-        
-        /* メインエリア：左側(都道府県リスト)と右側(名刺一覧)の2カラム構成 */
-        .main-container { flex: 1; display: flex; overflow: hidden; }
-        
-        .area-list { flex: 1; padding: 40px; overflow-y: auto; border-right: 1px solid #e0e0e0; }
-        .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background-color: #f0faff; }
 
-        .area-section { background: white; border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.04); }
+        /* --- エリアページ専用：2カラムレイアウト --- */
+        .main-container { flex: 1; display: flex; overflow: hidden; }
+
+        /* 左側：都道府県リスト */
+        .area-selector { flex: 1; padding: 40px; overflow-y: auto; border-right: 1px solid #e0e0e0; background-color: white; }
+        .area-section { margin-bottom: 35px; }
         .area-title { color: #6fceca; border-left: 5px solid #6fceca; padding-left: 15px; margin-bottom: 15px; font-weight: bold; font-size: 18px; }
         .pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
         .pref-btn { padding: 10px; background: #f0faff; border: 1px solid #d0efff; border-radius: 8px; text-align: center; cursor: pointer; color: #5eabd5; font-weight: bold; transition: 0.2s; font-size: 13px; }
-        .pref-btn:hover, .pref-btn.active { background: #6fceca; color: white; border-color: #6fceca; transform: translateY(-2px); }
+        .pref-btn:hover { background: #6fceca; color: white; border-color: #6fceca; transform: translateY(-2px); }
+        .pref-btn.active { background: #5eabd5; color: white; border-color: #5eabd5; }
 
-        /* 名刺カードデザイン */
-        .result-header { font-size: 20px; font-weight: bold; color: #5eabd5; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        /* 右側：名刺表示エリア */
+        .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background-color: #f8fafc; }
+        .result-header { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; }
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .card:hover { border-color: #6fceca; transform: scale(1.02); }
-        .user-thumb { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #f0faff; }
-        .card-name { font-weight: bold; font-size: 17px; color: #333; }
-        .card-dept { color: #888; font-size: 13px; }
+        
+        /* 名刺カード（キーワードページと統一） */
+        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; border: 1px solid #eee; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); border-color: #6fceca; }
+        .user-thumb { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #f0faff; }
+        .card-name { font-weight: bold; font-size: 18px; color: #333; margin-bottom: 3px; }
+        .card-dept { color: #888; font-size: 14px; }
 
-        /* モーダル（共通） */
+        /* モーダル */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 25px; padding: 30px; position: relative; }
-        .close-button { position: absolute; top: 15px; right: 20px; font-size: 25px; border: none; background: none; color: #ccc; cursor: pointer; }
-        .modal-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 20px; }
+        .modal-content { background: white; width: 90%; max-width: 480px; border-radius: 30px; padding: 40px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
+        .modal-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f0faff; padding-bottom: 15px; }
         .modal-thumb { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #f0faff; margin-bottom: 10px; }
-        .modal-name { font-size: 24px; font-weight: bold; }
-        .modal-title { color: #5eabd5; font-size: 16px; }
         .info-group { margin-top: 15px; }
-        .info-label { font-size: 11px; color: #aaa; font-weight: bold; }
-        .info-value { font-size: 15px; color: #444; background: #f8f9fa; padding: 8px 12px; border-radius: 8px; margin-top: 4px; }
+        .info-label { font-size: 12px; color: #aaa; font-weight: bold; }
+        .info-value { font-size: 16px; color: #444; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 4px; }
     </style>
 </head>
 <body>
@@ -58,31 +59,43 @@
     </div>
 
     <div class="main-container">
-        <div class="area-list" id="areaList">
-            <h2 style="color:#5eabd5; margin-bottom:30px;">エリアを選択</h2>
+        <div class="area-selector">
+            <h2 style="color:#5eabd5; margin-bottom:30px;">地域から探す</h2>
+            
             <div class="area-section">
                 <div class="area-title">中部・東海</div>
                 <div class="pref-grid">
-                    <div class="pref-btn" onclick="filterByArea('愛知県', this)">愛知県</div>
-                    <div class="pref-btn" onclick="filterByArea('三重県', this)">三重県</div>
-                    <div class="pref-btn" onclick="filterByArea('岐阜県', this)">岐阜県</div>
-                    <div class="pref-btn" onclick="filterByArea('静岡県', this)">静岡県</div>
+                    <div class="pref-btn" onclick="selectPref('愛知県', this)">愛知県</div>
+                    <div class="pref-btn" onclick="selectPref('三重県', this)">三重県</div>
+                    <div class="pref-btn" onclick="selectPref('岐阜県', this)">岐阜県</div>
+                    <div class="pref-btn" onclick="selectPref('静岡県', this)">静岡県</div>
                 </div>
             </div>
+
             <div class="area-section">
                 <div class="area-title">関東</div>
                 <div class="pref-grid">
-                    <div class="pref-btn" onclick="filterByArea('東京都', this)">東京都</div>
-                    <div class="pref-btn" onclick="filterByArea('神奈川県', this)">神奈川県</div>
-                    <div class="pref-btn" onclick="filterByArea('千葉県', this)">千葉県</a></div>
+                    <div class="pref-btn" onclick="selectPref('東京都', this)">東京都</div>
+                    <div class="pref-btn" onclick="selectPref('神奈川県', this)">神奈川県</div>
+                    <div class="pref-btn" onclick="selectPref('埼玉県', this)">埼玉県</div>
+                    <div class="pref-btn" onclick="selectPref('千葉県', this)">千葉県</div>
                 </div>
             </div>
-        </div>
+
+            <div class="area-section">
+                <div class="area-title">近畿</div>
+                <div class="pref-grid">
+                    <div class="pref-btn" onclick="selectPref('大阪府', this)">大阪府</div>
+                    <div class="pref-btn" onclick="selectPref('京都府', this)">京都府</div>
+                    <div class="pref-btn" onclick="selectPref('兵庫県', this)">兵庫県</div>
+                </div>
+            </div>
+            </div>
 
         <div class="result-view">
             <div class="result-header">
-                <span id="selectedAreaName">エリアを選択してください</span>
-                <span id="resultCount" style="font-size: 14px; color: #aaa;">0件</span>
+                <span id="currentArea">エリアを選択してください</span>
+                <span id="hitCount" style="font-size: 14px; color: #999; font-weight: normal;"></span>
             </div>
             <div class="card-grid" id="cardGrid">
                 </div>
@@ -94,49 +107,47 @@
             <button class="close-button" onclick="closeModal()">×</button>
             <div class="modal-header">
                 <img src="" id="modalThumb" class="modal-thumb">
-                <div id="modalName" class="modal-name"></div>
-                <div id="modalTitle" class="modal-title"></div>
+                <div id="modalName" style="font-size:26px; font-weight:bold;"></div>
+                <div id="modalTitle" style="color:#5eabd5; font-size:16px;"></div>
             </div>
-            <div class="modal-body" id="modalBody">
-                </div>
+            <div id="modalBody" class="modal-body"></div>
         </div>
     </div>
 
     <script>
-        // サンプルデータ（index.htmlと同じものを使用）
         const userData = [
             { id: 1, name: '田中 太郎', dept: '制作技術部', title: '部長', company: '株式会社サンプル', area: '三重県', email: 'tanaka@example.com', phone: '090-1234-5678', notes: '趣味はゴルフ。', icon: 'user-1.png' },
-            { id: 2, name: '佐藤 花子', dept: '報道制作部', title: '課長', company: '企画プロデュース', area: '東京都', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクト。', icon: 'user-2.png' }
+            { id: 2, name: '佐藤 花子', dept: '報道制作部', title: '課長', company: '企画プロデュース', area: '東京都', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクト。', icon: 'user-2.png' },
+            { id: 3, name: '鈴木 一郎', dept: '開発部', title: 'リーダー', company: 'テック', area: '三重県', email: 'suzuki@tech.io', phone: '080-1111-2222', notes: '技術担当。', icon: 'user-3.png' }
         ];
 
-        const cardGrid = document.getElementById('cardGrid');
-        const areaLabel = document.getElementById('selectedAreaName');
-        const countLabel = document.getElementById('resultCount');
-
-        // エリアで絞り込む関数
-        function filterByArea(areaName, element) {
-            // ボタンのスタイル切り替え
+        function selectPref(prefName, element) {
+            // ボタンのアクティブ状態管理
             document.querySelectorAll('.pref-btn').forEach(btn => btn.classList.remove('active'));
             element.classList.add('active');
 
-            areaLabel.textContent = areaName + " の名刺";
-            cardGrid.innerHTML = "";
+            // ヘッダー更新
+            document.getElementById('currentArea').textContent = prefName;
+            
+            // 絞り込み実行
+            const filtered = userData.filter(u => u.area === prefName);
+            document.getElementById('hitCount').textContent = filtered.length + " 件見つかりました";
 
-            const filtered = userData.filter(user => user.area === areaName);
-            countLabel.textContent = filtered.length + "件";
-
+            // カード生成
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = "";
             filtered.forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openModal(user);
                 card.innerHTML = `
                     <img src="${user.icon}" class="user-thumb">
-                    <div>
+                    <div class="card-info">
                         <div class="card-name">${user.name}</div>
                         <div class="card-dept">${user.dept}・${user.title}</div>
                     </div>
                 `;
-                cardGrid.appendChild(card);
+                grid.appendChild(card);
             });
         }
 
@@ -146,19 +157,15 @@
             document.getElementById('modalTitle').textContent = `${user.dept}・${user.title}`;
             
             const fields = [
-                { label: '会社名', val: user.company },
-                { label: '部署名', val: user.dept },
-                { label: '役職', val: user.title },
-                { label: 'エリア', val: user.area },
-                { label: 'メール', val: user.email },
-                { label: '備考', val: user.notes }
+                { l: '会社名', v: user.company }, { l: '部署名', v: user.dept },
+                { l: '役職', v: user.title }, { l: 'エリア', v: user.area },
+                { l: 'メール', v: user.email }, { l: '電話番号', v: user.phone },
+                { l: '備考', v: user.notes }
             ];
-
-            const body = document.getElementById('modalBody');
-            body.innerHTML = fields.map(f => `
+            document.getElementById('modalBody').innerHTML = fields.map(f => `
                 <div class="info-group">
-                    <div class="info-label">${f.label}</div>
-                    <div class="info-value">${f.val}</div>
+                    <div class="info-label">${f.l}</div>
+                    <div class="info-value">${f.v}</div>
                 </div>
             `).join('');
 
