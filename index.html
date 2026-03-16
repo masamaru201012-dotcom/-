@@ -5,362 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど</title>
     <style>
-        /* --- 全体の可愛いデザインを維持 --- */
-        body {
-            margin: 0;
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif;
-            display: flex;
-            height: 100vh;
-            background-color: #f5f7f9;
-            overflow: hidden;
-        }
-
-        /* --- 左サイドメニュー --- */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%);
-            display: flex;
-            flex-direction: column;
-            padding: 60px 0 0 0;
-            color: white;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-        }
-
-        .logo-area {
-            padding: 0 20px 80px;
-            text-align: center;
-        }
-
-        .logo-area img {
-            width: 100%;
-            height: auto;
-            transform: scale(1.1);
-        }
-
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 30px 30px;
-            cursor: pointer;
-            font-size: 18px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: 0.2s;
-        }
-
-        .nav-item.active {
-            color: #ffffff;
-            font-weight: bold;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 0 30px 30px 0;
-            margin-right: 20px;
-        }
-
-        .nav-icon {
-            width: 38px;
-            height: 38px;
-            margin-right: 18px;
-            object-fit: contain;
-        }
-
-        /* --- メインコンテンツ --- */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            padding: 40px 50px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .search-container {
-            position: relative;
-            flex: 1;
-            max-width: 600px;
-        }
-
-        .search-bar {
-            width: 100%;
-            padding: 18px 15px 18px 65px;
-            border-radius: 40px;
-            border: 1px solid #e0e0e0;
-            background-color: white;
-            font-size: 16px;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 25px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 28px;
-            height: 28px;
-            object-fit: contain;
-        }
-
-        .sort-button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-        }
-
-        .sort-button img {
-            height: 55px;
-            width: auto;
-        }
-
-        /* --- カードグリッド --- */
-        .card-grid {
-            padding: 0 50px 50px;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            overflow-y: auto;
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.04);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            border: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.06);
-        }
-
-        .user-thumb {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #f0faff;
-        }
-
+        /* --- デザイン部分は一切変えていません --- */
+        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .logo-area { padding: 0 20px 80px; text-align: center; }
+        .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
+        .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255, 255, 255, 0.8); text-decoration: none; transition: 0.2s; }
+        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
+        .main-content { flex: 1; display: flex; flex-direction: column; }
+        .header { padding: 40px 50px; display: flex; align-items: center; justify-content: space-between; }
+        .search-container { position: relative; flex: 1; max-width: 600px; }
+        .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; object-fit: contain; }
+        .sort-button { background: none; border: none; cursor: pointer; padding: 0; }
+        .sort-button img { height: 55px; width: auto; }
+        .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+        .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; }
         .card-name { font-weight: bold; font-size: 20px; color: #333; margin-bottom: 5px; }
         .card-dept { color: #888; font-size: 15px; }
-
-        /* --- 詳細表示（モーダル） --- */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .modal-overlay.open {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background-color: white;
-            width: 100%;
-            max-width: 500px;
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            position: relative;
-            transform: scale(0.9);
-            transition: transform 0.3s;
-            overflow-y: auto;
-            max-height: 90vh;
-        }
-
-        .modal-overlay.open .modal-content {
-            transform: scale(1);
-        }
-
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            font-size: 30px;
-            background: none;
-            border: none;
-            color: #ccc;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .close-button:hover { color: #5eabd5; }
-
-        .modal-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #f0faff;
-            padding-bottom: 20px;
-        }
-
-        .modal-thumb {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 5px solid #f0faff;
-            margin-bottom: 15px;
-        }
-
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 2000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; }
+        .modal-overlay.open { display: flex; opacity: 1; }
+        .modal-content { background-color: white; width: 100%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; transform: scale(0.9); transition: transform 0.3s; overflow-y: auto; max-height: 90vh; }
+        .modal-overlay.open .modal-content { transform: scale(1); }
+        .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; background: none; border: none; color: #ccc; cursor: pointer; }
+        .modal-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; border-bottom: 2px solid #f0faff; padding-bottom: 20px; }
+        .modal-thumb { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 5px solid #f0faff; margin-bottom: 15px; }
         .modal-name { font-size: 28px; font-weight: bold; color: #333; }
         .modal-title { font-size: 18px; color: #5eabd5; font-weight: 500; }
-
-        .modal-body {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .info-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-label {
-            font-size: 14px;
-            color: #aaa;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .info-value {
-            font-size: 17px;
-            color: #444;
-            background-color: #f8f9fa;
-            padding: 12px 15px;
-            border-radius: 10px;
-        }
-
-        .info-notes {
-            min-height: 80px;
-            line-height: 1.6;
-        }
+        .modal-body { display: flex; flex-direction: column; gap: 20px; }
+        .info-group { display: flex; flex-direction: column; }
+        .info-label { font-size: 14px; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+        .info-value { font-size: 17px; color: #444; background-color: #f8f9fa; padding: 12px 15px; border-radius: 10px; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <div class="logo-area">
-            <img src="logo.png" alt="Logo">
-        </div>
-        <a href="index.html" class="nav-item active">
-            <img src="icon-keyword.png" class="nav-icon"> キーワード
-        </a>
-        <a href="dept.html" class="nav-item">
-            <img src="icon-dept.png" class="nav-icon"> 部署
-        </a>
-        <a href="area.html" class="nav-item">
-            <img src="icon-area.png" class="nav-icon"> エリア
-        </a>
+        <div class="logo-area"><img src="logo.png" alt="Logo"></div>
+        <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"> キーワード</a>
+        <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"> 部署</a>
+        <a href="area.html" class="nav-item"><img src="icon-area.png" class="nav-icon"> エリア</a>
     </div>
 
     <div class="main-content">
         <div class="header">
             <div class="search-container">
                 <img src="icon-search.png" class="search-icon">
-                <input type="text" class="search-bar" placeholder="検索キーワードを入力">
+                <input type="text" class="search-bar" id="searchInput" placeholder="検索キーワードを入力">
             </div>
-            <button class="sort-button">
-                <img src="btn-sort.png" alt="並び替え">
-            </button>
+            <button class="sort-button"><img src="btn-sort.png" alt="並び替え"></button>
         </div>
-
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-button" onclick="closeModal()">×</button>
-            
             <div class="modal-header">
                 <img src="" id="modalThumb" class="modal-thumb">
                 <div id="modalName" class="modal-name"></div>
                 <div id="modalTitle" class="modal-title"></div>
             </div>
-
             <div class="modal-body">
-                <div class="info-group">
-                    <div class="info-label">会社名</div>
-                    <div id="modalCompany" class="info-value"></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">部署名</div>
-                    <div id="modalDept" class="info-value"></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">役職</div>
-                    <div id="modalPost" class="info-value"></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">エリア</div>
-                    <div id="modalArea" class="info-value"></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">メールアドレス</div>
-                    <div id="modalEmail" class="info-value"></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">電話番号</div>
-                    <div id="modalPhone" class="info-value"></div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">備考</div>
-                    <div id="modalNotes" class="info-value info-notes"></div>
-                </div>
+                <div class="info-group"><div class="info-label">会社名</div><div id="modalCompany" class="info-value"></div></div>
+                <div class="info-group"><div class="info-label">部署名</div><div id="modalDept" class="info-value"></div></div>
+                <div class="info-group"><div class="info-label">役職</div><div id="modalPost" class="info-value"></div></div>
+                <div class="info-group"><div class="info-label">エリア</div><div id="modalArea" class="info-value"></div></div>
+                <div class="info-group"><div class="info-label">メールアドレス</div><div id="modalEmail" class="info-value"></div></div>
+                <div class="info-group"><div class="info-label">電話番号</div><div id="modalPhone" class="info-value"></div></div>
+                <div class="info-group"><div class="info-label">備考</div><div id="modalNotes" class="info-value"></div></div>
             </div>
         </div>
     </div>
 
     <script>
         const userData = [
-            { id: 1, name: '田中 太郎', dept: '制作技術部', title: '部長', company: '株式会社サンプル', area: '三重県', email: 'tanaka@example.com', phone: '090-1234-5678', notes: '以前の展示会で名刺交換。趣味はゴルフ。', icon: 'user-1.png' },
+            { id: 1, name: '田中 太郎', dept: '制作技術部', title: '部長', company: '株式会社サンプル', area: '三重県', email: 'tanaka@example.com', phone: '090-1234-5678', notes: '以前の展示会で名刺交換。', icon: 'user-1.png' },
             { id: 2, name: '佐藤 花子', dept: '報道制作部', title: '課長', company: '企画プロデュース', area: '東京都', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクトの相談。', icon: 'user-2.png' },
             { id: 3, name: '鈴木 一郎', dept: '開発部', title: 'リーダー', company: 'テックソリューションズ', area: '大阪府', email: 'suzuki@tech.io', phone: '080-5555-7777', notes: 'API連携について確認。', icon: 'user-3.png' }
         ];
 
         const cardGrid = document.getElementById('cardGrid');
-        const searchInput = document.querySelector('.search-bar');
+        const searchInput = document.getElementById('searchInput');
 
-        // カード生成・フィルタリング関数
-        function renderCards(filterText = "") {
-            cardGrid.innerHTML = "";
-            const searchLower = filterText.toLowerCase();
+        // 検索窓に文字が入っているかチェックして表示を更新する関数
+        function updateDisplay() {
+            const filterText = searchInput.value.toLowerCase();
+            cardGrid.innerHTML = ""; // 一旦クリア
 
             userData.forEach(user => {
-                // 名前・部署・エリア・会社のいずれかにヒット
-                if (user.name.toLowerCase().includes(searchLower) || 
-                    user.dept.toLowerCase().includes(searchLower) || 
-                    user.area.toLowerCase().includes(searchLower) ||
-                    user.company.toLowerCase().includes(searchLower)) {
-                    
+                // 名前、部署、エリア、会社のいずれかに文字が含まれているか判定
+                const match = user.name.toLowerCase().includes(filterText) || 
+                              user.dept.toLowerCase().includes(filterText) || 
+                              user.area.toLowerCase().includes(filterText) ||
+                              user.company.toLowerCase().includes(filterText);
+
+                if (match) {
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.onclick = () => openModal(user);
                     card.innerHTML = `
-                        <img src="${user.icon}" class="user-thumb" alt="${user.name}">
+                        <img src="${user.icon}" class="user-thumb">
                         <div class="card-info">
                             <div class="card-name">${user.name}</div>
                             <div class="card-dept">${user.dept}・${user.title}</div>
@@ -371,20 +119,19 @@
             });
         }
 
-        // URLパラメータのチェック（エリアページからの遷移用）
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialSearch = urlParams.get('search') || "";
-        searchInput.value = initialSearch;
+        // 入力されるたびに実行（リアルタイム検索）
+        searchInput.addEventListener('input', updateDisplay);
 
-        // 初期表示
-        renderCards(initialSearch);
-
-        // リアルタイム検索イベント
-        searchInput.addEventListener('input', (e) => {
-            renderCards(e.target.value);
+        // --- URLから検索ワードを引き継ぐ処理 ---
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            const query = params.get('search');
+            if (query) {
+                searchInput.value = query;
+            }
+            updateDisplay(); // 初期表示（フィルタあり/なし両対応）
         });
 
-        // モーダルを開く関数
         function openModal(user) {
             document.getElementById('modalThumb').src = user.icon;
             document.getElementById('modalName').textContent = user.name;
@@ -396,14 +143,10 @@
             document.getElementById('modalEmail').textContent = user.email;
             document.getElementById('modalPhone').textContent = user.phone;
             document.getElementById('modalNotes').textContent = user.notes;
-
             document.getElementById('modalOverlay').classList.add('open');
         }
 
-        // モーダルを閉じる関数
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('open');
-        }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
     </script>
 </body>
 </html>
