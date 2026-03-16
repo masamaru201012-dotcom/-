@@ -19,13 +19,18 @@
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
+        
+        /* サイドバー項目：ホバー時の変化を削除 */
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: none; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
+        
+        /* 【重要】現在開いているページ（active）だけ色が変わる */
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
-        /* メイン画面：ヘッダー位置固定 */
+        /* メイン画面 */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
         .header-left { display: flex; align-items: center; }
@@ -36,13 +41,15 @@
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
 
         .header-actions { display: flex; gap: 10px; align-items: center; }
+        
+        /* 【重要】ホバー時の色変化を完全削除。クリックしても色は変えない */
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; transition: none; }
-        .add-button:active { transform: scale(0.98); background: #5dbdb9; }
+        .add-button:hover { background:#6fceca; color:white; opacity: 1; } /* ホバーしてもそのまま */
 
-        .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; transition: none; }
-        .sort-select:active { background: #f8fafc; }
+        .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; transition: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 35px; background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 15px center; }
+        .sort-select:hover { background-color: white; } /* ホバーしてもそのまま */
 
-        /* 名刺カード */
+        /* 名刺カード（ここだけは一覧なのでホバー時の浮き上がりを維持） */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
@@ -51,7 +58,7 @@
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
-        .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; display: block; }
     </style>
 </head>
 <body>
@@ -82,19 +89,22 @@
             <div class="header-left">
                 <div class="header-title">キーワード検索</div>
             </div>
-            <div class="search-container"><input type="text" class="search-bar" id="searchInput" oninput="renderCards()"></div>
+            <div class="search-container"><input type="text" class="search-bar" id="searchInput" placeholder="名前や会社名で検索" oninput="renderCards()"></div>
             <div class="header-actions">
                 <button class="add-button">新規追加</button>
                 <select class="sort-select" id="sortSelect" onchange="renderCards()">
-                    <option value="name">名前順</option>
-                    <option value="company">会社名順</option>
+                    <option value="new">最新順</option>
+                    <option value="asc">五十音順</option>
+                    <option value="desc">五十音順（逆）</option>
                 </select>
             </div>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
-    <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
+    <div id="imageModal" class="modal" onclick="this.style.display='none'">
+        <img id="modalImg" src="">
+    </div>
 
     <script>
         const cardData = [
@@ -108,18 +118,24 @@
             const term = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
+            
             let filtered = cardData.filter(c => c.name.toLowerCase().includes(term) || c.company.toLowerCase().includes(term));
+            
             filtered.sort((a, b) => {
-                if (sortBy === "name") return a.name.localeCompare(b.name, 'ja');
-                if (sortBy === "company") return a.company.localeCompare(b.company, 'ja');
+                if (sortBy === "new") return b.id - a.id;
+                if (sortBy === "asc") return a.name.localeCompare(b.name, 'ja');
+                if (sortBy === "desc") return b.name.localeCompare(a.name, 'ja');
                 return 0;
             });
+
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => {
-                    document.getElementById('modalImg').src = c.icon;
-                    document.getElementById('imageModal').style.display = 'flex';
+                    const modal = document.getElementById('imageModal');
+                    const modalImg = document.getElementById('modalImg');
+                    modalImg.src = c.icon;
+                    modal.style.display = 'flex';
                 };
                 div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
                 grid.appendChild(div);
@@ -129,6 +145,7 @@
         function checkAuth() { if(!sessionStorage.getItem('isLoggedIn')) { document.getElementById('loginOverlay').style.display = 'flex'; } }
         function doLogin() { if(document.getElementById('emailInput').value.trim() !== "") { sessionStorage.setItem('isLoggedIn', 'true'); document.getElementById('loginOverlay').style.display = 'none'; } }
         function doLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
+        
         window.onload = () => { checkAuth(); renderCards(); };
     </script>
 </body>
