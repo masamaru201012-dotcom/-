@@ -6,70 +6,88 @@
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
-        /* ログイン・サイドバー・ヘッダーの基本設定（維持） */
-        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .logo-login { width: 400px; margin-bottom: 50px; object-fit: contain; }
-        .login-card { background: white; padding: 60px 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 450px; text-align: center; box-sizing: border-box; }
-        .input-group { margin-bottom: 30px; text-align: left; }
-        .input-group label { display: block; font-size: 14px; color: #666; margin-bottom: 12px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 16px; box-sizing: border-box; outline: none; }
-        .login-btn { width: 100%; padding: 18px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
-
+        /* サイドバー・ヘッダー（維持） */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: none; }
-        .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
-        .header-left { display: flex; align-items: center; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; }
-        
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 20px; }
-        .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
 
         .header-actions { display: flex; gap: 10px; align-items: center; }
-        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; transition: none; }
-        .add-button:hover { background:#6fceca; color:white; opacity: 1; }
+        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; }
+        .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
-        .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; transition: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 35px; background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 15px center; }
-
-        /* 名刺カード：縦伸び徹底防止 */
-        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
+        /* 【修正】名刺カード：縦伸び徹底防止 */
+        .card-grid { 
+            flex: 1; 
+            padding: 40px; 
+            overflow-y: auto; 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+            grid-auto-rows: 130px; /* カードの高さを一律固定 */
+            gap: 25px; 
+            align-items: start; /* 上揃えにして縦に伸ばさない */
+        }
+        .card { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 25px; 
+            display: flex; 
+            align-items: center; 
+            gap: 20px; 
+            border: 1px solid #eef2f6; 
+            cursor: pointer; 
+            height: 130px; /* カード自体の高さを固定 */
+            box-sizing: border-box;
+            overflow: hidden;
+            transition: 0.3s;
+        }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         
         /* 画像を絶対に変形させない設定 */
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
-        .thumb-box img { width: 100% !important; height: 100% !important; display: block; object-fit: cover !important; }
+        .thumb-box { 
+            width: 80px; 
+            height: 80px; 
+            min-width: 80px; /* 縮小防止 */
+            min-height: 80px; /* 縮小防止 */
+            border-radius: 50%; 
+            overflow: hidden; 
+            background: #e0f4f3; 
+            border: 2px solid #fff; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        .thumb-box img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
 
-        /* モーダル共通設定 */
+        /* モーダル関連（維持） */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
-        
-        /* 新規追加ポップアップ：項目増量に伴うスクロール対応 */
         .add-modal-card { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; }
         .add-modal-header { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 20px; text-align: center; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; }
-        
-        /* 入力フォームレイアウト */
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; text-align: left; }
         .form-group label { display: block; font-size: 13px; color: #555; margin-bottom: 6px; font-weight: bold; }
         .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; font-size: 14px; box-sizing: border-box; outline: none; }
         .form-group textarea { height: 80px; resize: none; }
-        
         .image-preview-area { width: 100px; height: 100px; border-radius: 15px; border: 2px dashed #e2e8f0; background: #f8fafc; margin: 0 auto 20px auto; display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer; position: relative; }
         .image-preview-area img { width: 100%; height: 100%; object-fit: cover; display: none; }
         .image-preview-area.has-image img { display: block; }
         .image-label { text-align: center; font-size: 12px; color: #888; margin-bottom: 20px; }
-
         .save-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        
         #imageModal img { max-width: 95%; max-height: 95%; border-radius: 8px; }
     </style>
 </head>
@@ -108,13 +126,11 @@
         <div class="add-modal-card">
             <button class="close-modal" onclick="closeAddModal()">×</button>
             <div class="add-modal-header">新規名刺追加</div>
-            
             <div class="image-preview-area" id="imagePreviewArea" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="">
             </div>
             <div class="image-label">名刺をクリックして画像を選択</div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
-
             <div class="form-row">
                 <div class="form-group"><label>名前</label><input type="text" id="newName"></div>
                 <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
@@ -131,7 +147,6 @@
                 <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
             </div>
             <div class="form-group"><label>備考</label><textarea id="newNote"></textarea></div>
-            
             <button class="save-btn" onclick="saveNewCard()">保存する</button>
         </div>
     </div>
@@ -162,7 +177,7 @@
                     document.getElementById('modalImg').src = c.icon;
                     document.getElementById('imageModal').style.display = 'flex';
                 };
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px; line-height:1.2;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
@@ -199,6 +214,7 @@
             closeAddModal();
             renderCards();
         }
+        function doLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         window.onload = () => { renderCards(); };
     </script>
 </body>
