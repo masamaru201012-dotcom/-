@@ -9,13 +9,11 @@
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
-        /* サイドバー：デザイン統一 */
+        /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
-        
-        /* 選択状態：エリアを光らせる */
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         
@@ -23,7 +21,7 @@
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
         .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; outline: none; }
 
-        /* メインコンテンツエリア */
+        /* メインコンテンツ */
         #mainApp { display: none; width: 100%; height: 100%; }
         .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 60px; }
         .page-title { font-size: 24px; font-weight: bold; color: #444; margin-bottom: 40px; }
@@ -32,24 +30,18 @@
         .region-section { margin-bottom: 50px; }
         .region-name { font-size: 18px; font-weight: bold; color: #5eabd5; margin-bottom: 20px; border-left: 4px solid #6fceca; padding-left: 15px; }
 
-        /* 都道府県グリッド */
-        .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        /* グリッド（文字のみ） */
+        .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .area-card { 
-            background: white; border-radius: 12px; padding: 20px; 
-            display: flex; flex-direction: column; align-items: center; 
-            border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; text-decoration: none;
+            background: white; border-radius: 10px; padding: 18px; 
+            display: flex; justify-content: center; align-items: center; 
+            border: 1px solid #eef2f6; cursor: pointer; transition: 0.2s; text-decoration: none;
         }
-        .area-card:hover { transform: translateY(-3px); border-color: #6fceca; box-shadow: 0 8px 20px rgba(111, 206, 202, 0.15); }
+        .area-card:hover { border-color: #6fceca; background-color: #f0fdfc; transform: translateY(-2px); }
+        .pref-name { font-weight: bold; color: #444; font-size: 14px; text-align: center; }
         
-        /* エリアアイコン（ピン） */
-        .area-icon { 
-            width: 44px; height: 44px; border-radius: 50%; 
-            margin-bottom: 12px; 
-            background: linear-gradient(135deg, #a5d6d4 0%, #6fceca 100%);
-            display: flex; justify-content: center; align-items: center;
-            color: white; font-size: 20px;
-        }
-        .pref-name { font-weight: bold; color: #444; font-size: 15px; }
+        /* 三重県セクションを際立たせる */
+        .mie-section { background: #fff; padding: 25px; border-radius: 20px; border: 2px solid #6fceca; margin-bottom: 50px; }
     </style>
 </head>
 <body>
@@ -74,11 +66,13 @@
     </div>
 
     <script>
-        // エリア専用データ
+        // 三重県の市町村（主要どころを抜粋）
+        const mieCities = ["津市", "四日市市", "伊勢市", "松阪市", "桑名市", "鈴鹿市", "名張市", "尾鷲市", "亀山市", "鳥羽市", "熊野市", "いなべ市", "志摩市", "伊賀市", "桑名郡", "員弁郡", "三重郡", "多気郡", "度会郡", "北牟婁郡", "南牟婁郡"];
+
         const regionData = [
             { region: "北海道・東北", prefs: ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
             { region: "関東", prefs: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"] },
-            { region: "中部", prefs: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県"] },
+            { region: "中部", prefs: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県"] }, // 三重県を除外
             { region: "近畿", prefs: ["滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"] },
             { region: "中国・四国", prefs: ["鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県"] },
             { region: "九州・沖縄", prefs: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] }
@@ -88,7 +82,7 @@
             const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
             if (isLoggedIn) {
                 document.getElementById('mainApp').style.display = 'flex';
-                renderRegions(); // エリア描画を実行
+                renderRegions();
             } else {
                 window.location.href = 'index.html';
             }
@@ -100,30 +94,29 @@
             window.location.href = 'index.html';
         }
 
-        // ここがエリア専用の描画ロジックです
         function renderRegions() {
             const container = document.getElementById('regionContainer');
-            container.innerHTML = ""; // 一旦空にする
+            container.innerHTML = "";
 
+            // 1. 三重県セクションを一番上に追加
+            const mieSection = document.createElement('div');
+            mieSection.className = 'region-section mie-section';
+            let mieHtml = `<div class="region-name">三重県（市町村別）</div><div class="area-grid">`;
+            mieCities.forEach(city => {
+                mieHtml += `<a href="#" class="area-card" onclick="event.preventDefault(); alert('${city}の名刺を表示します')"><div class="pref-name">${city}</div></a>`;
+            });
+            mieHtml += `</div>`;
+            mieSection.innerHTML = mieHtml;
+            container.appendChild(mieSection);
+
+            // 2. 他の地方を追加
             regionData.forEach(data => {
                 const section = document.createElement('div');
                 section.className = 'region-section';
-                
                 let html = `<div class="region-name">${data.region}</div><div class="area-grid">`;
-                
                 data.prefs.forEach(pref => {
-                    // 三重県だけちょっと特別扱い（任意）
-                    const iconColor = (pref === "三重県") ? "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)" : "";
-                    const style = iconColor ? `style="background: ${iconColor};"` : "";
-
-                    html += `
-                        <a href="#" class="area-card" onclick="event.preventDefault(); alert('${pref}の名刺フォルダを開きます');">
-                            <div class="area-icon" ${style}>📍</div>
-                            <div class="pref-name">${pref}</div>
-                        </a>
-                    `;
+                    html += `<a href="#" class="area-card" onclick="event.preventDefault(); alert('${pref}の名刺を表示します')"><div class="pref-name">${pref}</div></a>`;
                 });
-                
                 html += `</div>`;
                 section.innerHTML = html;
                 container.appendChild(section);
