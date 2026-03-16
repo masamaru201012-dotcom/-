@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- 共通レイアウト --- */
+        /* --- レイアウト（PC） --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
         .sidebar { 
@@ -28,40 +28,47 @@
         .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
 
         /* メインヘッダー */
-        .header { padding: 30px 50px; display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
-        .search-container { position: relative; flex: 0 1 400px; }
-        .search-bar { width: 100%; padding: 15px 15px 15px 55px; border-radius: 40px; border: 1px solid #e0e0e0; font-size: 16px; outline: none; }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 24px; }
+        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
+        .search-container { position: relative; flex: 0 1 450px; }
+        .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-sizing: border-box; }
+        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; }
+
+        .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
+
+        /* 並び替えボタン */
+        .sort-container { position: relative; min-width: 150px; display: flex; justify-content: flex-end; }
+        .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; }
+        .sort-trigger img { height: 44px; width: auto; }
+        .sort-current-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
 
         /* カードデザイン */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
-        .card { background: white; border-radius: 20px; padding: 25px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
         .card:hover { transform: translateY(-3px); border-color: #6fceca; }
 
-        /* アイコン画像（文字アイコン併用） */
-        .thumb-container { position: relative; width: 75px; height: 75px; flex-shrink: 0; }
-        .user-thumb { width: 75px; height: 75px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #5eabd5; font-size: 24px; position: absolute; top: 0; left: 0; }
-        .user-thumb img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        /* アイコン画像（画像優先・文字代替） */
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #5eabd5; overflow: hidden; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
 
-        .card-info { flex: 1; }
-        .card-name { font-weight: bold; font-size: 19px; color: #333; margin-bottom: 4px; }
-        .card-dept { font-size: 13px; color: #5eabd5; font-weight: bold; }
-        .card-sub { font-size: 12px; color: #999; margin-top: 2px; }
+        .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* 詳細モーダル */
+        /* モーダル共通 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 450px; border-radius: 30px; padding: 35px; position: relative; max-height: 85vh; overflow-y: auto; }
-        .info-group { margin-bottom: 12px; }
-        .info-label { font-size: 11px; color: #aaa; font-weight: bold; margin-bottom: 4px; }
-        .info-value { padding: 12px; border-radius: 10px; background: #f8f9fa; font-size: 15px; color: #444; border: 1px solid #eee; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
+        .info-group { margin-bottom: 15px; }
+        .info-label { font-size: 12px; color: #aaa; margin-bottom: 5px; font-weight: bold; }
+        .info-value { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; font-size: 15px; background: #f8f9fa; box-sizing: border-box; }
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { position: fixed; left: -280px; top: 0; height: 100%; }
             .sidebar.open { left: 0; }
             .mobile-header { display: flex; position: sticky; top: 0; }
-            .header { padding: 20px; }
+            .header { padding: 20px; flex-direction: column; gap: 15px; }
+            .search-container { width: 100%; }
+            .action-controls { width: 100%; justify-content: space-between; }
             .card-grid { padding: 0 15px 30px; grid-template-columns: 1fr; }
         }
     </style>
@@ -86,6 +93,15 @@
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" id="searchInput" placeholder="名前や部署で検索">
             </div>
+            <div class="action-controls">
+                <button class="add-button" onclick="openAddModal()">新規追加</button>
+                <div class="sort-container">
+                    <div class="sort-trigger">
+                        <div class="sort-current-label">最新順</div>
+                        <img src="btn-sort.png" alt="並び替え">
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
@@ -105,8 +121,7 @@
         }
 
         const defaultData = [
-            { id: 1, name: '田中 太郎', dept: '制作技術部', title: '部長', company: '三重テレビ放送', area: '三重県', email: 'tanaka@mietv.example.com', phone: '059-225-1234', icon: 'user-default.png' },
-            { id: 2, name: '佐藤 花子', dept: '報道制作部', title: '課長', company: '三重テレビ放送', area: '三重県', email: 'sato@mietv.example.com', phone: '059-225-5678', icon: 'user-default.png' }
+            { id: 1, name: '田中 太郎', dept: '制作技術部', title: '部長', company: '三重テレビ放送', area: '三重県', email: 'tanaka@mietv.example.com', icon: '' }
         ];
         let userData = JSON.parse(localStorage.getItem('myCards')) || defaultData;
 
@@ -115,42 +130,37 @@
             grid.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
 
-            userData.filter(u => u.name.includes(search) || u.dept.includes(search)).forEach(user => {
+            userData.filter(u => u.name.toLowerCase().includes(search) || u.dept.toLowerCase().includes(search)).forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(user);
                 
                 const initial = user.name.charAt(0);
                 card.innerHTML = `
-                    <div class="thumb-container">
-                        <div class="user-thumb">${initial}</div>
-                        ${user.icon ? `<img src="${user.icon}" class="user-thumb" onerror="this.style.display='none'">` : ''}
+                    <div class="thumb-box">
+                        ${initial}
+                        ${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}
                     </div>
-                    <div class="card-info">
-                        <div class="card-name">${user.name}</div>
-                        <div class="card-dept">${user.dept}</div>
-                        <div class="card-sub">${user.company}</div>
-                    </div>
+                    <div class="card-name">${user.name}</div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        function openDetail(user) {
+        function openDetail(u) {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
-                <div style="text-align:center; margin-bottom:25px;">
-                    <div class="thumb-container" style="margin: 0 auto 15px; width:100px; height:100px;">
-                        <div class="user-thumb" style="width:100px; height:100px; font-size:40px;">${user.name.charAt(0)}</div>
-                        <img src="${user.icon}" style="width:100px; height:100px; border-radius:50%; position:absolute; top:0; left:0;" onerror="this.style.display='none'">
+                <div style="text-align:center; border-bottom:2px solid #f0faff; padding-bottom:15px; margin-bottom:20px;">
+                    <div class="thumb-box" style="margin: 0 auto 10px; width:100px; height:100px; font-size:40px;">
+                        ${u.name.charAt(0)}
+                        ${u.icon ? `<img src="${u.icon}" style="width:100px; height:100px;" onerror="this.style.display='none'">` : ''}
                     </div>
-                    <div style="font-size:24px; font-weight:bold;">${user.name}</div>
+                    <div style="font-size:24px; font-weight:bold;">${u.name}</div>
                 </div>
-                <div class="info-group"><div class="info-label">部署</div><div class="info-value">${user.dept}</div></div>
-                <div class="info-group"><div class="info-label">役職</div><div class="info-value">${user.title || '---'}</div></div>
-                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${user.company}</div></div>
-                <div class="info-group"><div class="info-label">エリア</div><div class="info-value">${user.area}</div></div>
-                <div class="info-group"><div class="info-label">メール</div><div class="info-value">${user.email}</div></div>
+                <div class="info-group"><div class="info-label">部署</div><div class="info-value">${u.dept}</div></div>
+                <div class="info-group"><div class="info-label">役職</div><div class="info-value">${u.title || '---'}</div></div>
+                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${u.company}</div></div>
+                <div class="info-group"><div class="info-label">エリア</div><div class="info-value">${u.area}</div></div>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
