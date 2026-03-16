@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- レイアウト・デザイン（既存を維持） --- */
+        /* --- 共通デザイン --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; transition: 0.3s; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
@@ -15,11 +15,6 @@
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; }
-        .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
-        .mobile-logo { height: 30px; }
-        .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
-
         .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
         .search-container { position: relative; flex: 0 1 450px; }
         .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-sizing: border-box; }
@@ -27,50 +22,30 @@
 
         .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; }
         .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
-        .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; }
-        .sort-trigger img { height: 44px; width: auto; }
+        .sort-trigger { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .sort-trigger img { height: 44px; }
 
+        /* カードとアイコン */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
         .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; flex-shrink: 0; overflow: hidden; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
-
         .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* モーダル共通スタイル */
+        /* モーダル */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
-        
-        /* 入力フォーム用スタイル */
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; max-height: 85vh; overflow-y: auto; box-sizing: border-box; position: relative; }
         .info-group { margin-bottom: 18px; }
         .info-label { font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: bold; }
         .info-value, .info-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f8f9fa; box-sizing: border-box; color: #444; }
         .info-input { background: #fff; border: 1px solid #ddd; }
-        .info-input:focus { border-color: #6fceca; outline: none; }
-
         .save-btn { width: 100%; background-color: #6fceca; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
         .delete-link { display: block; text-align: center; color: #ff7675; margin-top: 20px; font-size: 13px; cursor: pointer; text-decoration: underline; }
-
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { position: fixed; left: -280px; top: 0; height: 100%; }
-            .sidebar.open { left: 0; }
-            .mobile-header { display: flex; position: sticky; top: 0; }
-            .header { padding: 20px; flex-direction: column; gap: 15px; }
-            .card-grid { padding: 0 15px 30px; grid-template-columns: 1fr; }
-        }
     </style>
 </head>
 <body>
-    <div class="mobile-header">
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <img src="logo.png" alt="名刺くらうど" class="mobile-logo">
-    </div>
-    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-
-    <div class="sidebar" id="sidebar">
+    <div class="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"><span>部署</span></a>
@@ -86,7 +61,7 @@
             <div class="action-controls">
                 <button class="add-button" onclick="openAddModal()">新規追加</button>
                 <div class="sort-trigger" onclick="toggleSort()">
-                    <div class="sort-current-label" id="sortLabel">最新順</div>
+                    <div id="sortLabel" style="font-weight:bold; color:#5eabd5;">最新順</div>
                     <img src="btn-sort.png">
                 </div>
             </div>
@@ -95,42 +70,24 @@
     </div>
 
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="modalInner"></div>
-        </div>
+        <div class="modal-content" onclick="event.stopPropagation()"><div id="modalInner"></div></div>
     </div>
 
     <script>
-        function toggleMenu() {
-            const s = document.getElementById('sidebar');
-            const o = document.getElementById('menuOverlay');
-            const open = s.classList.toggle('open');
-            o.style.display = open ? 'block' : 'none';
-        }
-
-        // --- データの管理 ---
         let userData = JSON.parse(localStorage.getItem('myCards')) || [
-            { id: 1, name: '清水 真輝', company: '三重テレビ放送', dept: '制作技術部', title: '係長', email: 'shimizu@mietv.example.com', phone: '059-123-4567', memo: '本人', icon: 'user-1.png', date: Date.now() }
+            { id: 1, name: '清水 真輝', company: '三重テレビ放送', dept: '制作技術部', title: '係長', email: 'shimizu@mietv.example.com', phone: '059-123-4567', memo: '本人。', icon: 'user-1.png', date: Date.now() }
         ];
-
-        let currentSort = 'newest'; // newest, name
+        let currentSort = 'newest';
 
         function updateDisplay() {
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
+            let data = [...userData];
+            if (currentSort === 'newest') data.sort((a,b) => b.date - a.date);
+            else data.sort((a,b) => a.name.localeCompare(b.name, 'ja'));
 
-            // 並び替えロジック
-            let sortedData = [...userData];
-            if (currentSort === 'newest') {
-                sortedData.sort((a, b) => b.date - a.date);
-                document.getElementById('sortLabel').innerText = '最新順';
-            } else {
-                sortedData.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
-                document.getElementById('sortLabel').innerText = '名前順';
-            }
-
-            sortedData.filter(u => u.name.toLowerCase().includes(search) || u.dept.toLowerCase().includes(search)).forEach(user => {
+            data.filter(u => u.name.toLowerCase().includes(search) || u.dept.toLowerCase().includes(search)).forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(user);
@@ -139,19 +96,18 @@
             });
         }
 
-        // 並び替え切り替え
         function toggleSort() {
             currentSort = (currentSort === 'newest') ? 'name' : 'newest';
+            document.getElementById('sortLabel').innerText = (currentSort === 'newest') ? '最新順' : '名前順';
             updateDisplay();
         }
 
-        // 詳細表示
         function openDetail(u) {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
                 <div style="text-align:center; padding-bottom:20px; border-bottom:2px solid #f0faff; margin-bottom:25px;">
-                    <div class="thumb-box" style="margin: 0 auto 15px; width:100px; height:100px;"><img src="${u.icon}"></div>
-                    <div style="font-size:24px; font-weight:bold; color:#333;">${u.name}</div>
+                    <div class="thumb-box" style="margin:0 auto 15px; width:100px; height:100px;"><img src="${u.icon}"></div>
+                    <div style="font-size:24px; font-weight:bold;">${u.name}</div>
                 </div>
                 <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${u.company || '---'}</div></div>
                 <div class="info-group"><div class="info-label">部署名</div><div class="info-value">${u.dept || '---'}</div></div>
@@ -164,18 +120,17 @@
             document.getElementById('modalOverlay').classList.add('open');
         }
 
-        // 新規追加モーダル
         function openAddModal() {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
-                <h2 style="color:#5eabd5; margin-bottom:20px; text-align:center;">新規名刺登録</h2>
-                <div class="info-group"><div class="info-label">氏名</div><input type="text" id="add-name" class="info-input" placeholder="例：田中 太郎"></div>
+                <h2 style="color:#5eabd5; text-align:center;">新規名刺登録</h2>
+                <div class="info-group"><div class="info-label">氏名</div><input type="text" id="add-name" class="info-input"></div>
                 <div class="info-group"><div class="info-label">会社名</div><input type="text" id="add-company" class="info-input"></div>
                 <div class="info-group"><div class="info-label">部署名</div><input type="text" id="add-dept" class="info-input"></div>
                 <div class="info-group"><div class="info-label">役職</div><input type="text" id="add-title" class="info-input"></div>
                 <div class="info-group"><div class="info-label">メールアドレス</div><input type="email" id="add-email" class="info-input"></div>
                 <div class="info-group"><div class="info-label">電話番号</div><input type="tel" id="add-phone" class="info-input"></div>
-                <div class="info-group"><div class="info-label">備考</div><textarea id="add-memo" class="info-input" style="height:80px;"></textarea></div>
+                <div class="info-group"><div class="info-label">備考</div><textarea id="add-memo" class="info-input"></textarea></div>
                 <button class="save-btn" onclick="saveNewCard()">保存する</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
@@ -183,37 +138,24 @@
 
         function saveNewCard() {
             const name = document.getElementById('add-name').value;
-            if (!name) return alert('名前は必須です');
-
-            // GitHub上のアイコン（user-1.png 〜 user-6.png）をランダム、または順番に割り当て
+            if (!name) return alert('氏名は必須です');
             const nextId = userData.length > 0 ? Math.max(...userData.map(u => u.id)) + 1 : 1;
-            const iconNum = (nextId % 6) + 1; // 1〜6をループ
-
             const newCard = {
-                id: nextId,
-                name: name,
-                company: document.getElementById('add-company').value,
-                dept: document.getElementById('add-dept').value,
-                title: document.getElementById('add-title').value,
-                email: document.getElementById('add-email').value,
-                phone: document.getElementById('add-phone').value,
-                memo: document.getElementById('add-memo').value,
-                icon: `user-${iconNum}.png`,
-                date: Date.now()
+                id: nextId, name, company: document.getElementById('add-company').value,
+                dept: document.getElementById('add-dept').value, title: document.getElementById('add-title').value,
+                email: document.getElementById('add-email').value, phone: document.getElementById('add-phone').value,
+                memo: document.getElementById('add-memo').value, icon: `user-${(nextId % 6) + 1}.png`, date: Date.now()
             };
-
             userData.push(newCard);
             localStorage.setItem('myCards', JSON.stringify(userData));
-            closeModal();
-            updateDisplay();
+            closeModal(); updateDisplay();
         }
 
         function deleteCard(id) {
-            if (!confirm('本当に削除しますか？')) return;
+            if (!confirm('削除しますか？')) return;
             userData = userData.filter(u => u.id !== id);
             localStorage.setItem('myCards', JSON.stringify(userData));
-            closeModal();
-            updateDisplay();
+            closeModal(); updateDisplay();
         }
 
         function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
