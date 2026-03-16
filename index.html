@@ -5,62 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- レイアウト共通 --- */
+        /* --- レイアウト共通（以前のスタイルを維持） --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        
-        .sidebar { 
-            width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); 
-            display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; 
-            flex-shrink: 0; z-index: 3000; transition: 0.3s;
-        }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; transition: 0.3s; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-
-        /* スマホ用ヘッダー */
         .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; }
         .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
         .mobile-logo { height: 30px; }
         .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
-
-        /* ヘッダーエリア */
         .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
         .search-container { position: relative; flex: 0 1 450px; }
         .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-sizing: border-box; }
         .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; }
-
         .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; }
         .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
         .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; }
         .sort-trigger img { height: 44px; width: auto; }
-        .sort-current-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
-
-        /* カード一覧 */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
         .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        .card:hover { transform: translateY(-3px); border-color: #6fceca; }
-
-        /* アイコン画像（アップ済みの画像を確実に表示） */
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: bold; color: #5eabd5; overflow: hidden; }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 2; }
+        
+        /* --- アイコン表示の修正 --- */
+        .thumb-box { 
+            width: 80px; height: 80px; border-radius: 50%; 
+            border: 3px solid #f0faff; background-color: #e0f4f3; 
+            position: relative; flex-shrink: 0; 
+            overflow: hidden; 
+        }
+        .thumb-box img { 
+            width: 100%; height: 100%; object-fit: cover; 
+            display: block; /* 画像を確実に表示 */
+        }
 
         .card-name { font-weight: bold; font-size: 20px; color: #333; }
-
-        /* 詳細モーダル */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
         .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
-        
-        .modal-header { text-align: center; border-bottom: 2px solid #f0faff; padding-bottom: 20px; margin-bottom: 25px; }
-        .modal-name { font-size: 26px; font-weight: bold; color: #333; margin-top: 10px; }
-        
         .info-group { margin-bottom: 18px; }
-        .info-label { font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: bold; padding-left: 5px; }
-        .info-value { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f8f9fa; box-sizing: border-box; color: #444; }
+        .info-label { font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: bold; }
+        .info-value { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f8f9fa; box-sizing: border-box; }
 
         @media (max-width: 768px) {
             body { flex-direction: column; }
@@ -80,7 +67,6 @@
         <img src="logo.png" alt="名刺くらうど" class="mobile-logo">
     </div>
     <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-
     <div class="sidebar" id="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"><span>キーワード</span></a>
@@ -95,20 +81,15 @@
                 <input type="text" class="search-bar" id="searchInput" placeholder="名前や部署で検索">
             </div>
             <div class="action-controls">
-                <button class="add-button" onclick="alert('新規追加機能は開発中です')">新規追加</button>
-                <div class="sort-trigger">
-                    <div class="sort-current-label">最新順</div>
-                    <img src="btn-sort.png" alt="並び替え">
-                </div>
+                <button class="add-button">新規追加</button>
+                <div class="sort-trigger"><div class="sort-current-label">最新順</div><img src="btn-sort.png"></div>
             </div>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <div id="modalInner"></div>
-        </div>
+        <div class="modal-content" onclick="event.stopPropagation()"><div id="modalInner"></div></div>
     </div>
 
     <script>
@@ -119,81 +100,41 @@
             o.style.display = open ? 'block' : 'none';
         }
 
-        // テストデータ（実際はlocalStorageから読み込み）
-        const defaultData = [
-            { 
-                id: 1, name: '田中 太郎', company: '三重テレビ放送', dept: '制作技術部', 
-                title: '部長', email: 'tanaka@mietv.example.com', phone: '059-225-1234', 
-                memo: 'リレー中継の技術責任者。Vマウントバッテリーの件で相談済み。', icon: 'user-default.png' 
-            }
+        let userData = JSON.parse(localStorage.getItem('myCards')) || [
+            { id: 1, name: '田中 太郎', company: '三重テレビ放送', dept: '制作技術部', title: '部長', email: 'tanaka@mietv.example.com', phone: '059-225-1234', memo: 'リレー中継責任者', icon: 'user-default.png' }
         ];
-        let userData = JSON.parse(localStorage.getItem('myCards')) || defaultData;
 
         function updateDisplay() {
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
             const search = document.getElementById('searchInput').value.toLowerCase();
-
             userData.filter(u => u.name.toLowerCase().includes(search) || u.dept.toLowerCase().includes(search)).forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(user);
-                
-                card.innerHTML = `
-                    <div class="thumb-box">
-                        ${user.name.charAt(0)}
-                        <img src="${user.icon}" alt="">
-                    </div>
-                    <div class="card-name">${user.name}</div>
-                `;
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div class="card-name">${user.name}</div>`;
                 grid.appendChild(card);
             });
         }
 
         function openDetail(u) {
             const inner = document.getElementById('modalInner');
-            // 指示通りの順番：会社名・部署名・役職・メールアドレス・電話番号・備考
             inner.innerHTML = `
-                <div class="modal-header">
-                    <div class="thumb-box" style="margin: 0 auto; width:100px; height:100px; font-size:40px;">
-                        ${u.name.charAt(0)}
-                        <img src="${u.icon}" style="width:100px; height:100px;">
-                    </div>
-                    <div class="modal-name">${u.name}</div>
+                <div style="text-align:center; padding-bottom:20px; border-bottom:2px solid #f0faff; margin-bottom:25px;">
+                    <div class="thumb-box" style="margin: 0 auto 15px; width:100px; height:100px;"><img src="${u.icon}" style="width:100%; height:100%;"></div>
+                    <div style="font-size:24px; font-weight:bold; color:#333;">${u.name}</div>
                 </div>
-                
-                <div class="info-group">
-                    <div class="info-label">会社名</div>
-                    <div class="info-value">${u.company || '---'}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">部署名</div>
-                    <div class="info-value">${u.dept || '---'}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">役職</div>
-                    <div class="info-value">${u.title || '---'}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">メールアドレス</div>
-                    <div class="info-value">${u.email || '---'}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">電話番号</div>
-                    <div class="info-value">${u.phone || '---'}</div>
-                </div>
-                <div class="info-group">
-                    <div class="info-label">備考</div>
-                    <div class="info-value" style="white-space: pre-wrap; line-height: 1.6;">${u.memo || '---'}</div>
-                </div>
+                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${u.company || '---'}</div></div>
+                <div class="info-group"><div class="info-label">部署名</div><div class="info-value">${u.dept || '---'}</div></div>
+                <div class="info-group"><div class="info-label">役職</div><div class="info-value">${u.title || '---'}</div></div>
+                <div class="info-group"><div class="info-label">メールアドレス</div><div class="info-value">${u.email || '---'}</div></div>
+                <div class="info-group"><div class="info-label">電話番号</div><div class="info-value">${u.phone || '---'}</div></div>
+                <div class="info-group"><div class="info-label">備考</div><div class="info-value" style="white-space:pre-wrap;">${u.memo || '---'}</div></div>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('open');
-        }
-
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
         document.getElementById('searchInput').addEventListener('input', updateDisplay);
         window.onload = updateDisplay;
     </script>
