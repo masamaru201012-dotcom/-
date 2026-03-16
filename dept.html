@@ -5,21 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - 部署</title>
     <style>
-        /* 基本スタイルは共通（省略：index.htmlと同じ） */
-        /* --- 部署・エリア選択ボタンのスタイル --- */
+        /* スタイルは index.html と共通ですが、ボタン用を追加 */
         .filter-container { padding: 30px 50px 10px; display: flex; flex-wrap: wrap; gap: 12px; }
-        .filter-btn { 
-            padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; 
-            background: white; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s;
-        }
-        /* 選択された時の色 */
-        .filter-btn.active { 
-            background: #6fceca; color: white; border-color: #6fceca; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3);
-        }
-        
-        /* 以降、index.htmlと同様のスタイルを適用 */
+        .filter-btn { padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: white; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        /* 選択された時の色（エメラルドグリーン） */
+        .filter-btn.active { background: #6fceca; color: white; border-color: #6fceca; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
+        /* その他共通スタイル（index.htmlから流用） */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -42,7 +35,6 @@
         <a href="dept.html" class="nav-item active"><img src="icon-dept.png" style="width:38px; margin-right:18px;"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png" style="width:38px; margin-right:18px;"><span>エリア</span></a>
     </div>
-
     <div class="main-content">
         <div class="filter-container" id="deptFilters">
             <button class="filter-btn active" onclick="filterDept('すべて', this)">すべて</button>
@@ -53,23 +45,18 @@
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
-
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()"><div id="modalInner"></div></div>
     </div>
-
     <script>
         let userData = JSON.parse(localStorage.getItem('myCards')) || [];
         let currentDept = 'すべて';
-
         function filterDept(dept, btn) {
             currentDept = dept;
-            // ボタンの色を切り替え
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             updateDisplay();
         }
-
         function updateDisplay() {
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
@@ -77,14 +64,12 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(user);
-                card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div class="card-name" style="font-weight:bold; font-size:20px;">${user.name}</div>`;
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div style="font-weight:bold; font-size:20px;">${user.name}</div>`;
                 grid.appendChild(card);
             });
         }
-
         function openDetail(u) {
             const inner = document.getElementById('modalInner');
-            // 清水さん指定の順番
             inner.innerHTML = `
                 <div style="text-align:center; padding-bottom:20px; border-bottom:2px solid #f0faff; margin-bottom:25px;">
                     <div class="thumb-box" style="margin:0 auto 15px; width:100px; height:100px;"><img src="${u.icon}"></div>
@@ -99,7 +84,6 @@
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
-
         function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
         window.onload = updateDisplay;
     </script>
