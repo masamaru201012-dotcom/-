@@ -6,40 +6,31 @@
     <title>名刺くらうど - キーワード</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        
-        /* サイドバー：全ページ共通・1ミリも動かさない設定 */
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; height: 100vh; box-sizing: border-box; }
-        .logo-area { padding: 0 20px 80px; text-align: center; box-sizing: border-box; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
+        .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 0 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; height: 100px; box-sizing: border-box; }
+        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
-        
-        /* 検索窓・虫眼鏡アイコン（潰れないよう固定） */
         .search-container { position: relative; flex: 0 1 450px; }
         .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-sizing: border-box; }
-        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; object-fit: contain; }
+        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; }
+        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; }
 
-        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
-
-        /* カード（ファイル型）デザイン */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
-        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; background-color: #e0f4f3; flex-shrink: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #e0f4f3; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
-        .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* モーダル：詳細・追加画面 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
-        .info-group { margin-bottom: 18px; }
-        .info-label { font-size: 12px; color: #aaa; margin-bottom: 6px; font-weight: bold; }
-        .info-value, .info-input { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #eee; font-size: 15px; background: #f8f9fa; box-sizing: border-box; }
-        .save-btn { width: 100%; background-color: #6fceca; color: white; border: none; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; }
+        .info-group { margin-bottom: 15px; }
+        .info-label { font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        .info-value { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #eee; background: #f8f9fa; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -49,7 +40,6 @@
         <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png" class="nav-icon"><span>エリア</span></a>
     </div>
-
     <div class="main-content">
         <div class="header">
             <div class="search-container">
@@ -60,16 +50,13 @@
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
-
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()"><div id="modalInner"></div></div>
     </div>
-
     <script>
         let userData = JSON.parse(localStorage.getItem('myCards')) || [
-            { id: 1, name: '清水 真輝', company: '三重テレビ放送', dept: '制作技術部', memo: '本人', icon: 'user-1.png', date: Date.now() }
+            { id: 1, name: '清水 真輝', dept: '制作技術部', memo: '本人', icon: 'user-1.png' }
         ];
-
         function updateDisplay() {
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
@@ -78,50 +65,41 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetail(user);
-                card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div class="card-name">${user.name}</div>`;
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div style="font-weight:bold; font-size:20px;">${user.name}</div>`;
                 grid.appendChild(card);
             });
         }
-
         function openDetail(u) {
-            const inner = document.getElementById('modalInner');
-            inner.innerHTML = `
-                <div style="text-align:center; padding-bottom:20px; border-bottom:2px solid #f0faff; margin-bottom:25px;">
-                    <div class="thumb-box" style="margin: 0 auto 15px; width:100px; height:100px;"><img src="${u.icon}"></div>
-                    <div style="font-size:24px; font-weight:bold;">${u.name}</div>
-                </div>
-                <div class="info-group"><div class="info-label">部署名</div><div class="info-value">${u.dept || '---'}</div></div>
-                <div class="info-group"><div class="info-label">備考</div><div class="info-value" style="white-space:pre-wrap;">${u.memo || '---'}</div></div>
-                <div style="text-align:center; margin-top:20px; color:#ff7675; cursor:pointer;" onclick="deleteCard(${u.id})">この名刺を削除する</div>
+            document.getElementById('modalInner').innerHTML = `
+                <div style="text-align:center; margin-bottom:20px;"><div class="thumb-box" style="margin:0 auto; width:100px; height:100px;"><img src="${u.icon}"></div><h3>${u.name}</h3></div>
+                <div class="info-group"><div class="info-label">部署</div><div class="info-value">${u.dept}</div></div>
+                <div class="info-group"><div class="info-label">備考</div><div class="info-value">${u.memo}</div></div>
+                <button onclick="deleteCard(${u.id})" style="width:100%; background:#ff7675; color:white; border:none; padding:10px; border-radius:10px; margin-top:10px;">削除</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
-
         function openAddModal() {
-            const inner = document.getElementById('modalInner');
-            inner.innerHTML = `
-                <h2 style="color:#5eabd5; text-align:center;">新規名刺登録</h2>
-                <div class="info-group"><div class="info-label">氏名</div><input type="text" id="add-name" class="info-value" style="background:#fff; border:1px solid #ddd;"></div>
-                <div class="info-group"><div class="info-label">部署名</div><input type="text" id="add-dept" class="info-value" style="background:#fff; border:1px solid #ddd;"></div>
-                <div class="info-group"><div class="info-label">備考 (三重県 など)</div><textarea id="add-memo" class="info-value" style="height:80px; background:#fff; border:1px solid #ddd;"></textarea></div>
-                <button class="save-btn" onclick="saveNewCard()">保存する</button>
+            document.getElementById('modalInner').innerHTML = `
+                <h3>新規登録</h3>
+                <input type="text" id="new-name" placeholder="名前" class="info-value" style="margin-bottom:10px; background:white; border:1px solid #ddd;">
+                <input type="text" id="new-dept" placeholder="部署" class="info-value" style="margin-bottom:10px; background:white; border:1px solid #ddd;">
+                <textarea id="new-memo" placeholder="備考" class="info-value" style="margin-bottom:10px; background:white; border:1px solid #ddd; height:80px;"></textarea>
+                <button onclick="saveCard()" style="width:100%; background:#6fceca; color:white; border:none; padding:10px; border-radius:10px;">保存</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
-
-        function saveNewCard() {
-            const name = document.getElementById('add-name').value;
-            if (!name) return alert('名前を入力してください');
-            const nextId = userData.length > 0 ? Math.max(...userData.map(u => u.id)) + 1 : 1;
-            userData.push({ id: nextId, name, dept: document.getElementById('add-dept').value, memo: document.getElementById('add-memo').value, icon: `user-${(nextId % 6) + 1}.png`, date: Date.now() });
+        function saveCard() {
+            const name = document.getElementById('new-name').value;
+            if(!name) return;
+            userData.push({ id: Date.now(), name, dept: document.getElementById('new-dept').value, memo: document.getElementById('new-memo').value, icon: 'user-1.png' });
             localStorage.setItem('myCards', JSON.stringify(userData));
             closeModal(); updateDisplay();
         }
-
         function deleteCard(id) {
-            if (confirm('削除しますか？')) { userData = userData.filter(u => u.id !== id); localStorage.setItem('myCards', JSON.stringify(userData)); closeModal(); updateDisplay(); }
+            userData = userData.filter(u => u.id !== id);
+            localStorage.setItem('myCards', JSON.stringify(userData));
+            closeModal(); updateDisplay();
         }
-
         function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
         document.getElementById('searchInput').addEventListener('input', updateDisplay);
         window.onload = updateDisplay;
