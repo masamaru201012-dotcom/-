@@ -2,44 +2,59 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード検索</title>
     <style>
-        body { margin: 0; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
+        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
+        
+        /* ログイン画面のスタイル */
+        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .login-card { background: white; padding: 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        .logo { width: 240px; margin-bottom: 40px; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 14px; color: #666; margin-bottom: 8px; }
+        .input-group input { width: 100%; padding: 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 16px; box-sizing: border-box; outline: none; }
+        .login-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 20px; }
+
+        /* サイドバー */
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
-        .nav-item img { width: 24px; height: 24px; margin-right: 15px; opacity: 0.8; }
-        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .nav-item.active img { opacity: 1; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
-        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
-        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
+
+        /* メインコンテンツ */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { background: white; padding: 20px 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
+        .header-left { display: flex; align-items: center; gap: 15px; width: 250px; }
         .header-title-icon { width: 32px; height: 32px; }
-        .header-title { font-size: 20px; font-weight: bold; color: #444; margin-right: 20px; white-space: nowrap; }
-        .search-container { position: relative; flex: 1; max-width: 450px; }
-        .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 20px; opacity: 0.3; }
-        .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; transition: 0.3s; }
-        .search-bar:focus { border-color: #6fceca; background-color: white; box-shadow: 0 0 15px rgba(111,206,202,0.2); }
-        .sort-select { padding: 10px 15px; border-radius: 20px; border: 1px solid #e2e8f0; background: #fff; color: #555; font-size: 13px; outline: none; cursor: pointer; margin-left: 15px; }
-        .add-button { background-color: #6fceca; color: white; border: none; padding: 12px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; margin-left: 15px; transition: 0.3s; box-shadow: 0 4px 15px rgba(111,206,202,0.3); white-space: nowrap; }
-        .add-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(111,206,202,0.4); }
-        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; align-content: start; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #6fceca; }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #5eabd5; flex-shrink: 0; overflow: hidden; position: relative; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
-        .card-owner-tag { font-size: 11px; color: #5eabd5; background: #e0f4f3; padding: 4px 12px; border-radius: 15px; display: inline-block; font-weight: bold; margin-top: 8px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; }
-        .modal-img { max-width: 95%; max-height: 90%; border-radius: 12px; }
+        .header-title { font-size: 20px; font-weight: bold; color: #444; }
+        .search-container { position: relative; flex: 1; max-width: 400px; }
+        .search-bar { width: 100%; padding: 12px 25px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; }
+        
+        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; flex-shrink: 0; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        /* 画像拡大モーダル */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
+        .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
+    <div id="loginOverlay">
+        <div class="login-card">
+            <img src="logo.png" class="logo">
+            <div class="input-group"><label>メールアドレス</label><input type="email" value="m.shimizu@mietv.co.jp"></div>
+            <div class="input-group"><label>パスワード</label><input type="password" value="********"></div>
+            <button class="login-btn" onclick="doLogin()">ログイン</button>
+        </div>
+    </div>
+
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
@@ -47,46 +62,57 @@
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
         <div class="user-profile-area">
             <div class="user-name">清水　茉咲 (制作技術部)</div>
-            <button class="logout-btn">ログアウト</button>
+            <a href="#" onclick="doLogout()" style="color:rgba(255,255,255,0.6); font-size:12px; text-decoration:none;">ログアウト</a>
         </div>
     </div>
+
     <div class="main-content">
         <div class="header">
-            <div class="header-left">
-                <img src="icon-keyword.png" class="header-title-icon">
-                <div class="header-title">キーワード検索</div>
-            </div>
-            <div class="search-container">
-                <img src="icon-search.png" class="search-icon">
-                <input type="text" class="search-bar" id="searchInput" placeholder="社外の名刺を検索..." oninput="searchCards()">
-            </div>
-            <select id="sortOrder" class="sort-select" onchange="searchCards()">
-                <option value="new">登録が新しい順</option>
-                <option value="name">名前順</option>
-                <option value="company">会社名順</option>
-            </select>
-            <button class="add-button">新規追加</button>
+            <div class="header-left"><img src="icon-keyword.png" class="header-title-icon"><div class="header-title">キーワード検索</div></div>
+            <div class="search-container"><input type="text" class="search-bar" id="searchInput" placeholder="社外の名刺を検索..." oninput="renderCards()"></div>
+            <button style="background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer;">新規追加</button>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
-    <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" class="modal-img"></div>
+
+    <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
+
     <script>
-        function searchCards() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
+        // 名刺データ
+        const cardData = [
+            { name: "佐藤 健二", company: "株式会社デジタルサービス", icon: "user-1.png" },
+            { name: "田中 美咲", company: "グローバル・リンクス", icon: "user-2.png" },
+            { name: "鈴木 一郎", company: "テック・ソリューションズ", icon: "user-3.png" }
+        ];
+
+        function renderCards() {
             const grid = document.getElementById('cardGrid');
+            const search = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = "";
-            let data = JSON.parse(localStorage.getItem('myCards')) || [];
-            let filtered = data.filter(u => u.name.toLowerCase().includes(query) || u.company.toLowerCase().includes(query));
-            filtered.forEach(user => {
-                const card = document.createElement('div'); card.className = 'card';
-                // 名刺クリックでの画像表示機能を維持
-                card.onclick = () => { if(user.icon){ document.getElementById('imageModal').style.display='flex'; document.getElementById('modalImg').src = user.icon; } };
-                card.innerHTML = `<div class="thumb-box"><img src="${user.icon || 'user-1.png'}"></div>
-                <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company}</div><div class="card-owner-tag">👤 ${user.registeredBy}</div></div>`;
-                grid.appendChild(card);
+            cardData.filter(c => c.name.toLowerCase().includes(search) || c.company.toLowerCase().includes(search)).forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.onclick = () => {
+                    document.getElementById('modalImg').src = c.icon;
+                    document.getElementById('imageModal').style.display = 'flex';
+                };
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px;">${c.name}</div><div style="font-size:14px; color:#888;">${c.company}</div></div>`;
+                grid.appendChild(div);
             });
         }
-        window.onload = searchCards;
+
+        function doLogin() {
+            localStorage.setItem('isLoggedIn', 'true');
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+        function doLogout() {
+            localStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+        window.onload = () => {
+            if(localStorage.getItem('isLoggedIn')) document.getElementById('loginOverlay').style.display = 'none';
+            renderCards();
+        };
     </script>
 </body>
 </html>
