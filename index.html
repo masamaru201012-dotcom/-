@@ -26,7 +26,7 @@
         .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); transition: 0.2s; }
         .add-button:hover { background-color: #5dbdb8; transform: translateY(-2px); }
 
-        /* --- 改良版：並び替えドロップダウン --- */
+        /* 並び替えドロップダウン */
         .sort-container { position: relative; }
         .sort-trigger { display: flex; align-items: center; gap: 10px; background: white; padding: 6px 20px 6px 8px; border-radius: 40px; border: 1px solid #e0e0e0; cursor: pointer; transition: 0.2s; }
         .sort-trigger:hover { border-color: #6fceca; }
@@ -52,17 +52,22 @@
         .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; }
         .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* モーダル（共通） */
+        /* モーダル共通設定 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 90vh; overflow-y: auto; }
         .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
-        
-        /* フォーム用 */
-        .form-group { margin-bottom: 15px; }
+
+        /* フォーム用スタイル */
+        .form-group { margin-bottom: 12px; }
         .form-label { display: block; font-size: 13px; color: #888; margin-bottom: 5px; font-weight: bold; }
-        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
-        .submit-btn { width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .form-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
+        .submit-btn { width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+
+        /* 詳細用スタイル */
+        .info-group { margin-top: 12px; }
+        .info-label { font-size: 12px; color: #aaa; font-weight: bold; }
+        .info-value { font-size: 15px; color: #444; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 4px; word-break: break-all; }
     </style>
 </head>
 <body>
@@ -108,10 +113,10 @@
     </div>
 
     <script>
-        // データ（LocalStorage対応版）
+        // データ管理（LocalStorage対応）
         let userData = JSON.parse(localStorage.getItem('myCards')) || [
-            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', area: '三重県', icon: 'user-default.png' },
-            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '総務部', title: '課長', area: '三重県', icon: 'user-default.png' }
+            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ', area: '三重県', email: 'tanaka@example.com', phone: '059-123-4567', icon: 'user-default.png', notes: 'メイン担当' },
+            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '総務部', title: '課長', company: '三重テレビ', area: '三重県', email: 'sato@example.com', phone: '059-000-0000', icon: 'user-default.png', notes: '採用窓口' }
         ];
 
         let currentSortMode = 'newest';
@@ -120,7 +125,6 @@
             document.getElementById('sortMenu').classList.toggle('open');
         }
 
-        // メニュー以外をクリックしたら閉じる
         window.addEventListener('click', (e) => {
             if (!e.target.closest('.sort-container')) {
                 document.getElementById('sortMenu').classList.remove('open');
@@ -131,12 +135,9 @@
             currentSortMode = mode;
             const labels = { 'newest': '最新順', 'az': '五十音順', 'za': '五十音順（逆）' };
             document.getElementById('currentSortLabel').textContent = labels[mode];
-            
-            // アクティブ表示の切り替え
             document.querySelectorAll('.sort-option').forEach(opt => {
                 opt.classList.toggle('active', opt.textContent === labels[mode]);
             });
-
             document.getElementById('sortMenu').classList.remove('open');
             updateDisplay();
         }
@@ -152,14 +153,9 @@
                 u.area.toLowerCase().includes(filterText)
             );
 
-            // 並び替えロジック
-            if (currentSortMode === 'newest') {
-                filtered.sort((a, b) => b.id - a.id);
-            } else if (currentSortMode === 'az') {
-                filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
-            } else if (currentSortMode === 'za') {
-                filtered.sort((a, b) => b.kana.localeCompare(a.kana, 'ja'));
-            }
+            if (currentSortMode === 'newest') filtered.sort((a, b) => b.id - a.id);
+            else if (currentSortMode === 'az') filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
+            else if (currentSortMode === 'za') filtered.sort((a, b) => b.kana.localeCompare(a.kana, 'ja'));
 
             filtered.forEach(user => {
                 const card = document.createElement('div');
@@ -170,16 +166,19 @@
             });
         }
 
-        // --- 以下、前回同様の機能 ---
+        // 新規追加ポップアップ
         function openAddModal() {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
                 <h2 style="color:#5eabd5; margin-bottom:20px;">名刺の新規追加</h2>
-                <div class="form-group"><label class="form-label">名前</label><input type="text" id="newName" class="form-input"></div>
-                <div class="form-group"><label class="form-label">ふりがな</label><input type="text" id="newKana" class="form-input"></div>
-                <div class="form-group"><label class="form-label">部署</label><input type="text" id="newDept" class="form-input"></div>
-                <div class="form-group"><label class="form-label">役職</label><input type="text" id="newTitle" class="form-input"></div>
-                <div class="form-group"><label class="form-label">エリア</label><input type="text" id="newArea" class="form-input"></div>
+                <div class="form-group"><label class="form-label">名前</label><input type="text" id="newName" class="form-input" placeholder="例：山田 太郎"></div>
+                <div class="form-group"><label class="form-label">ふりがな</label><input type="text" id="newKana" class="form-input" placeholder="例：やまだ たろう"></div>
+                <div class="form-group"><label class="form-label">部署</label><input type="text" id="newDept" class="form-input" placeholder="例：営業部"></div>
+                <div class="form-group"><label class="form-label">役職</label><input type="text" id="newTitle" class="form-input" placeholder="例：課長"></div>
+                <div class="form-group"><label class="form-label">エリア</label><input type="text" id="newArea" class="form-input" placeholder="例：東京都"></div>
+                <div class="form-group"><label class="form-label">メールアドレス</label><input type="email" id="newEmail" class="form-input"></div>
+                <div class="form-group"><label class="form-label">電話番号</label><input type="text" id="newPhone" class="form-input"></div>
+                <div class="form-group"><label class="form-label">備考</label><input type="text" id="newNotes" class="form-input"></div>
                 <button class="submit-btn" onclick="addNewCard()">登録する</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
@@ -187,22 +186,27 @@
 
         function addNewCard() {
             const name = document.getElementById('newName').value;
-            if(!name) return;
+            if(!name) { alert("お名前を入力してください"); return; }
             const newData = {
                 id: Date.now(),
                 name: name,
-                kana: document.getElementById('newKana').value || "ん", // 並び替え用
+                kana: document.getElementById('newKana').value || "ん",
                 dept: document.getElementById('newDept').value || "未設定",
                 title: document.getElementById('newTitle').value || "",
+                company: "三重テレビ",
                 area: document.getElementById('newArea').value || "三重県",
+                email: document.getElementById('newEmail').value || "",
+                phone: document.getElementById('newPhone').value || "",
+                notes: document.getElementById('newNotes').value || "",
                 icon: 'user-default.png'
             };
             userData.push(newData);
-            localStorage.setItem('myCards', JSON.stringify(userData)); // 保存
+            localStorage.setItem('myCards', JSON.stringify(userData));
             closeModal();
             updateDisplay();
         }
 
+        // 詳細ポップアップ（メール・電話などを表示）
         function openDetailModal(user) {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
@@ -211,9 +215,11 @@
                     <div style="font-size:26px; font-weight:bold;">${user.name}</div>
                     <div style="color:#5eabd5; font-size:18px;">${user.dept}・${user.title}</div>
                 </div>
-                <div style="background:#f8f9fa; padding:20px; border-radius:15px;">
-                    <p style="margin:5px 0;"><strong>エリア:</strong> ${user.area}</p>
-                </div>
+                <div class="info-group"><div class="info-label">エリア</div><div class="info-value">${user.area}</div></div>
+                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${user.company}</div></div>
+                <div class="info-group"><div class="info-label">メールアドレス</div><div class="info-value">${user.email || '---'}</div></div>
+                <div class="info-group"><div class="info-label">電話番号</div><div class="info-value">${user.phone || '---'}</div></div>
+                <div class="info-group"><div class="info-label">備考</div><div class="info-value">${user.notes || '---'}</div></div>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
