@@ -5,33 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - 部署別</title>
     <style>
-        /* 共通デザイン復元 */
+        /* デザイン完全復元 */
         body { margin: 0; font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 25px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
+        .nav-item { display: flex; align-items: center; padding: 25px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
         .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
-
+        
         .main-container { flex: 1; display: flex; overflow: hidden; }
         .dept-selector { flex: 1; padding: 40px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
-        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 25px; }
+        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
         .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 15px; border-radius: 15px; transition: 0.2s; text-align: center; }
         .dept-folder:hover { background: #f0faff; transform: translateY(-3px); }
-        .folder-icon { width: 60px; height: 45px; background: #85c1e9; border-radius: 4px 10px 4px 4px; position: relative; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .folder-icon { width: 60px; height: 45px; background: #85c1e9; border-radius: 4px 10px 4px 4px; position: relative; margin-bottom: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .folder-icon::before { content: ""; position: absolute; top: -6px; left: 0; width: 22px; height: 10px; background: inherit; border-radius: 4px 4px 0 0; }
         
         .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background: #f8fafc; }
         .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #6fceca; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; margin-bottom: 15px; cursor: pointer; transition: 0.3s; }
-        .card:hover { border-color: #6fceca; box-shadow: 0 12px 20px rgba(0,0,0,0.06); }
-        .thumb-box { width: 70px; height: 70px; border-radius: 50%; background: #e0f4f3; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #5eabd5; flex-shrink: 0; overflow: hidden; position: relative; border: 2px solid #f0faff; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; margin-bottom: 15px; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #6fceca; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; color: #5eabd5; flex-shrink: 0; overflow: hidden; position: relative; border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; }
         .card-owner-tag { font-size: 11px; color: #5eabd5; background: #e0f4f3; padding: 4px 12px; border-radius: 15px; display: inline-block; font-weight: bold; margin-top: 8px; }
-
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; }
         .modal-img { max-width: 95%; max-height: 90%; border-radius: 12px; }
     </style>
@@ -60,14 +59,10 @@
     <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" class="modal-img"></div>
 
     <script>
-        function checkLogin() {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if (!user) { location.href = "index.html"; }
-            else { document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")"; }
-        }
+        function checkLogin() { const user = JSON.parse(localStorage.getItem('currentUser')); if (!user) { location.href = "index.html"; } else { document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")"; } }
         function handleLogout() { localStorage.removeItem('currentUser'); location.href = "index.html"; }
 
-        // 放送技術部も完備した部署リスト
+        // 部署リスト
         const depts = ["報道制作部", "制作技術部", "放送技術部", "本社営業部", "名古屋支社", "東京支社", "大阪支社", "放送部", "事業部", "編成部", "総務部"];
         const dGrid = document.getElementById('deptGrid');
         depts.forEach(d => {
@@ -84,15 +79,27 @@
             grid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
             const filtered = data.filter(u => u.ownerDept === deptName);
+            
             if(filtered.length === 0) {
                 grid.innerHTML = `<div style="color:#888; padding:20px;">登録データはありません。</div>`;
             } else {
                 filtered.forEach(user => {
+                    // ★ここが重要：ランダム画像ロジック追加
+                    const randomIconId = Math.floor(Math.random() * 6) + 1;
+                    const randomIconPath = `user-${randomIconId}.png`;
+
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.onclick = () => { if(user.icon){ document.getElementById('imageModal').style.display='flex'; document.getElementById('modalImg').src=user.icon; }};
-                    card.innerHTML = `<div class="thumb-box">${user.name.charAt(0)}${user.icon ? `<img src="${user.icon}">` : ''}</div>
-                        <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company}</div><div class="card-owner-tag">👤 登録者: ${user.registeredBy}</div></div>`;
+                    card.innerHTML = `
+                        <div class="thumb-box">
+                            <img src="${user.icon ? user.icon : randomIconPath}" onerror="this.style.display='none'">
+                        </div>
+                        <div>
+                            <div style="font-weight:bold; font-size:18px; color:#333;">${user.name}</div>
+                            <div style="font-size:14px; color:#888;">${user.company || ''} / ${user.dept || ''}</div>
+                            <div class="card-owner-tag">👤 登録者: ${user.registeredBy}</div>
+                        </div>`;
                     grid.appendChild(card);
                 });
             }
