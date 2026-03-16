@@ -39,11 +39,13 @@
             </div>
             <div class="pref-grid" id="prefGrid"></div>
         </div>
-        <div class="result-view">
-            <div id="selectedAreaName" class="result-header">都道府県を選択してください</div>
+<div class="result-view">
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 15px;">
+                <img src="icon-area.png" style="width: 32px; height: 32px;">
+                <div id="selectedAreaName" style="font-size: 20px; font-weight: bold; color: #444;">都道府県を選択してください</div>
+            </div>
             <div id="cardGrid" class="card-list"></div>
         </div>
-    </div>
     <script>
         const prefs = ["三重県", "愛知県", "岐阜県", "滋賀県", "東京都", "大阪府"];
         const pGrid = document.getElementById('prefGrid');
