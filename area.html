@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - エリア</title>
     <style>
-        /* 共通レイアウト */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; transition: 0.3s; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
@@ -13,33 +12,27 @@
         .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-
         .main-container { flex: 1; display: flex; overflow: hidden; }
-
-        /* スマホ用ヘッダー */
         .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; }
         .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
         .mobile-logo { height: 30px; }
         .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
-
-        /* コンテンツエリア */
         .area-selector { flex: 1; padding: 30px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
         .region-title { color: #5eabd5; border-left: 5px solid #6fceca; padding-left: 10px; margin: 20px 0 10px; font-weight: bold; font-size: 14px; }
         .pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
         .pref-btn { padding: 10px 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; font-size: 12px; color: #64748b; }
         .pref-btn:hover { background: #e0f4f3; color: #5eabd5; }
-
         .result-view { flex: 1; padding: 30px; overflow-y: auto; background: #f8fafc; }
         .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 10px; }
-        .user-thumb { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; background-color: #eee; }
-
+        .thumb-box { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #5eabd5; overflow: hidden; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
         @media (max-width: 768px) {
             body { flex-direction: column; }
             .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; }
             .sidebar.open { left: 0; }
             .mobile-header { display: flex; position: sticky; top: 0; }
-            .main-container { flex-direction: column; height: calc(100vh - 60px); }
-            .area-selector, .result-view { flex: none; height: 50%; width: 100%; padding: 20px; box-sizing: border-box; }
+            .main-container { flex-direction: column; height: auto; }
+            .area-selector, .result-view { flex: none; width: 100%; padding: 20px; }
         }
     </style>
 </head>
@@ -61,7 +54,8 @@
             <div id="areaGrid"></div>
         </div>
         <div class="result-view" id="resultArea">
-            <div style="color:#bbb; text-align:center; padding-top:50px;">エリアを選択してください</div>
+            <h3 id="selectedTitle" style="color:#5eabd5; font-size:16px;">エリアを選択してください</h3>
+            <div id="cardGrid"></div>
         </div>
     </div>
     <script>
@@ -86,13 +80,12 @@
             grid.innerHTML += html + `</div>`;
         });
         function showArea(name) {
+            document.getElementById('selectedTitle').innerText = name;
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            const filtered = data.filter(u => u.area === name);
-            const view = document.getElementById('resultArea');
-            view.innerHTML = `<h3 style="color:#5eabd5; font-size:16px; border-bottom:2px solid #6fceca; padding-bottom:10px;">${name}</h3>`;
-            if(filtered.length === 0) view.innerHTML += `<p style="color:#999; font-size:14px;">名刺が見つかりません</p>`;
-            filtered.forEach(u => {
-                view.innerHTML += `<div class="card"><img src="${u.icon}" class="user-thumb"><div><div style="font-weight:bold;">${u.name}</div><div style="font-size:12px; color:#888;">${u.dept}</div></div></div>`;
+            data.filter(u => u.area === name).forEach(user => {
+                grid.innerHTML += `<div class="card"><div class="thumb-box">${user.name.charAt(0)}${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}</div><div><div style="font-weight:bold;">${user.name}</div><div style="font-size:12px; color:#888;">${user.dept}</div></div></div>`;
             });
         }
     </script>
