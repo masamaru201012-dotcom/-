@@ -6,17 +6,15 @@
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン画面専用：指示のあったロゴ位置修正のみ適用 */
+        /* ログイン画面：ロゴ位置のみ変更 */
         #loginOverlay {
             position: fixed; inset: 0;
             background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000;
         }
-        /* ロゴは白枠の外へ */
         .login-logo-outside { width: 280px; margin-bottom: 30px; text-align: center; }
         .login-logo-outside img { width: 100%; transform: scale(1.1); }
 
-        /* ログインボックス：清水さんの元のデザインを維持 */
         .login-box {
             background: white; padding: 35px; border-radius: 30px; 
             width: 100%; max-width: 360px; text-align: center;
@@ -33,10 +31,9 @@
             cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3);
         }
 
-        /* メインアプリ：初期は非表示 */
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* --- 以下、元のキーワードページのスタイル --- */
+        /* 以下、清水さんのオリジナルスタイルを一切変えずに維持 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -48,6 +45,7 @@
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
+        .header-left { display: flex; align-items: center; min-width: 180px; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; margin: 0; }
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
@@ -73,7 +71,7 @@
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; font-weight: 500; }
-        .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+        .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
     </style>
 </head>
 <body>
@@ -86,7 +84,7 @@
         </div>
     </div>
 
-    <div id="mainApp" style="display:flex;">
+    <div id="mainApp">
         <div class="sidebar">
             <div class="logo-area"><img src="logo.png"></div>
             <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
@@ -113,7 +111,60 @@
                     </select>
                 </div>
             </div>
-            <div class="card-grid" id="cardGrid"></div>
+            <div id="cardGrid" class="card-grid"></div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-card">
+            <button class="close-modal" onclick="closeModal('detailModal')">×</button>
+            <div class="modal-header">名刺詳細</div>
+            <div class="img-container"><img id="viewImg" src=""></div>
+            <div class="form-row">
+                <div class="form-group"><label>名前</label><div class="display-value" id="viewName"></div></div>
+                <div class="form-group"><label>ふりがな</label><div class="display-value" id="viewKana"></div></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>会社名</label><div class="display-value" id="viewCompany"></div></div>
+                <div class="form-group"><label>部署名</label><div class="display-value" id="viewDept"></div></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>役職</label><div class="display-value" id="viewTitle"></div></div>
+                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
+            </div>
+            <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-card">
+            <button class="close-modal" onclick="closeModal('addModal')">×</button>
+            <div class="modal-header">新規名刺追加</div>
+            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0;" onclick="document.getElementById('imageInput').click()">
+                <img id="previewImg" src="" style="display: none;">
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択</span>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
+            <div class="form-row">
+                <div class="form-group"><label>名前</label><input type="text" id="newName"></div>
+                <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>会社名</label><input type="text" id="newCompany"></div>
+                <div class="form-group"><label>部署名</label><input type="text" id="newDept"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
+                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
+            </div>
+            <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
+            <button class="save-btn" onclick="saveNewCard()">保存する</button>
         </div>
     </div>
 
@@ -124,9 +175,7 @@
             if (email.includes('@')) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 checkLogin();
-            } else {
-                alert('メールアドレスを入力してください');
-            }
+            } else { alert('メールアドレスを入力してください'); }
         }
 
         function checkLogin() {
@@ -145,9 +194,9 @@
             location.reload();
         }
 
-        // --- 以下、元のカード描画ロジック ---
+        // 名刺データ
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [
-            { id: 1, name: "佐藤 健二", company: "株式会社三重デジタル", icon: "user-1.png" }
+            { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
         ];
 
         function renderCards() {
@@ -158,12 +207,77 @@
             grid.innerHTML = "";
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
             
+            filtered.sort((a, b) => {
+                if (sortBy === "new") return b.id - a.id;
+                if (sortBy === "asc") return (a.name || "").localeCompare(b.name, 'ja');
+                if (sortBy === "desc") return (b.name || "").localeCompare(a.name, 'ja');
+                return 0;
+            });
+
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px;">${c.name}</div><div style="color:#888;">${c.company}</div></div>`;
+                div.onclick = () => openDetailModal(c);
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
+        }
+
+        function openDetailModal(data) {
+            document.getElementById('viewImg').src = data.icon;
+            document.getElementById('viewName').innerText = data.name;
+            document.getElementById('viewKana').innerText = data.kana || "-";
+            document.getElementById('viewCompany').innerText = data.company;
+            document.getElementById('viewDept').innerText = data.dept || "-";
+            document.getElementById('viewTitle').innerText = data.title || "-";
+            document.getElementById('viewEmail').innerText = data.email || "-";
+            document.getElementById('viewTel').innerText = data.tel || "-";
+            document.getElementById('viewNote').innerText = data.note || "-";
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        let currentImageDataUrl = "";
+        function openAddModal() {
+            ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById('imageInput').value = "";
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentImageDataUrl = e.target.result;
+                    document.getElementById('previewImg').src = currentImageDataUrl;
+                    document.getElementById('previewImg').style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function saveNewCard() {
+            const name = document.getElementById('newName').value;
+            if (!name || !currentImageDataUrl) { alert("名前と画像は必須です"); return; }
+            cardData.unshift({
+                id: Date.now(),
+                name: name,
+                kana: document.getElementById('newKana').value,
+                company: document.getElementById('newCompany').value,
+                dept: document.getElementById('newDept').value,
+                title: document.getElementById('newTitle').value,
+                email: document.getElementById('newEmail').value,
+                tel: document.getElementById('newTel').value,
+                note: document.getElementById('newNote').value,
+                icon: currentImageDataUrl
+            });
+            localStorage.setItem('businessCards', JSON.stringify(cardData));
+            closeModal('addModal');
+            renderCards();
         }
 
         window.onload = checkLogin;
