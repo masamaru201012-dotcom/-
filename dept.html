@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - 部署別</title>
     <style>
-        /* index.htmlと共通のスタイル */
+        /* index.htmlと完全に共通化 */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
@@ -13,19 +13,29 @@
         .nav-item img { width: 24px; margin-right: 15px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
+        .logout-link { font-size: 12px; color: rgba(255,255,255,0.6); cursor: pointer; text-decoration: underline; }
 
-        /* 部署ページ専用：1列リストと右側の表示 */
-        .container { flex: 1; display: flex; overflow: hidden; }
-        .side-list { width: 300px; background: white; border-right: 1px solid #eef2f6; padding: 30px; overflow-y: auto; }
-        .dept-item { display: flex; align-items: center; padding: 15px; cursor: pointer; border-radius: 12px; transition: 0.2s; margin-bottom: 5px; color: #555; font-weight: bold; }
-        .dept-item:hover { background: #f0faff; color: #5eabd5; }
-        .dept-item img { width: 22px; margin-right: 12px; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
+        .header-left { display: flex; align-items: center; gap: 15px; width: 250px; }
+        .header-title-icon { width: 32px; height: 32px; }
+        .header-title { font-size: 20px; font-weight: bold; color: #444; }
+        .search-placeholder { flex: 1; max-width: 400px; height: 40px; } /* ヘッダーの配置を揃えるための空白 */
+        .header-right { width: 250px; display: flex; justify-content: flex-end; }
+        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
+
+        /* 2ペインレイアウト */
+        .content-container { flex: 1; display: flex; overflow: hidden; }
+        .side-list { width: 300px; background: white; border-right: 1px solid #eef2f6; padding: 20px; overflow-y: auto; }
+        .list-item { padding: 15px; cursor: pointer; border-radius: 12px; transition: 0.2s; font-weight: bold; color: #555; }
+        .list-item:hover { background: #f0faff; color: #5eabd5; }
         
         .main-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
-        .header-title-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; border-bottom: 2px solid #6fceca; padding-bottom: 15px; }
+        .view-title { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #6fceca; }
         .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 480px; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .thumb-box { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; background: #eee; flex-shrink: 0; }
+        .card { background: white; border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .thumb-box { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; background: #eee; flex-shrink: 0; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
@@ -35,37 +45,42 @@
         <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-        <div class="user-profile-area"><div class="user-name" id="displayUserName">---</div></div>
+        <div class="user-profile-area">
+            <div class="user-name">清水 (報道制作部)</div>
+            <div class="logout-link">ログアウト</div>
+        </div>
     </div>
-    <div class="container">
-        <div class="side-list" id="deptList"></div>
-        <div class="main-view">
-            <div class="header-title-bar">
-                <img src="icon-dept.png" style="width:32px;">
-                <div id="selectedTitle" style="font-size:22px; font-weight:bold; color:#444;">部署を選択してください</div>
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <img src="icon-dept.png" class="header-title-icon">
+                <div class="header-title">部署別</div>
             </div>
-            <div id="cardGrid" class="card-list"></div>
+            <div class="search-placeholder"></div> <div class="header-right"><button class="add-button">新規追加</button></div>
+        </div>
+        <div class="content-container">
+            <div class="side-list" id="deptList"></div>
+            <div class="main-view">
+                <div id="viewTitle" class="view-title">部署を選択してください</div>
+                <div id="cardGrid" class="card-list"></div>
+            </div>
         </div>
     </div>
     <script>
         const depts = ["報道制作部", "制作技術部", "放送技術部", "本社営業部", "名古屋支社", "東京支社", "大阪支社"];
         const dContainer = document.getElementById('deptList');
         depts.forEach(d => {
-            dContainer.innerHTML += `<div class="dept-item" onclick="selectDept('${d}')"><img src="icon-dept.png">${d}</div>`;
+            const div = document.createElement('div'); div.className = 'list-item'; div.innerText = d;
+            div.onclick = () => {
+                document.getElementById('viewTitle').innerText = d + "の名刺一覧";
+                const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
+                const data = JSON.parse(localStorage.getItem('myCards')) || [];
+                data.filter(u => u.ownerDept === d).forEach(u => {
+                    grid.innerHTML += `<div class="card"><div class="thumb-box"><img src="${u.icon||'user-1.png'}"></div><div><b>${u.name}</b><br><small>${u.company}</small></div></div>`;
+                });
+            };
+            dContainer.appendChild(div);
         });
-        function selectDept(name) {
-            document.getElementById('selectedTitle').innerText = name + "の名刺一覧";
-            const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
-            const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            data.filter(u => u.ownerDept === name).forEach(user => {
-                grid.innerHTML += `<div class="card"><div class="thumb-box"><img src="${user.icon||'user-1.png'}"></div>
-                <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company}</div></div></div>`;
-            });
-        }
-        window.onload = () => {
-            const user = JSON.parse(localStorage.getItem('currentUser'));
-            if(user) document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")";
-        };
     </script>
 </body>
 </html>
