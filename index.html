@@ -19,14 +19,9 @@
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        
-        /* サイドバー項目：ホバー時の変化を削除 */
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: none; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
-        
-        /* 【重要】現在開いているページ（active）だけ色が変わる */
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
@@ -38,24 +33,24 @@
         
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 20px; }
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
+        /* 【修正】検索のプレースホルダーを短く。CSSでアスペクト比を維持 */
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
 
         .header-actions { display: flex; gap: 10px; align-items: center; }
-        
-        /* 【重要】ホバー時の色変化を完全削除。クリックしても色は変えない */
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; transition: none; }
-        .add-button:hover { background:#6fceca; color:white; opacity: 1; } /* ホバーしてもそのまま */
+        .add-button:hover { background:#6fceca; color:white; opacity: 1; }
 
         .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; transition: none; -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 35px; background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 15px center; }
-        .sort-select:hover { background-color: white; } /* ホバーしてもそのまま */
+        .sort-select:hover { background-color: white; }
 
-        /* 名刺カード（ここだけは一覧なのでホバー時の浮き上がりを維持） */
+        /* 名刺カード */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         
+        /* 【修正】縦に伸びないようにアスペクト比を維持 */
         .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; } /* これでアスペクト比を維持して切り抜きます */
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
         .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; display: block; }
@@ -89,7 +84,7 @@
             <div class="header-left">
                 <div class="header-title">キーワード検索</div>
             </div>
-            <div class="search-container"><input type="text" class="search-bar" id="searchInput" placeholder="名前や会社名で検索" oninput="renderCards()"></div>
+            <div class="search-container"><input type="text" class="search-bar" id="searchInput" placeholder="検索" oninput="renderCards()"></div>
             <div class="header-actions">
                 <button class="add-button">新規追加</button>
                 <select class="sort-select" id="sortSelect" onchange="renderCards()">
