@@ -2,70 +2,89 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>名刺くらうど - 部署別</title>
+    <title>名刺くらうど - キーワード</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
-        .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; opacity: 0.8; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .nav-item.active img { opacity: 1; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
-        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
+        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; }
+        
+        .main-container { flex: 1; display: flex; overflow: hidden; }
+        
+        /* エリア画面と同じ「左リスト」の構造 */
+        .side-list { width: 320px; background: white; border-right: 1px solid #eef2f6; padding: 30px 20px; overflow-y: auto; }
+        .keyword-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
+        .key-btn { padding: 8px; border-radius: 8px; border: 1px solid #f0f4f8; background: white; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; font-weight: bold; color: #555; }
+        .key-btn:hover { border-color: #6fceca; color: #5eabd5; background: #f0faff; }
+        .region-title { font-size: 12px; color: #999; font-weight: bold; margin: 15px 0 8px 10px; border-left: 3px solid #6fceca; padding-left: 10px; }
 
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-title-icon { width: 32px; height: 32px; }
-        .header-title { font-size: 20px; font-weight: bold; color: #444; }
-
-        .content-container { flex: 1; display: flex; overflow: hidden; }
-        .dept-selector { width: 320px; background: white; border-right: 1px solid #eef2f6; padding: 30px; overflow-y: auto; }
-        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; }
-        .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s; text-align: center; color: #555; }
-        .dept-folder:hover { background: #f0faff; }
-        /* 選択時に青文字にするスタイル */
-        .dept-folder.selected { color: #5eabd5; }
-        .folder-icon { width: 50px; height: 38px; background: #85c1e9; border-radius: 4px; position: relative; margin-bottom: 8px; }
-        .folder-icon::before { content: ""; position: absolute; top: -5px; left: 0; width: 18px; height: 10px; background: inherit; border-radius: 3px; }
-
-        .main-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
-        .view-title { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
+        .result-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
+        .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
+        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 480px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .thumb-box { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; background: #eee; flex-shrink: 0; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png"></div>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
-        <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
+        <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
+        <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-        <div class="user-profile-area"><div class="user-name">清水　茉咲 (制作技術部)</div></div>
-    </div>
-    <div class="main-content">
-        <div class="header">
-            <div class="header-left"><img src="icon-dept.png" class="header-title-icon"><div class="header-title">部署別</div></div>
-            <button style="background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer;">新規追加</button>
-        </div>
-        <div class="content-container">
-            <div class="dept-selector"><div class="dept-grid" id="deptGrid"></div></div>
-            <div class="main-view"><div id="viewTitle" class="view-title">部署を選択してください</div><div id="cardGrid"></div></div>
+        <div class="user-profile-area">
+            <div class="user-name">清水　茉咲 (制作技術部)</div>
+            <button class="logout-btn">ログアウト</button>
         </div>
     </div>
+    <div class="main-container">
+        <div class="side-list" id="keywordList">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+                <img src="icon-keyword.png" style="width:24px;">
+                <h3 style="margin:0; color:#5eabd5;">キーワード選択</h3>
+            </div>
+            </div>
+        <div class="result-view">
+            <div class="result-header">
+                <img src="icon-keyword.png" style="width:32px; height:32px; object-fit:contain;">
+                <div id="selectedKeyName" style="display:inline; margin-left:10px;">キーワードを選択してください</div>
+            </div>
+            <div id="cardGrid" class="card-list"></div>
+        </div>
+    </div>
+
     <script>
-        const depts = ["報道制作部", "制作技術部", "放送技術部", "本社営業部", "名古屋支社", "東京支社", "大阪支社", "放送部", "事業部", "編成部", "総務部"];
-        const dGrid = document.getElementById('deptGrid');
-        depts.forEach(d => {
-            const folder = document.createElement('div'); folder.className = 'dept-folder';
-            folder.innerHTML = `<div class="folder-icon"></div><div style="font-size:12px; font-weight:bold;">${d}</div>`;
-            folder.onclick = function() {
-                // 他の選択を解除して、クリックしたものを青文字に
-                document.querySelectorAll('.dept-folder').forEach(el => el.classList.remove('selected'));
-                this.classList.add('selected');
-                document.getElementById('viewTitle').innerText = d + "が登録した名刺";
-            };
-            dGrid.appendChild(folder);
+        const groups = [
+            { n: "番組・制作", k: ["報道特番", "中継", "4K制作", "アーカイブ", "編集"] },
+            { n: "ビジネス", k: ["広告代理店", "スポンサー", "イベント", "官公庁", "協賛"] }
+        ];
+
+        const kContainer = document.getElementById('keywordList');
+        groups.forEach(group => {
+            const label = document.createElement('div'); label.className = 'region-title'; label.innerText = group.n;
+            kContainer.appendChild(label);
+            const grid = document.createElement('div'); grid.className = 'keyword-grid';
+            group.k.forEach(k => {
+                const btn = document.createElement('button'); btn.className = 'key-btn'; btn.innerText = k;
+                btn.onclick = () => selectKey(k);
+                grid.appendChild(btn);
+            });
+            kContainer.appendChild(grid);
         });
+
+        function selectKey(name) {
+            document.getElementById('selectedKeyName').innerText = name + "の名刺一覧";
+            const grid = document.getElementById('cardGrid'); 
+            grid.innerHTML = `<div style="color:#999; text-align:center; margin-top:50px;">${name} に関する名刺を検索中...</div>`;
+        }
     </script>
 </body>
 </html>
