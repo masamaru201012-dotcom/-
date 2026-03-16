@@ -6,22 +6,20 @@
     <title>名刺くらうど - エリア別</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .main-container { flex: 1; display: flex; overflow: hidden; }
         .area-selector { width: 320px; padding: 30px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
-        .pref-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 20px; }
-        .area-btn { padding: 8px; border-radius: 8px; border: 1px solid #f0f4f8; background: #fff; font-size: 13px; cursor: pointer; }
-        .area-btn:hover { border-color: #6fceca; }
+        .pref-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+        .area-btn { padding: 10px; border-radius: 8px; border: 1px solid #f0f4f8; background: #fff; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; }
+        .area-btn:hover { border-color: #6fceca; color: #5eabd5; }
         .result-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
         .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
-        /* 1列表示に固定 */
-        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 420px; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #6fceca; }
+        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 450px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
         .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
@@ -37,7 +35,7 @@
         <div class="area-selector">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <img src="icon-area.png" style="width:32px;">
-                <h2 style="font-size:18px; color:#5eabd5;">エリア別</h2>
+                <h2 style="font-size:18px; color:#5eabd5; margin:0;">エリア別</h2>
             </div>
             <div class="pref-grid" id="prefGrid"></div>
         </div>
@@ -59,9 +57,8 @@
             const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
             data.filter(u => u.area === areaName).forEach(user => {
-                const randomIconId = Math.floor(Math.random() * 6) + 1;
                 const card = document.createElement('div'); card.className = 'card';
-                card.innerHTML = `<div class="thumb-box"><img src="${user.icon ? user.icon : 'user-'+randomIconId+'.png'}"></div>
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon ? user.icon : 'user-1.png'}"></div>
                 <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company || ''}</div></div>`;
                 grid.appendChild(card);
             });
