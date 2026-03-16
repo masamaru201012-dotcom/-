@@ -6,11 +6,10 @@
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
-        /* 【修正】ログイン画面：ロゴをデカく、センター合わせ */
+        /* ログイン画面：ロゴは外、入力欄は完全に空 */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .logo-login { width: 400px; /* デカく調整 */ margin-bottom: 50px; /* 下のカードとの間隔 */ object-fit: contain; }
-        .login-card { background: white; padding: 60px 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 450px; /* 少し幅広に */ text-align: center; box-sizing: border-box; }
-        
+        .logo-login { width: 400px; margin-bottom: 50px; object-fit: contain; }
+        .login-card { background: white; padding: 60px 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 450px; text-align: center; box-sizing: border-box; }
         .input-group { margin-bottom: 30px; text-align: left; }
         .input-group label { display: block; font-size: 14px; color: #666; margin-bottom: 12px; font-weight: bold; }
         .input-group input { width: 100%; padding: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 16px; box-sizing: border-box; outline: none; transition: 0.3s; }
@@ -38,13 +37,17 @@
         .search-bar { width: 100%; padding: 12px 25px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; }
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; }
 
-        /* カード一覧 */
+        /* 名刺カード一覧 */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; flex-shrink: 0; }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
         
+        /* 影の設定（マウスかざすと出るいい感じのやつ） */
+        .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        
+        /* 【修正ポイント】縦に伸びないように調整 */
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; } /* これでアスペクト比を維持して切り抜きます */
+
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
         .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; }
     </style>
@@ -84,10 +87,11 @@
     <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" src=""></div>
 
     <script>
-        // 名刺データ
+        // ロジックを削らずに維持
         const cardData = [
             { id: 1, name: "佐藤 健二", company: "株式会社三重デジタル", icon: "user-1.png" },
-            { id: 2, name: "田中 美咲", company: "東海放送システム", icon: "user-2.png" }
+            { id: 2, name: "田中 美咲", company: "東海放送システム", icon: "user-2.png" },
+            { id: 3, name: "鈴木 一郎", company: "津シティ広告", icon: "user-3.png" }
         ];
 
         function renderCards() {
@@ -101,7 +105,12 @@
                     document.getElementById('modalImg').src = c.icon;
                     document.getElementById('imageModal').style.display = 'flex';
                 };
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company}</div></div>`;
+                div.innerHTML = `
+                    <div class="thumb-box"><img src="${c.icon}"></div>
+                    <div>
+                        <div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div>
+                        <div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div>
+                    </div>`;
                 grid.appendChild(div);
             });
         }
