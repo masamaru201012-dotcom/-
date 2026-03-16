@@ -6,26 +6,23 @@
     <title>名刺くらうど - 部署別</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); }
         .main-container { flex: 1; display: flex; overflow: hidden; }
         .dept-selector { flex: 1; padding: 30px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
         .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
-        .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 10px; }
+        .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 10px; transition: 0.2s; }
         .dept-folder:hover { background: #f0faff; }
         .folder-icon { width: 50px; height: 40px; background: #85c1e9; border-radius: 4px; position: relative; margin-bottom: 8px; }
         .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background: #f8fafc; }
         .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
-        /* 1列表示に固定 */
-        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 420px; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #6fceca; }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; border: 2px solid #fff; flex-shrink: 0; }
+        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 450px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
@@ -35,13 +32,12 @@
         <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-        <div class="user-profile-area"><div id="displayUserName">---</div></div>
     </div>
     <div class="main-container">
         <div class="dept-selector">
             <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
                 <img src="icon-dept.png" style="width:32px;">
-                <h2 style="font-size:18px; color:#5eabd5;">部署別</h2>
+                <h2 style="font-size:18px; color:#5eabd5; margin:0;">部署別</h2>
             </div>
             <div class="dept-grid" id="deptGrid"></div>
         </div>
@@ -55,17 +51,16 @@
         const dGrid = document.getElementById('deptGrid');
         depts.forEach(d => {
             const folder = document.createElement('div'); folder.className = 'dept-folder'; folder.onclick = () => selectDept(d);
-            folder.innerHTML = `<div class="folder-icon"></div><div style="font-size:12px; font-weight:bold;">${d}</div>`;
+            folder.innerHTML = `<div class="folder-icon"></div><div style="font-size:12px; font-weight:bold; color:#555;">${d}</div>`;
             dGrid.appendChild(folder);
         });
         function selectDept(deptName) {
-            document.getElementById('selectedDeptName').innerText = deptName + "が登録した名刺";
+            document.getElementById('selectedDeptName').innerText = deptName + "の名刺一覧";
             const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
             data.filter(u => u.ownerDept === deptName).forEach(user => {
-                const randomIconId = Math.floor(Math.random() * 6) + 1;
                 const card = document.createElement('div'); card.className = 'card';
-                card.innerHTML = `<div class="thumb-box"><img src="${user.icon ? user.icon : 'user-'+randomIconId+'.png'}"></div>
+                card.innerHTML = `<div class="thumb-box"><img src="${user.icon ? user.icon : 'user-1.png'}"></div>
                 <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company || ''}</div></div>`;
                 grid.appendChild(card);
             });
