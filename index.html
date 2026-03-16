@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- 基本デザイン --- */
+        /* --- 基本レイアウト --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
@@ -17,19 +17,33 @@
         .main-content { flex: 1; display: flex; flex-direction: column; }
 
         /* ヘッダー */
-        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
+        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; position: relative; }
         .search-container { position: relative; flex: 0 1 450px; }
         .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; object-fit: contain; }
 
         .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
-        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); transition: 0.2s; display: flex; align-items: center; gap: 8px; }
+        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); transition: 0.2s; }
         .add-button:hover { background-color: #5dbdb8; transform: translateY(-2px); }
 
-        .sort-group { display: flex; align-items: center; gap: 10px; background: white; padding: 6px 20px 6px 8px; border-radius: 40px; border: 1px solid #e0e0e0; }
-        .sort-button { background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
-        .sort-button img { height: 48px; width: auto; }
-        .sort-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
+        /* --- 改良版：並び替えドロップダウン --- */
+        .sort-container { position: relative; }
+        .sort-trigger { display: flex; align-items: center; gap: 10px; background: white; padding: 6px 20px 6px 8px; border-radius: 40px; border: 1px solid #e0e0e0; cursor: pointer; transition: 0.2s; }
+        .sort-trigger:hover { border-color: #6fceca; }
+        .sort-trigger img { height: 48px; width: auto; }
+        .sort-current-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
+
+        .sort-menu { 
+            display: none; position: absolute; top: 60px; right: 0; width: 160px; 
+            background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            border: 1px solid #eee; z-index: 1000; overflow: hidden; 
+        }
+        .sort-menu.open { display: block; animation: fadeIn 0.2s; }
+        .sort-option { padding: 12px 20px; font-size: 14px; color: #666; cursor: pointer; transition: 0.2s; }
+        .sort-option:hover { background: #f0faff; color: #5eabd5; }
+        .sort-option.active { background: #6fceca; color: white; font-weight: bold; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* カードグリッド */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
@@ -38,22 +52,17 @@
         .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; }
         .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* モーダル共通設定 */
+        /* モーダル（共通） */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; }
         .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
-
-        /* フォーム用スタイル */
+        
+        /* フォーム用 */
         .form-group { margin-bottom: 15px; }
         .form-label { display: block; font-size: 13px; color: #888; margin-bottom: 5px; font-weight: bold; }
-        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 15px; }
-        .submit-btn { width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 15px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-
-        /* 詳細用スタイル */
-        .info-group { margin-top: 15px; }
-        .info-label { font-size: 12px; color: #aaa; font-weight: bold; }
-        .info-value { font-size: 16px; color: #444; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 4px; }
+        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; }
+        .submit-btn { width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -70,83 +79,107 @@
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" id="searchInput" placeholder="検索キーワードを入力">
             </div>
+            
             <div class="action-controls">
                 <button class="add-button" onclick="openAddModal()">新規追加</button>
-                <div class="sort-group">
-                    <button class="sort-button" onclick="toggleSort()">
+                
+                <div class="sort-container">
+                    <div class="sort-trigger" onclick="toggleSortMenu()">
                         <img src="btn-sort.png" alt="並び替え">
-                    </button>
-                    <div id="sortLabel" class="sort-label">新しい順</div>
+                        <div id="currentSortLabel" class="sort-current-label">最新順</div>
+                    </div>
+                    <div class="sort-menu" id="sortMenu">
+                        <div class="sort-option active" onclick="setSort('newest')">最新順</div>
+                        <div class="sort-option" onclick="setSort('az')">五十音順</div>
+                        <div class="sort-option" onclick="setSort('za')">五十音順（逆）</div>
+                    </div>
                 </div>
             </div>
         </div>
+
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
-        <div class="modal-content" id="modalContent" onclick="event.stopPropagation()">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-button" onclick="closeModal()">×</button>
             <div id="modalInner"></div>
         </div>
     </div>
 
     <script>
-        // サンプルデータ
-        let userData = [
-            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ', area: '三重県', email: 'tanaka@example.com', phone: '059-123-4567', icon: 'user-default.png', notes: '技術担当' },
-            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '総務部', title: '課長', company: '三重テレビ', area: '三重県', email: 'sato@example.com', phone: '059-000-0000', icon: 'user-default.png', notes: '採用担当' }
+        // データ（LocalStorage対応版）
+        let userData = JSON.parse(localStorage.getItem('myCards')) || [
+            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', area: '三重県', icon: 'user-default.png' },
+            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '総務部', title: '課長', area: '三重県', icon: 'user-default.png' }
         ];
 
-        let currentSortMode = 'id';
-        const cardGrid = document.getElementById('cardGrid');
-        const searchInput = document.getElementById('searchInput');
+        let currentSortMode = 'newest';
 
-        // 表示の更新（青い文字を削除しました）
-        function updateDisplay() {
-            const filterText = searchInput.value.toLowerCase();
-            cardGrid.innerHTML = "";
-            let filtered = userData.filter(u => u.name.toLowerCase().includes(filterText) || u.dept.toLowerCase().includes(filterText) || u.area.toLowerCase().includes(filterText));
+        function toggleSortMenu() {
+            document.getElementById('sortMenu').classList.toggle('open');
+        }
+
+        // メニュー以外をクリックしたら閉じる
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.sort-container')) {
+                document.getElementById('sortMenu').classList.remove('open');
+            }
+        });
+
+        function setSort(mode) {
+            currentSortMode = mode;
+            const labels = { 'newest': '最新順', 'az': '五十音順', 'za': '五十音順（逆）' };
+            document.getElementById('currentSortLabel').textContent = labels[mode];
             
-            if (currentSortMode === 'name') filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
-            else filtered.sort((a, b) => b.id - a.id);
+            // アクティブ表示の切り替え
+            document.querySelectorAll('.sort-option').forEach(opt => {
+                opt.classList.toggle('active', opt.textContent === labels[mode]);
+            });
+
+            document.getElementById('sortMenu').classList.remove('open');
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const filterText = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = "";
+
+            let filtered = userData.filter(u => 
+                u.name.toLowerCase().includes(filterText) || 
+                u.dept.toLowerCase().includes(filterText) || 
+                u.area.toLowerCase().includes(filterText)
+            );
+
+            // 並び替えロジック
+            if (currentSortMode === 'newest') {
+                filtered.sort((a, b) => b.id - a.id);
+            } else if (currentSortMode === 'az') {
+                filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
+            } else if (currentSortMode === 'za') {
+                filtered.sort((a, b) => b.kana.localeCompare(a.kana, 'ja'));
+            }
 
             filtered.forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openDetailModal(user);
-                card.innerHTML = `
-                    <img src="${user.icon}" class="user-thumb">
-                    <div class="card-name">${user.name}</div>
-                `;
-                cardGrid.appendChild(card);
+                card.innerHTML = `<img src="${user.icon}" class="user-thumb"><div class="card-name">${user.name}</div>`;
+                grid.appendChild(card);
             });
         }
 
-        // --- 新規追加モーダル ---
+        // --- 以下、前回同様の機能 ---
         function openAddModal() {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
                 <h2 style="color:#5eabd5; margin-bottom:20px;">名刺の新規追加</h2>
-                <div class="form-group">
-                    <label class="form-label">名前</label>
-                    <input type="text" id="newName" class="form-input" placeholder="例：山田 太郎">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">ふりがな</label>
-                    <input type="text" id="newKana" class="form-input" placeholder="例：やまだ たろう">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">部署</label>
-                    <input type="text" id="newDept" class="form-input" placeholder="例：総務部">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">役職</label>
-                    <input type="text" id="newTitle" class="form-input" placeholder="例：課長">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">エリア</label>
-                    <input type="text" id="newArea" class="form-input" placeholder="例：三重県">
-                </div>
+                <div class="form-group"><label class="form-label">名前</label><input type="text" id="newName" class="form-input"></div>
+                <div class="form-group"><label class="form-label">ふりがな</label><input type="text" id="newKana" class="form-input"></div>
+                <div class="form-group"><label class="form-label">部署</label><input type="text" id="newDept" class="form-input"></div>
+                <div class="form-group"><label class="form-label">役職</label><input type="text" id="newTitle" class="form-input"></div>
+                <div class="form-group"><label class="form-label">エリア</label><input type="text" id="newArea" class="form-input"></div>
                 <button class="submit-btn" onclick="addNewCard()">登録する</button>
             `;
             document.getElementById('modalOverlay').classList.add('open');
@@ -154,48 +187,40 @@
 
         function addNewCard() {
             const name = document.getElementById('newName').value;
-            if(!name) { alert("名前は必須です"); return; }
-
+            if(!name) return;
             const newData = {
                 id: Date.now(),
                 name: name,
-                kana: document.getElementById('newKana').value || "",
+                kana: document.getElementById('newKana').value || "ん", // 並び替え用
                 dept: document.getElementById('newDept').value || "未設定",
                 title: document.getElementById('newTitle').value || "",
-                company: "三重テレビ",
                 area: document.getElementById('newArea').value || "三重県",
-                email: "", phone: "", notes: "", icon: 'user-default.png'
+                icon: 'user-default.png'
             };
-
             userData.push(newData);
+            localStorage.setItem('myCards', JSON.stringify(userData)); // 保存
             closeModal();
             updateDisplay();
         }
 
-        // --- 詳細モーダル ---
         function openDetailModal(user) {
             const inner = document.getElementById('modalInner');
             inner.innerHTML = `
-                <div style="text-align:center; margin-bottom:25px; border-bottom:2px solid #f0faff; padding-bottom:15px;">
+                <div style="text-align:center; border-bottom:2px solid #f0faff; padding-bottom:15px; margin-bottom:20px;">
                     <img src="${user.icon}" style="width:110px; height:110px; border-radius:50%; border:4px solid #f0faff; margin-bottom:10px;">
                     <div style="font-size:26px; font-weight:bold;">${user.name}</div>
                     <div style="color:#5eabd5; font-size:18px;">${user.dept}・${user.title}</div>
                 </div>
-                <div class="info-group"><div class="info-label">エリア</div><div class="info-value">${user.area}</div></div>
-                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${user.company}</div></div>
+                <div style="background:#f8f9fa; padding:20px; border-radius:15px;">
+                    <p style="margin:5px 0;"><strong>エリア:</strong> ${user.area}</p>
+                </div>
             `;
             document.getElementById('modalOverlay').classList.add('open');
         }
 
-        function toggleSort() {
-            currentSortMode = (currentSortMode === 'id') ? 'name' : 'id';
-            document.getElementById('sortLabel').textContent = (currentSortMode === 'id') ? "新しい順" : "名前順";
-            updateDisplay();
-        }
-
         function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-        searchInput.addEventListener('input', updateDisplay);
-        window.addEventListener('load', updateDisplay);
+        document.getElementById('searchInput').addEventListener('input', updateDisplay);
+        window.onload = updateDisplay;
     </script>
 </body>
 </html>
