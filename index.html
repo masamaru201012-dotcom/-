@@ -71,7 +71,6 @@
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; font-weight: 500; }
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
-        /* 削除ボタンのスタイル */
         .delete-btn-container { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
         .delete-btn { color: #ff5a5f; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
     </style>
@@ -138,9 +137,8 @@
                 <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
             </div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
-            
             <div class="delete-btn-container">
-                <button class="delete-btn" id="deleteTargetBtn" onclick="">名刺を削除</button>
+                <button class="delete-btn" id="deleteTargetBtn">名刺を削除</button>
             </div>
         </div>
     </div>
@@ -151,7 +149,7 @@
             <div class="modal-header">新規名刺追加</div>
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none;">
-                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択</span>
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
             <div class="form-row">
@@ -233,16 +231,14 @@
             document.getElementById('viewImg').src = data.icon;
             document.getElementById('viewName').innerText = data.name;
             document.getElementById('viewKana').innerText = data.kana || "-";
-            document.getElementById('viewCompany').innerText = data.company;
+            document.getElementById('viewCompany').innerText = data.company || "-";
             document.getElementById('viewDept').innerText = data.dept || "-";
             document.getElementById('viewTitle').innerText = data.title || "-";
             document.getElementById('viewEmail').innerText = data.email || "-";
             document.getElementById('viewTel').innerText = data.tel || "-";
             document.getElementById('viewNote').innerText = data.note || "-";
             
-            // 削除ボタンにIDを渡す
             document.getElementById('deleteTargetBtn').onclick = () => deleteCard(data.id);
-            
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -263,6 +259,7 @@
             document.getElementById('imageInput').value = "";
             document.getElementById('previewImg').style.display = 'none';
             document.getElementById('uploadPlaceholder').style.display = 'block';
+            currentImageDataUrl = ""; // リセット
             document.getElementById('addModal').style.display = 'flex';
         }
 
@@ -282,7 +279,16 @@
 
         function saveNewCard() {
             const name = document.getElementById('newName').value;
-            if (!name || !currentImageDataUrl) { alert("名前と画像は必須です"); return; }
+            // 名前が空の場合のみ警告
+            if (!name) { alert("名前を入力してください"); return; }
+            
+            // 画像がない場合は user-1 から user-6 をランダムで設定
+            let finalIcon = currentImageDataUrl;
+            if (!finalIcon) {
+                const randNum = Math.floor(Math.random() * 6) + 1;
+                finalIcon = `user-${randNum}.png`;
+            }
+
             cardData.unshift({
                 id: Date.now(),
                 name: name,
@@ -293,7 +299,7 @@
                 email: document.getElementById('newEmail').value,
                 tel: document.getElementById('newTel').value,
                 note: document.getElementById('newNote').value,
-                icon: currentImageDataUrl
+                icon: finalIcon
             });
             localStorage.setItem('businessCards', JSON.stringify(cardData));
             closeModal('addModal');
