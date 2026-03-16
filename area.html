@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど - エリア</title>
+    <title>名刺くらうど - エリア検索</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
@@ -33,6 +33,7 @@
         .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .thumb-box { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #5eabd5; overflow: hidden; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .owner-info { font-size: 11px; color: #999; margin-top: 4px; }
 
         @media (max-width: 850px) {
             body { flex-direction: column; overflow: visible; }
@@ -41,7 +42,6 @@
             .mobile-header { display: flex; }
             .main-container { flex-direction: column; height: auto; margin-top: 60px; overflow: visible; }
             .area-selector, .result-view { flex: none; width: 100%; padding: 20px; box-sizing: border-box; }
-            .pref-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
         }
     </style>
 </head>
@@ -79,12 +79,9 @@
         }
 
         const regions = [
-            { r: "北海道・東北", p: ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
-            { r: "関東", p: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"] },
-            { r: "中部・東海", p: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県"] },
-            { r: "近畿", p: ["滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"] },
-            { r: "中国・四国", p: ["鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県"] },
-            { r: "九州・沖縄", p: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] }
+            { r: "三重県内", p: ["北勢", "中南勢", "伊勢志摩", "伊賀", "東紀州"] },
+            { r: "近隣・大都市", p: ["愛知県", "岐阜県", "大阪府", "東京都", "神奈川県"] },
+            { r: "その他", p: ["その他全国"] }
         ];
 
         const grid = document.getElementById('areaGrid');
@@ -94,24 +91,34 @@
             grid.innerHTML += html + `</div>`;
         });
 
-        function showArea(name) {
-            document.getElementById('selectedTitle').innerText = name;
+        function showArea(areaName) {
+            document.getElementById('selectedTitle').innerText = areaName + "の名刺";
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
+            
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            data.filter(u => u.area === name).forEach(user => {
-                grid.innerHTML += `
-                    <div class="card">
-                        <div class="thumb-box">
-                            ${user.name.charAt(0)}
-                            ${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}
-                        </div>
-                        <div>
-                            <div style="font-weight:bold;">${user.name}</div>
-                            <div style="font-size:12px; color:#888;">${user.dept}</div>
-                        </div>
-                    </div>`;
-            });
+            
+            // 名刺の相手のエリア（area）でフィルター
+            const filtered = data.filter(u => u.area === areaName);
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div style="color:#888; padding:20px;">このエリアの名刺はまだありません。</div>`;
+            } else {
+                filtered.forEach(user => {
+                    grid.innerHTML += `
+                        <div class="card">
+                            <div class="thumb-box">
+                                ${user.name.charAt(0)}
+                                ${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}
+                            </div>
+                            <div>
+                                <div style="font-weight:bold;">${user.name}</div>
+                                <div style="font-size:12px; color:#666;">${user.company || ''}</div>
+                                <div class="owner-info">${user.ownerDept}の${user.registeredBy}が登録</div>
+                            </div>
+                        </div>`;
+                });
+            }
             if(window.innerWidth <= 850) {
                 document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
             }
