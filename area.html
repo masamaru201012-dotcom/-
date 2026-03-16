@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - エリア別</title>
     <style>
-        /* チラつき防止 */
+        /* 1. チラつき防止 */
         html { visibility: hidden; }
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
@@ -24,14 +24,17 @@
         /* メインコンテンツエリア */
         #mainApp { display: none; width: 100%; height: 100%; }
         .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 60px; }
+        
+        /* タイトル：部署別と同じく文字のみ */
         .page-title { font-size: 24px; font-weight: bold; color: #444; margin-bottom: 40px; }
 
         /* 地方セクション */
         .region-section { margin-bottom: 50px; }
         .region-name { font-size: 18px; font-weight: bold; color: #5eabd5; margin-bottom: 20px; border-left: 4px solid #6fceca; padding-left: 15px; }
 
-        /* エリアグリッド */
-        .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        /* 都道府県グリッド */
+        .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        
         .area-card { 
             background: white; border-radius: 12px; padding: 20px; 
             display: flex; flex-direction: column; align-items: center; 
@@ -39,13 +42,13 @@
         }
         .area-card:hover { transform: translateY(-3px); border-color: #6fceca; box-shadow: 0 8px 20px rgba(111, 206, 202, 0.15); }
         
-        /* エリアアイコン：ピンのようなデザイン */
+        /* 部署別のフォルダと同じ色使いのピンアイコン */
         .area-icon { 
-            width: 40px; height: 40px; border-radius: 50%; 
+            width: 44px; height: 44px; border-radius: 50%; 
             margin-bottom: 12px; 
             background: linear-gradient(135deg, #a5d6d4 0%, #6fceca 100%);
             display: flex; justify-content: center; align-items: center;
-            color: white; font-weight: bold; font-size: 20px;
+            color: white; font-size: 20px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.2);
         }
         
         .pref-name { font-weight: bold; color: #444; font-size: 15px; }
@@ -73,6 +76,7 @@
     </div>
 
     <script>
+        // 47都道府県のデータ
         const regionData = [
             { region: "北海道・東北", prefs: ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
             { region: "関東", prefs: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"] },
@@ -106,11 +110,13 @@
                 const section = document.createElement('div');
                 section.className = 'region-section';
                 
+                // 地方ごとの見出し
                 let html = `<div class="region-name">${data.region}</div><div class="area-grid">`;
                 
+                // 都道府県ごとのカード
                 data.prefs.forEach(pref => {
                     html += `
-                        <a href="#" class="area-card" onclick="alert('${pref}の名刺を表示します')">
+                        <a href="#" class="area-card" onclick="event.preventDefault(); alert('${pref}の名刺フォルダを開きます');">
                             <div class="area-icon">📍</div>
                             <div class="pref-name">${pref}</div>
                         </a>
@@ -123,6 +129,7 @@
             });
         }
 
+        // 初期実行
         checkLogin();
     </script>
 </body>
