@@ -1,53 +1,70 @@
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <title>名刺くらうど - キーワード検索</title>
-    <title>名刺くらうど - 部署別</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        
+
         /* サイドバー：ホバー無効化 & active固定 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
+        .nav-item:hover { color: rgba(255, 255, 255, 0.7); cursor: pointer; } /* ホバーで色を変えない */
         .nav-item:hover { color: rgba(255, 255, 255, 0.7); cursor: pointer; } 
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
-        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
         /* メイン画面 */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        
+
+        /* 【修正】ヘッダー：縦中央を絶対死守するレイアウト */
         /* 【修正】ヘッダー：位置がずれないよう高さを厳密に管理 */
         .header { 
             height: 80px; 
             background: white; 
             padding: 0 40px; 
             display: flex; 
+            align-items: center; /* 縦の中央揃え */
             align-items: center; 
             justify-content: space-between; 
             border-bottom: 1px solid #eef2f6; 
             flex-shrink: 0; 
             box-sizing: border-box;
         }
+        .header-left { display: flex; align-items: center; min-width: 180px; }
+        .header-title { font-size: 20px; font-weight: bold; color: #444; margin: 0; line-height: 1; }
         .header-left { display: flex; align-items: center; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; margin: 0; }
-        
+
+        .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
+        .search-bar { 
+            width: 100%; 
+            padding: 12px 25px 12px 50px; 
+            border-radius: 30px; 
+            border: 1px solid #e2e8f0; 
+            background: #f8fafc url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>') no-repeat 20px center;
+            font-size: 15px; 
+            outline: none; 
+            box-sizing: border-box; 
+        }
         /* 検索バー周り */
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 20px; display: flex; align-items: center; }
         /* アイコンは前回の「icon-search.png」を使う形式に戻しました */
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
 
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; font-size: 14px; }
         .header-actions { display: flex; gap: 10px; align-items: center; }
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; transition: none; }
         
         /* 並び替えセレクトボックス（逆順も復活） */
         .sort-select { 
+            padding: 10px 35px 10px 15px; 
             padding: 12px 35px 12px 15px; 
             border-radius: 30px; 
             border: 1px solid #e2e8f0; 
@@ -62,39 +79,31 @@
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* モーダルデザイン（統一） */
         /* モーダルデザイン */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
         .modal-card { background: white; padding: 30px; border-radius: 25px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #888; cursor: pointer; border: none; background: none; z-index: 10; }
         .modal-header { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 25px; text-align: center; }
 
+        .img-container { width: 120px; height: 120px; border-radius: 20px; background: #f8fafc; margin: 0 auto 25px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #eef2f6; }
         .img-container { width: 120px; height: 120px; border-radius: 15px; background: #f8fafc; margin: 0 auto 20px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #eef2f6; }
         .img-container img { width: 100%; height: 100%; object-fit: cover; }
-        
+
+        .form-row { display: flex; gap: 20px; margin-bottom: 18px; }
         .form-row { display: flex; gap: 15px; margin-bottom: 15px; }
         .form-group { flex: 1; text-align: left; }
+        .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; letter-spacing: 0.05em; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
+        .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; font-weight: 500; }
         .form-group label { display: block; font-size: 13px; color: #6fceca; margin-bottom: 6px; font-weight: bold; }
         .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
         .display-value { width: 100%; padding: 12px; background: #fdfdfd; border-bottom: 1px solid #eee; font-size: 15px; color: #333; min-height: 45px; display: flex; align-items: center; }
 
+        .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
         .save-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
-        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
-        .header-left { display: flex; align-items: center; gap: 15px; }
-        .header-title-icon { width: 32px; height: 32px; }
-        .header-title { font-size: 20px; font-weight: bold; color: #444; }
-
-        .content-container { flex: 1; display: flex; overflow: hidden; }
-        .dept-selector { width: 320px; background: white; border-right: 1px solid #eef2f6; padding: 30px; overflow-y: auto; }
-        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 15px; }
-        .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 10px; border-radius: 12px; transition: 0.2s; text-align: center; color: #555; }
-        .dept-folder:hover { background: #f0faff; }
-        /* 選択時に青文字にするスタイル */
-        .dept-folder.selected { color: #5eabd5; }
-        .folder-icon { width: 50px; height: 38px; background: #85c1e9; border-radius: 4px; position: relative; margin-bottom: 8px; }
-        .folder-icon::before { content: ""; position: absolute; top: -5px; left: 0; width: 18px; height: 10px; background: inherit; border-radius: 3px; }
-
-        .main-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
-        .view-title { font-size: 18px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -103,25 +112,25 @@
         <div class="logo-area"><img src="logo.png"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
-        <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
         <div class="user-profile-area">
             <div class="user-name">清水　茉咲 (制作技術部)</div>
             <a href="#" onclick="doLogout()" style="color:rgba(255,255,255,0.6); font-size:12px; text-decoration:none;">ログアウト</a>
         </div>
-        <div class="user-profile-area"><div class="user-name">清水　茉咲 (制作技術部)</div></div>
     </div>
 
     <div class="main-content">
         <div class="header">
             <div class="header-left">
+                <h1 class="header-title">キーワード検索</h1>
                 <div class="header-title">キーワード検索</div>
             </div>
             <div class="search-container">
+                <input type="text" class="search-bar" id="searchInput" placeholder="名前や会社名で検索..." oninput="renderCards()">
                 <input type="text" class="search-bar" id="searchInput" placeholder="検索" oninput="renderCards()">
             </div>
             <div class="header-actions">
+                <button class="add-button" onclick="openAddModal()">＋ 新規追加</button>
                 <button class="add-button" onclick="openAddModal()">新規追加</button>
                 <select class="sort-select" id="sortSelect" onchange="renderCards()">
                     <option value="new">最新順</option>
@@ -129,8 +138,6 @@
                     <option value="desc">五十音順（逆）</option>
                 </select>
             </div>
-            <div class="header-left"><img src="icon-dept.png" class="header-title-icon"><div class="header-title">部署別</div></div>
-            <button style="background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer;">新規追加</button>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
@@ -155,10 +162,8 @@
             <div class="form-row">
                 <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
             </div>
+            <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 60px; align-items: flex-start;" id="viewNote"></div></div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
-        <div class="content-container">
-            <div class="dept-selector"><div class="dept-grid" id="deptGrid"></div></div>
-            <div class="main-view"><div id="viewTitle" class="view-title">部署を選択してください</div><div id="cardGrid"></div></div>
         </div>
     </div>
 
@@ -168,6 +173,7 @@
             <div class="modal-header">新規名刺追加</div>
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none;">
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">名刺画像を選択</span>
                 <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
@@ -186,14 +192,18 @@
             <div class="form-row">
                 <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
             </div>
+            <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
+            <button class="save-btn" onclick="saveNewCard()">この内容で保存する</button>
             <div class="form-group"><label>備考</label><textarea id="newNote"></textarea></div>
             <button class="save-btn" onclick="saveNewCard()">保存する</button>
         </div>
     </div>
 
     <script>
+        // localStorageからデータを読み込む（なければ初期値を設定）
         // データの永続化は清水さんの手間を減らすために残しておきますね
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [
+            { id: 1, name: "サンプル 太郎", kana: "さんぷる たろう", company: "株式会社サンプル", dept: "営業部", title: "部長", email: "taro@example.com", tel: "090-0000-0000", note: "初期データ", icon: "user-1.png" }
             { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
         ];
 
@@ -203,7 +213,7 @@
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
-            
+
             filtered.sort((a, b) => {
                 if (sortBy === "new") return b.id - a.id;
                 if (sortBy === "asc") return (a.name || "").localeCompare(b.name, 'ja');
@@ -243,7 +253,7 @@
             document.getElementById('uploadPlaceholder').style.display = 'block';
             document.getElementById('addModal').style.display = 'flex';
         }
-        
+
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -260,6 +270,7 @@
         function saveNewCard() {
             const name = document.getElementById('newName').value;
             if (!name || !currentImageDataUrl) { alert("名前と画像は必須です"); return; }
+            const newId = Date.now(); // ユニークIDとしてタイムスタンプを使用
             const newId = Date.now();
             cardData.unshift({
                 id: newId,
@@ -273,6 +284,7 @@
                 note: document.getElementById('newNote').value,
                 icon: currentImageDataUrl
             });
+            // localStorageに保存
             localStorage.setItem('businessCards', JSON.stringify(cardData));
             closeModal('addModal');
             renderCards();
@@ -280,19 +292,6 @@
 
         function doLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         window.onload = renderCards;
-        const depts = ["報道制作部", "制作技術部", "放送技術部", "本社営業部", "名古屋支社", "東京支社", "大阪支社", "放送部", "事業部", "編成部", "総務部"];
-        const dGrid = document.getElementById('deptGrid');
-        depts.forEach(d => {
-            const folder = document.createElement('div'); folder.className = 'dept-folder';
-            folder.innerHTML = `<div class="folder-icon"></div><div style="font-size:12px; font-weight:bold;">${d}</div>`;
-            folder.onclick = function() {
-                // 他の選択を解除して、クリックしたものを青文字に
-                document.querySelectorAll('.dept-folder').forEach(el => el.classList.remove('selected'));
-                this.classList.add('selected');
-                document.getElementById('viewTitle').innerText = d + "が登録した名刺";
-            };
-            dGrid.appendChild(folder);
-        });
     </script>
 </body>
 </html>
