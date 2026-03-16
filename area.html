@@ -2,66 +2,94 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>名刺くらうど - エリア</title>
+    <title>名刺くらうど - エリア別</title>
     <style>
-        body { margin: 0; font-family: sans-serif; display: flex; height: 100vh; background: #f5f7f9; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); color: white; display: flex; flex-direction: column; padding-top: 60px; flex-shrink: 0; }
+        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: white; text-decoration: none; opacity: 0.8; }
-        .nav-item img { width: 24px; margin-right: 15px; }
-        .nav-item.active { opacity: 1; font-weight: bold; background: rgba(255,255,255,0.1); }
-        .user-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255,255,255,0.2); }
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; opacity: 0.8; }
+        .nav-item:hover { background: rgba(255, 255, 255, 0.1); }
+        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; }
+
         .container { flex: 1; display: flex; overflow: hidden; }
-        .side-list { width: 250px; background: white; border-right: 1px solid #eee; padding: 20px; }
-        .area-btn { width: 100%; padding: 12px; margin-bottom: 8px; border: 1px solid #eee; background: white; border-radius: 8px; cursor: pointer; text-align: left; font-weight: bold; color: #555; }
-        .area-btn:hover { border-color: #6fceca; color: #5eabd5; }
-        .main-view { flex: 1; padding: 40px; overflow-y: auto; }
-        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 500px; }
-        .card { background: white; padding: 20px; border-radius: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .side-list { width: 300px; background: white; border-right: 1px solid #eef2f6; padding: 20px; overflow-y: auto; }
+        .area-section-title { font-size: 14px; color: #999; margin: 20px 0 10px 10px; font-weight: bold; border-left: 3px solid #6fceca; padding-left: 10px; }
+        .area-btn { width: 100%; padding: 12px 15px; margin-bottom: 5px; border: 1px solid #f0f4f8; background: white; border-radius: 8px; cursor: pointer; text-align: left; font-size: 14px; font-weight: bold; color: #555; transition: 0.2s; }
+        .area-btn:hover { border-color: #6fceca; color: #5eabd5; background: #f0faff; }
+        
+        .main-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
+        .header-title-bar { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; border-bottom: 2px solid #6fceca; padding-bottom: 15px; }
+        .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 480px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+        .thumb-box { width: 70px; height: 70px; border-radius: 50%; overflow: hidden; background: #eee; flex-shrink: 0; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png"></div>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png">キーワード</a>
-        <a href="dept.html" class="nav-item"><img src="icon-dept.png">部署</a>
-        <a href="area.html" class="nav-item active"><img src="icon-area.png">エリア</a>
-        <div class="user-area"><div id="uName" style="font-weight:bold;">---</div></div>
+        <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
+        <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
+        <a href="area.html" class="nav-item active"><img src="icon-area.png"><span>エリア</span></a>
+        <div class="user-profile-area"><div class="user-name" id="displayUserName">---</div></div>
     </div>
     <div class="container">
-        <div class="side-list">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
+        <div class="side-list" id="areaList">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; padding-left:10px;">
                 <img src="icon-area.png" style="width:24px;">
-                <h3 style="margin:0;">エリア</h3>
+                <h3 style="margin:0; color:#5eabd5;">エリア選択</h3>
             </div>
-            <div id="aList"></div>
-        </div>
+            </div>
         <div class="main-view">
-            <div style="display:flex; align-items:center; gap:15px; border-bottom:2px solid #6fceca; padding-bottom:15px; margin-bottom:25px;">
+            <div class="header-title-bar">
                 <img src="icon-area.png" style="width:32px; object-fit:contain;">
-                <h2 id="title" style="margin:0; font-size:20px; color:#444;">都道府県を選択してください</h2>
+                <div id="selectedTitle" style="font-size:22px; font-weight:bold; color:#444;">都道府県を選択してください</div>
             </div>
-            <div id="grid" class="card-list"></div>
+            <div id="cardGrid" class="card-list"></div>
         </div>
     </div>
     <script>
-        const areas = ["三重県", "愛知県", "岐阜県", "滋賀県", "東京都", "大阪府"];
-        const aList = document.getElementById('aList');
-        areas.forEach(a => {
-            aList.innerHTML += `<button class="area-btn" onclick="sel('${a}')">${a}</button>`;
+        const regions = [
+            { name: "北海道・東北", prefs: ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
+            { name: "関東", prefs: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"] },
+            { name: "中部", prefs: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県"] },
+            { name: "近畿", prefs: ["三重県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"] },
+            { name: "中国・四国", prefs: ["鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県"] },
+            { name: "九州・沖縄", prefs: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] }
+        ];
+
+        const aContainer = document.getElementById('areaList');
+        regions.forEach(region => {
+            const sectionTitle = document.createElement('div');
+            sectionTitle.className = 'area-section-title';
+            sectionTitle.innerText = region.name;
+            aContainer.appendChild(sectionTitle);
+            
+            region.prefs.forEach(p => {
+                const btn = document.createElement('button');
+                btn.className = 'area-btn';
+                btn.innerText = p;
+                btn.onclick = () => selectArea(p);
+                aContainer.appendChild(btn);
+            });
         });
-        function sel(name) {
-            document.getElementById('title').innerText = name + "の名刺一覧";
-            const grid = document.getElementById('grid'); grid.innerHTML = "";
+
+        function selectArea(name) {
+            document.getElementById('selectedTitle').innerText = name + "の名刺一覧";
+            const grid = document.getElementById('cardGrid'); grid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            data.filter(u => u.area === name).forEach(u => {
-                grid.innerHTML += `<div class="card"><img src="${u.icon||'user-1.png'}" style="width:60px;height:60px;border-radius:50%;object-fit:cover;"><div><b>${u.name}</b><br><small>${u.company}</small></div></div>`;
+            data.filter(u => u.area === name).forEach(user => {
+                grid.innerHTML += `<div class="card"><div class="thumb-box"><img src="${user.icon||'user-1.png'}"></div>
+                <div><div style="font-weight:bold; font-size:18px;">${user.name}</div><div style="font-size:14px; color:#888;">${user.company}</div></div></div>`;
             });
         }
         window.onload = () => {
             const user = JSON.parse(localStorage.getItem('currentUser'));
-            if(user) document.getElementById('uName').innerText = user.name + " (" + user.dept + ")";
+            if(user) document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")";
         };
     </script>
 </body>
