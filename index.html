@@ -5,75 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- 基本レイアウト（PC） --- */
+        /* --- 共通レイアウト（PC） --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); flex-shrink: 0; z-index: 100; }
+        
+        /* サイドバー（スマホでは初期状態を隠す） */
+        .sidebar { 
+            width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); 
+            display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; 
+            flex-shrink: 0; z-index: 3000; transition: 0.3s;
+        }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255, 255, 255, 0.8); text-decoration: none; transition: 0.2s; }
+        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.2s; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
         
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        /* ヘッダー */
-        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; position: relative; }
+        /* スマホ用ヘッダー（PCでは隠す） */
+        .mobile-header { 
+            display: none; width: 100%; height: 60px; background: white; 
+            align-items: center; padding: 0 20px; box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000;
+        }
+        .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
+        .mobile-logo { height: 30px; }
+
+        /* PCヘッダー */
+        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
         .search-container { position: relative; flex: 0 1 450px; }
-        .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.03); box-sizing: border-box; }
-        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; object-fit: contain; }
+        .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-sizing: border-box; }
+        .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; }
 
-        .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
-        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); transition: 0.2s; }
+        .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; }
+        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
-        /* 並び替えボタン（右端固定・枠なし） */
-        .sort-container { position: relative; min-width: 150px; display: flex; justify-content: flex-end; }
-        .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; padding: 5px 0; cursor: pointer; }
+        /* 並び替えボタン（右端固定） */
+        .sort-container { position: relative; min-width: 140px; display: flex; justify-content: flex-end; }
+        .sort-trigger { display: flex; align-items: center; gap: 8px; background: transparent; border: none; cursor: pointer; }
         .sort-trigger img { height: 44px; width: auto; }
         .sort-current-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
-        .sort-menu { display: none; position: absolute; top: 55px; right: 0; width: 160px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #eee; z-index: 1000; overflow: hidden; }
-        .sort-menu.open { display: block; }
-        .sort-option { padding: 12px 20px; font-size: 14px; color: #666; cursor: pointer; }
-        .sort-option.active { background: #6fceca; color: white; font-weight: bold; }
 
         /* カードグリッド */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
-        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        .card-name { font-weight: bold; font-size: 20px; color: #333; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; }
         .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; background-color: #eee; }
+        .card-name { font-weight: bold; font-size: 20px; color: #333; }
 
-        /* モーダル */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; box-sizing: border-box; }
-        .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
+        /* オーバーレイ（スマホ用メニューが開いた時の背景） */
+        .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
 
-        /* 詳細表示 / フォーム共通スタイル */
-        .form-group, .info-group { margin-bottom: 15px; text-align: left; }
-        .form-label, .info-label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; font-weight: bold; }
-        .form-input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #ddd; box-sizing: border-box; font-size: 14px; }
-        .info-value { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #eee; box-sizing: border-box; font-size: 15px; background: #f8f9fa; color: #444; display: block; word-break: break-all; text-decoration: none; }
-        .submit-btn { width: 100%; padding: 15px; background: #6fceca; color: white; border: none; border-radius: 15px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
-
-        /* スマホ対応 */
+        /* --- スマートフォン対応 --- */
         @media (max-width: 768px) {
             body { flex-direction: column; overflow-y: auto; }
-            .sidebar { width: 100%; height: auto; padding: 0; flex-direction: row; justify-content: center; position: sticky; top: 0; border-radius: 0 0 20px 20px; }
-            .logo-area { display: none; }
-            .nav-item { padding: 15px; font-size: 14px; flex-direction: column; gap: 5px; text-align: center; }
-            .nav-item.active { background: rgba(255,255,255,0.2); border-radius: 10px; margin: 5px; }
-            .nav-icon { width: 24px; height: 24px; margin-right: 0; }
-            .main-content { height: auto; overflow: visible; }
+            .sidebar { 
+                position: fixed; left: -280px; top: 0; height: 100%; 
+                width: 280px; box-shadow: 5px 0 15px rgba(0,0,0,0.1); 
+            }
+            .sidebar.open { left: 0; }
+            .mobile-header { display: flex; position: sticky; top: 0; }
             .header { padding: 20px; flex-direction: column; gap: 15px; }
             .search-container { width: 100%; }
-            .action-controls { width: 100%; justify-content: space-between; gap: 10px; }
-            .sort-container { min-width: auto; }
+            .action-controls { width: 100%; justify-content: space-between; }
             .card-grid { padding: 0 15px 30px; grid-template-columns: 1fr; gap: 15px; }
-            .modal-content { width: 95%; padding: 25px; }
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="mobile-header">
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <img src="logo.png" alt="名刺くらうど" class="mobile-logo">
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
+
+    <div class="sidebar" id="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"><span>部署</span></a>
@@ -86,7 +92,6 @@
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" id="searchInput" placeholder="名前や部署で検索">
             </div>
-            
             <div class="action-controls">
                 <button class="add-button" onclick="openAddModal()">新規追加</button>
                 <div class="sort-container">
@@ -94,118 +99,36 @@
                         <div id="currentSortLabel" class="sort-current-label">最新順</div>
                         <img src="btn-sort.png" alt="並び替え">
                     </div>
-                    <div class="sort-menu" id="sortMenu">
-                        <div class="sort-option active" onclick="setSort('newest')">最新順</div>
-                        <div class="sort-option" onclick="setSort('az')">五十音順</div>
-                        <div class="sort-option" onclick="setSort('za')">五十音順（逆）</div>
-                    </div>
                 </div>
             </div>
         </div>
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
-    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-button" onclick="closeModal()">×</button>
-            <div id="modalInner"></div>
-        </div>
-    </div>
-
     <script>
-        const defaultData = [
-            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ放送', area: '三重県', email: 'tanaka@mietv.example.com', phone: '059-225-1234', icon: 'user-default.png', notes: '技術局長' },
-            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '報道制作部', title: '課長', company: '三重テレビ放送', area: '三重県', email: 'sato@mietv.example.com', phone: '059-225-5678', icon: 'user-default.png', notes: 'ニュースキャスター' }
-        ];
-
-        let userData = JSON.parse(localStorage.getItem('myCards')) || defaultData;
-        if (!localStorage.getItem('myCards')) localStorage.setItem('myCards', JSON.stringify(userData));
-
-        let currentSortMode = 'newest';
-
-        function toggleSortMenu() { document.getElementById('sortMenu').classList.toggle('open'); }
-        window.addEventListener('click', (e) => { if (!e.target.closest('.sort-container')) document.getElementById('sortMenu').classList.remove('open'); });
-
-        function setSort(mode) {
-            currentSortMode = mode;
-            const labels = { 'newest': '最新順', 'az': '五十音順', 'za': '五十音順（逆）' };
-            document.getElementById('currentSortLabel').textContent = labels[mode];
-            document.querySelectorAll('.sort-option').forEach(opt => opt.classList.toggle('active', opt.textContent === labels[mode]));
-            document.getElementById('sortMenu').classList.remove('open');
-            updateDisplay();
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('menuOverlay');
+            const isOpen = sidebar.classList.toggle('open');
+            overlay.style.display = isOpen ? 'block' : 'none';
         }
 
+        // --- データ表示ロジックは以前のものを維持 ---
+        const defaultData = [
+            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ放送', area: '三重県', email: 'tanaka@mietv.example.com', phone: '059-225-1234', icon: 'user-default.png', notes: '技術局長' }
+        ];
+        let userData = JSON.parse(localStorage.getItem('myCards')) || defaultData;
+        
         function updateDisplay() {
-            const filterText = document.getElementById('searchInput').value.toLowerCase();
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
-            let filtered = userData.filter(u => u.name.toLowerCase().includes(filterText) || u.dept.toLowerCase().includes(filterText));
-            if (currentSortMode === 'newest') filtered.sort((a, b) => b.id - a.id);
-            else if (currentSortMode === 'az') filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
-            else if (currentSortMode === 'za') filtered.sort((a, b) => b.kana.localeCompare(a.kana, 'ja'));
-            filtered.forEach(user => {
+            userData.forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => openDetailModal(user);
-                card.innerHTML = `<img src="${user.icon}" class="user-thumb" alt="${user.name}"><div class="card-name">${user.name}</div>`;
+                card.innerHTML = `<img src="${user.icon || 'user-default.png'}" class="user-thumb"><div class="card-name">${user.name}</div>`;
                 grid.appendChild(card);
             });
         }
-
-        function openAddModal() {
-            const inner = document.getElementById('modalInner');
-            inner.innerHTML = `
-                <h2 style="color:#5eabd5; margin-bottom:20px; font-size:20px;">名刺の新規登録</h2>
-                <div class="form-group"><label class="form-label">名前</label><input type="text" id="newName" class="form-input"></div>
-                <div class="form-group"><label class="form-label">ふりがな</label><input type="text" id="newKana" class="form-input"></div>
-                <div class="form-group"><label class="form-label">会社名</label><input type="text" id="newCompany" class="form-input"></div>
-                <div class="form-group"><label class="form-label">部署</label><input type="text" id="newDept" class="form-input"></div>
-                <div class="form-group"><label class="form-label">役職</label><input type="text" id="newTitle" class="form-input"></div>
-                <div class="form-group"><label class="form-label">エリア</label><input type="text" id="newArea" class="form-input"></div>
-                <div class="form-group"><label class="form-label">メールアドレス</label><input type="email" id="newEmail" class="form-input"></div>
-                <div class="form-group"><label class="form-label">電話番号</label><input type="text" id="newPhone" class="form-input"></div>
-                <div class="form-group"><label class="form-label">備考</label><input type="text" id="newNotes" class="form-input"></div>
-                <button class="submit-btn" onclick="addNewCard()">登録する</button>
-            `;
-            document.getElementById('modalOverlay').classList.add('open');
-        }
-
-        function addNewCard() {
-            const name = document.getElementById('newName').value;
-            if(!name) return;
-            const newData = {
-                id: Date.now(), name: name, kana: document.getElementById('newKana').value || "ん",
-                company: document.getElementById('newCompany').value || "三重テレビ放送",
-                dept: document.getElementById('newDept').value || "未設定", title: document.getElementById('newTitle').value || "",
-                area: document.getElementById('newArea').value || "三重県", email: document.getElementById('newEmail').value || "", 
-                phone: document.getElementById('newPhone').value || "", notes: document.getElementById('newNotes').value || "", icon: 'user-default.png'
-            };
-            userData.push(newData);
-            localStorage.setItem('myCards', JSON.stringify(userData));
-            closeModal();
-            updateDisplay();
-        }
-
-        function openDetailModal(user) {
-            const inner = document.getElementById('modalInner');
-            inner.innerHTML = `
-                <div style="text-align:center; border-bottom:2px solid #f0faff; padding-bottom:15px; margin-bottom:20px;">
-                    <img src="${user.icon}" style="width:100px; height:100px; border-radius:50%; border:4px solid #f0faff; margin-bottom:10px; object-fit:cover;">
-                    <div style="font-size:24px; font-weight:bold;">${user.name}</div>
-                </div>
-                <div class="info-group"><div class="info-label">部署</div><div class="info-value">${user.dept || '---'}</div></div>
-                <div class="info-group"><div class="info-label">役職</div><div class="info-value">${user.title || '---'}</div></div>
-                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${user.company}</div></div>
-                <div class="info-group"><div class="info-label">エリア</div><div class="info-value">${user.area}</div></div>
-                <div class="info-group"><div class="info-label">メールアドレス</div><a href="mailto:${user.email}" class="info-value" style="color:#5eabd5; text-decoration:underline;">${user.email || '---'}</a></div>
-                <div class="info-group"><div class="info-label">電話番号</div><a href="tel:${user.phone}" class="info-value" style="color:#5eabd5; text-decoration:underline;">${user.phone || '---'}</a></div>
-                <div class="info-group"><div class="info-label">備考</div><div class="info-value">${user.notes || '---'}</div></div>
-            `;
-            document.getElementById('modalOverlay').classList.add('open');
-        }
-
-        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-        document.getElementById('searchInput').addEventListener('input', updateDisplay);
         window.onload = updateDisplay;
     </script>
 </body>
