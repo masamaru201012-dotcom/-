@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど</title>
+    <title>名刺くらうど - キーワード</title>
     <style>
-        /* --- 基本デザイン維持 --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255, 255, 255, 0.8); text-decoration: none; transition: 0.2s; }
@@ -16,95 +15,41 @@
         
         .main-content { flex: 1; display: flex; flex-direction: column; }
 
-        /* --- ヘッダーレイアウト修正 --- */
-        .header { 
-            padding: 40px 50px; 
-            display: flex; 
-            align-items: center; 
-            gap: 20px; 
-            justify-content: space-between; /* 両端に寄せる */
-        }
-        
-        .search-container { 
-            position: relative; 
-            flex: 1; 
-            max-width: 500px; /* 少しスリムにして右側のスペースを確保 */
-        }
-        .search-bar { 
-            width: 100%; 
-            padding: 18px 15px 18px 65px; 
-            border-radius: 40px; 
-            border: 1px solid #e0e0e0; 
-            background-color: white; 
-            font-size: 16px; 
-            outline: none; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03); 
-        }
+        /* ヘッダー：検索とボタンのレイアウト */
+        .header { padding: 40px 50px; display: flex; align-items: center; gap: 30px; }
+        .search-container { position: relative; flex: 0 1 450px; }
+        .search-bar { width: 100%; padding: 18px 15px 18px 65px; border-radius: 40px; border: 1px solid #e0e0e0; background-color: white; font-size: 16px; outline: none; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .search-icon { position: absolute; left: 25px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; object-fit: contain; }
 
-        /* 右側の操作ボタンエリア */
-        .action-controls {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        /* 新規追加ボタン */
-        .add-button {
-            background-color: #6fceca;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3);
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .action-controls { margin-left: auto; display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+        .add-button { background-color: #6fceca; color: white; border: none; padding: 14px 28px; border-radius: 35px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); transition: 0.2s; display: flex; align-items: center; gap: 8px; }
         .add-button:hover { background-color: #5dbdb8; transform: translateY(-2px); }
         .add-button::before { content: "+"; font-size: 20px; }
 
-        /* 並び替えエリア */
-        .sort-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            padding: 5px 15px 5px 5px;
-            border-radius: 40px;
-            border: 1px solid #e0e0e0;
-        }
+        .sort-group { display: flex; align-items: center; gap: 10px; background: white; padding: 6px 20px 6px 8px; border-radius: 40px; border: 1px solid #e0e0e0; }
         .sort-button { background: none; border: none; cursor: pointer; padding: 0; display: flex; align-items: center; }
-        .sort-button img { height: 45px; width: auto; }
+        .sort-button img { height: 48px; width: auto; }
         .sort-label { font-size: 13px; color: #5eabd5; font-weight: bold; white-space: nowrap; }
 
-        /* カード・モーダルデザイン維持 */
+        /* カードグリッド */
         .card-grid { padding: 0 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
         .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.06); border-color: #6fceca; }
         .user-thumb { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #f0faff; }
         .card-name { font-weight: bold; font-size: 20px; color: #333; margin-bottom: 5px; }
         .card-dept { color: #888; font-size: 15px; }
-        
+
         /* モーダル */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-overlay.open { display: flex; opacity: 1; }
-        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; }
+        .modal-overlay.open { display: flex; }
+        .modal-content { background: white; width: 90%; max-width: 500px; border-radius: 30px; padding: 40px; position: relative; max-height: 90vh; overflow-y: auto; }
         .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
-        .modal-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; border-bottom: 2px solid #f0faff; padding-bottom: 15px; }
-        .modal-thumb { width: 110px; height: 110px; border-radius: 50%; border: 4px solid #f0faff; margin-bottom: 10px; }
-        .modal-name { font-size: 26px; font-weight: bold; }
         .info-group { margin-top: 15px; }
         .info-label { font-size: 12px; color: #aaa; font-weight: bold; }
         .info-value { font-size: 16px; color: #444; background: #f8f9fa; padding: 10px; border-radius: 8px; margin-top: 4px; }
     </style>
 </head>
 <body>
-
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png" alt="Logo"></div>
         <a href="index.html" class="nav-item active"><img src="icon-keyword.png" class="nav-icon"> キーワード</a>
@@ -118,9 +63,8 @@
                 <img src="icon-search.png" class="search-icon">
                 <input type="text" class="search-bar" id="searchInput" placeholder="検索キーワードを入力">
             </div>
-
             <div class="action-controls">
-                <button class="add-button" onclick="alert('新規追加フォームを開きます（今後実装）')">新規追加</button>
+                <button class="add-button" onclick="alert('新規追加フォームを準備中です')">新規追加</button>
                 <div class="sort-group">
                     <button class="sort-button" onclick="toggleSort()">
                         <img src="btn-sort.png" alt="並び替え">
@@ -129,27 +73,20 @@
                 </div>
             </div>
         </div>
-
         <div class="card-grid" id="cardGrid"></div>
     </div>
 
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-button" onclick="closeModal()">×</button>
-            <div class="modal-header">
-                <img src="" id="modalThumb" class="modal-thumb">
-                <div id="modalName" class="modal-name"></div>
-                <div id="modalTitle" class="modal-title" style="color:#5eabd5;"></div>
-            </div>
-            <div id="modalFields" class="modal-body"></div>
+            <div id="modalInner"></div>
         </div>
     </div>
 
     <script>
         const userData = [
-            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '株式会社サンプル', area: '三重県', email: 'tanaka@example.com', phone: '090-1234-5678', notes: '趣味はゴルフ。', icon: 'user-1.png' },
-            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '報道制作部', title: '課長', company: '企画プロデュース', area: '東京都', email: 'sato@example.co.jp', phone: '03-9876-5432', notes: '新規プロジェクト。', icon: 'user-2.png' },
-            { id: 3, name: '阿部 晋', kana: 'あべ しん', dept: '開発部', title: 'リーダー', company: 'テック', area: '大阪府', email: 'abe@tech.io', phone: '080-0000-0000', notes: 'API連携。', icon: 'user-3.png' }
+            { id: 1, name: '田中 太郎', kana: 'たなか たろう', dept: '制作技術部', title: '部長', company: '三重テレビ', area: '三重県', email: 'tanaka@example.com', phone: '059-123-4567', icon: 'user-1.png', notes: '技術担当' },
+            { id: 2, name: '佐藤 花子', kana: 'さとう はなこ', dept: '総務部', title: '課長', company: '三重テレビ', area: '三重県', email: 'sato@example.com', phone: '059-000-0000', icon: 'user-2.png', notes: '採用窓口' }
         ];
 
         let currentSortMode = 'id';
@@ -165,58 +102,43 @@
         function updateDisplay() {
             const filterText = searchInput.value.toLowerCase();
             cardGrid.innerHTML = "";
-
-            let filtered = userData.filter(user => 
-                user.name.toLowerCase().includes(filterText) || 
-                user.dept.toLowerCase().includes(filterText) || 
-                user.area.toLowerCase().includes(filterText)
-            );
-
-            if (currentSortMode === 'name') {
-                filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
-            } else {
-                filtered.sort((a, b) => b.id - a.id);
-            }
+            let filtered = userData.filter(u => u.name.toLowerCase().includes(filterText) || u.dept.toLowerCase().includes(filterText) || u.area.toLowerCase().includes(filterText));
+            
+            if (currentSortMode === 'name') filtered.sort((a, b) => a.kana.localeCompare(b.kana, 'ja'));
+            else filtered.sort((a, b) => b.id - a.id);
 
             filtered.forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.onclick = () => openModal(user);
-                card.innerHTML = `
-                    <img src="${user.icon}" class="user-thumb">
-                    <div class="card-info">
-                        <div class="card-name">${user.name}</div>
-                        <div class="card-dept">${user.dept}・${user.title}</div>
-                    </div>
-                `;
+                card.innerHTML = `<img src="${user.icon}" class="user-thumb"><div><div class="card-name">${user.name}</div><div class="card-dept">${user.dept}・${user.title}</div></div>`;
                 cardGrid.appendChild(card);
             });
         }
 
         function openModal(user) {
-            document.getElementById('modalThumb').src = user.icon;
-            document.getElementById('modalName').textContent = user.name;
-            document.getElementById('modalTitle').textContent = `${user.dept}・${user.title}`;
-            
-            const fields = [
-                { l: '会社名', v: user.company }, { l: '部署名', v: user.dept },
-                { l: '役職', v: user.title }, { l: 'エリア', v: user.area },
-                { l: 'メール', v: user.email }, { l: '電話番号', v: user.phone },
-                { l: '備考', v: user.notes }
-            ];
-            document.getElementById('modalFields').innerHTML = fields.map(f => `
-                <div class="info-group">
-                    <div class="info-label">${f.l}</div>
-                    <div class="info-value">${f.v}</div>
+            const inner = document.getElementById('modalInner');
+            inner.innerHTML = `
+                <div style="text-align:center; margin-bottom:25px; border-bottom:2px solid #f0faff; padding-bottom:15px;">
+                    <img src="${user.icon}" style="width:110px; height:110px; border-radius:50%; border:4px solid #f0faff; margin-bottom:10px;">
+                    <div style="font-size:26px; font-weight:bold;">${user.name}</div>
+                    <div style="color:#5eabd5; font-size:18px;">${user.dept}・${user.title}</div>
                 </div>
-            `).join('');
-
+                <div class="info-group"><div class="info-label">会社名</div><div class="info-value">${user.company}</div></div>
+                <div class="info-group"><div class="info-label">メール</div><div class="info-value">${user.email}</div></div>
+                <div class="info-group"><div class="info-label">電話番号</div><div class="info-value">${user.phone}</div></div>
+                <div class="info-group"><div class="info-label">備考</div><div class="info-value">${user.notes}</div></div>
+            `;
             document.getElementById('modalOverlay').classList.add('open');
         }
 
         function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
         searchInput.addEventListener('input', updateDisplay);
-        window.addEventListener('load', updateDisplay);
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('search')) searchInput.value = params.get('search');
+            updateDisplay();
+        });
     </script>
 </body>
 </html>
