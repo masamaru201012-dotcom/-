@@ -2,45 +2,45 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード検索</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
         /* ログイン画面 */
-        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; }
-        .logo-login { width: 80%; max-width: 400px; margin-bottom: 40px; }
-        .login-card { background: white; padding: 40px 30px; border-radius: 25px; width: 100%; max-width: 400px; text-align: center; box-sizing: border-box; }
-        .input-group { margin-bottom: 25px; text-align: left; }
+        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .logo-login { width: 400px; margin-bottom: 50px; object-fit: contain; }
+        .login-card { background: white; padding: 60px 50px; border-radius: 30px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); width: 450px; text-align: center; box-sizing: border-box; }
+        .input-group { margin-bottom: 30px; text-align: left; }
         .input-group label { display: block; font-size: 14px; color: #666; margin-bottom: 12px; font-weight: bold; }
-        .input-group input { width: 100%; padding: 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 16px; box-sizing: border-box; outline: none; }
-        .login-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .input-group input { width: 100%; padding: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 16px; box-sizing: border-box; outline: none; }
+        .login-btn { width: 100%; padding: 18px; border: none; border-radius: 12px; background: #6fceca; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
 
         /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
-        /* メイン画面 */
+        /* メイン画面：ヘッダー位置固定 */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; border-bottom: 1px solid #eef2f6; flex-shrink: 0; gap: 15px; }
-        .header-left { min-width: 160px; }
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; }
+        .header-left { display: flex; align-items: center; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; }
         
-        .search-container { position: relative; flex: 1; max-width: 450px; }
+        .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 20px; }
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
 
-        /* ボタンエリア */
         .header-actions { display: flex; gap: 10px; align-items: center; }
-        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; }
-        
-        /* 並べ替えセレクトボックス */
-        .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
+        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; transition: none; }
+        .add-button:active { transform: scale(0.98); background: #5dbdb9; }
+
+        .sort-select { padding: 12px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; transition: none; }
+        .sort-select:active { background: #f8fafc; }
 
         /* 名刺カード */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 25px; }
@@ -52,19 +52,6 @@
 
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; }
         .modal img { max-width: 90%; max-height: 90%; border-radius: 12px; }
-
-        /* スマホレスポンシブ */
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { width: 100%; height: 65px; flex-direction: row; padding: 0; order: 2; }
-            .logo-area, .user-profile-area { display: none; }
-            .nav-item { flex: 1; justify-content: center; padding: 0; font-size: 12px; border-radius: 0 !important; margin: 0 !important; }
-            .nav-item img { margin-right: 0; margin-bottom: 4px; width: 20px; height: 20px; }
-            .main-content { order: 1; height: calc(100vh - 65px); }
-            .header { padding: 0 15px; height: auto; padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap; justify-content: center; }
-            .header-left { display: none; }
-            .search-container { min-width: 100%; margin-bottom: 10px; }
-        }
     </style>
 </head>
 <body>
@@ -81,7 +68,7 @@
 
     <div class="sidebar">
         <div class="logo-area"><img src="logo.png"></div>
-        <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>検索</span></a>
+        <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
         <div class="user-profile-area">
@@ -92,7 +79,9 @@
 
     <div class="main-content">
         <div class="header">
-            <div class="header-left"><div class="header-title">キーワード検索</div></div>
+            <div class="header-left">
+                <div class="header-title">キーワード検索</div>
+            </div>
             <div class="search-container"><input type="text" class="search-bar" id="searchInput" oninput="renderCards()"></div>
             <div class="header-actions">
                 <button class="add-button">新規追加</button>
@@ -118,18 +107,13 @@
             const grid = document.getElementById('cardGrid');
             const term = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
-
             grid.innerHTML = "";
-
-            // フィルタリングと並べ替え
             let filtered = cardData.filter(c => c.name.toLowerCase().includes(term) || c.company.toLowerCase().includes(term));
-            
             filtered.sort((a, b) => {
                 if (sortBy === "name") return a.name.localeCompare(b.name, 'ja');
                 if (sortBy === "company") return a.company.localeCompare(b.company, 'ja');
                 return 0;
             });
-
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
@@ -137,12 +121,7 @@
                     document.getElementById('modalImg').src = c.icon;
                     document.getElementById('imageModal').style.display = 'flex';
                 };
-                div.innerHTML = `
-                    <div class="thumb-box"><img src="${c.icon}"></div>
-                    <div>
-                        <div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div>
-                        <div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div>
-                    </div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
