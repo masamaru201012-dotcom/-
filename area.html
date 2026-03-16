@@ -3,126 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど - エリア検索</title>
+    <title>名刺くらうど - エリア</title>
     <style>
-        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; transition: 0.3s; }
-        .logo-area { padding: 0 20px 80px; text-align: center; }
-        .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
-        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-
+        /* index.html のCSSを継承 */
+        body { margin: 0; font-family: sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; }
+        .user-profile-area { margin-top: auto; padding: 25px; border-top: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.05); }
         .main-container { flex: 1; display: flex; overflow: hidden; }
-
-        .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; position: fixed; top: 0; left: 0; }
-        .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
-        .mobile-logo { height: 30px; }
-        .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
-
-        .area-selector { flex: 1; padding: 30px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
-        .region-title { color: #5eabd5; border-left: 5px solid #6fceca; padding-left: 10px; margin: 20px 0 10px; font-weight: bold; font-size: 14px; }
-        .pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
-        .pref-btn { padding: 12px 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; font-size: 12px; color: #64748b; transition: 0.2s; }
-        .pref-btn:hover { background: #e0f4f3; color: #5eabd5; border-color: #6fceca; }
-
-        .result-view { flex: 1; padding: 30px; overflow-y: auto; background: #f8fafc; }
-        .result-header-area { font-size: 18px; font-weight: bold; color: #5eabd5; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 2px solid #6fceca; }
-        
-        .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
-        .thumb-box { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #5eabd5; overflow: hidden; }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-        .owner-info { font-size: 11px; color: #999; margin-top: 4px; }
-
-        @media (max-width: 850px) {
-            body { flex-direction: column; overflow: visible; }
-            .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; }
-            .sidebar.open { left: 0; }
-            .mobile-header { display: flex; }
-            .main-container { flex-direction: column; height: auto; margin-top: 60px; overflow: visible; }
-            .area-selector, .result-view { flex: none; width: 100%; padding: 20px; box-sizing: border-box; }
-        }
+        .area-selector { flex: 1; padding: 30px; background: white; border-right: 1px solid #eef2f6; overflow-y: auto; }
+        .pref-btn { padding: 10px; background: #f8fafc; border: 1px solid #eee; border-radius: 8px; margin: 5px; cursor: pointer; display: inline-block; font-size: 13px; }
+        .result-view { flex: 1; padding: 30px; background: #f8fafc; overflow-y: auto; }
+        .card { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; margin-bottom: 10px; cursor: pointer; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 5000; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
-    <div class="mobile-header">
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <img src="logo.png" alt="名刺くらうど" class="mobile-logo">
-    </div>
-    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-    
-    <div class="sidebar" id="sidebar">
-        <div class="logo-area"><img src="logo.png" alt="Logo"></div>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png" class="nav-icon"><span>キーワード</span></a>
-        <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"><span>部署</span></a>
-        <a href="area.html" class="nav-item active"><img src="icon-area.png" class="nav-icon"><span>エリア</span></a>
+    <div class="sidebar">
+        <div class="logo-area"><img src="logo.png" style="width:100%"></div>
+        <a href="index.html" class="nav-item"><span>キーワード</span></a>
+        <a href="dept.html" class="nav-item"><span>部署</span></a>
+        <a href="area.html" class="nav-item active"><span>エリア</span></a>
+        <div class="user-profile-area">
+            <div class="user-name" id="displayUserName">---</div>
+            <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+        </div>
     </div>
 
     <div class="main-container">
         <div class="area-selector">
-            <h2 style="color:#5eabd5; font-size:18px; margin-top:0;">地域から探す</h2>
+            <h2 style="color:#5eabd5;">エリア別ファイル</h2>
             <div id="areaGrid"></div>
         </div>
         <div class="result-view" id="resultArea">
-            <h3 id="selectedTitle" class="result-header-area">エリアを選択してください</h3>
+            <h3 id="selectedTitle">エリアを選択してください</h3>
             <div id="cardGrid"></div>
         </div>
     </div>
 
+    <div id="imageModal" class="modal" onclick="this.style.display='none'"><img id="modalImg" style="max-width:90%; max-height:90%;"></div>
+
     <script>
-        function toggleMenu() {
-            const s = document.getElementById('sidebar');
-            const o = document.getElementById('menuOverlay');
-            const open = s.classList.toggle('open');
-            o.style.display = open ? 'block' : 'none';
+        function checkLogin() {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) { location.href = "index.html"; }
+            else { document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")"; }
         }
+        function handleLogout() { localStorage.removeItem('currentUser'); location.href = "index.html"; }
 
-        const regions = [
-            { r: "三重県内", p: ["北勢", "中南勢", "伊勢志摩", "伊賀", "東紀州"] },
-            { r: "近隣・大都市", p: ["愛知県", "岐阜県", "大阪府", "東京都", "神奈川県"] },
-            { r: "その他", p: ["その他全国"] }
-        ];
-
+        const prefs = ["北勢", "中南勢", "伊勢志摩", "伊賀", "東紀州", "愛知県", "岐阜県", "東京都", "大阪府"];
         const grid = document.getElementById('areaGrid');
-        regions.forEach(reg => {
-            let html = `<div class="region-title">${reg.r}</div><div class="pref-grid">`;
-            reg.p.forEach(p => { html += `<div class="pref-btn" onclick="showArea('${p}')">${p}</div>`; });
-            grid.innerHTML += html + `</div>`;
+        prefs.forEach(p => {
+            grid.innerHTML += `<div class="pref-btn" onclick="showArea('${p}')">${p}</div>`;
         });
 
         function showArea(areaName) {
             document.getElementById('selectedTitle').innerText = areaName + "の名刺";
-            const grid = document.getElementById('cardGrid');
-            grid.innerHTML = "";
-            
+            const cGrid = document.getElementById('cardGrid');
+            cGrid.innerHTML = "";
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            
-            // 名刺の相手のエリア（area）でフィルター
-            const filtered = data.filter(u => u.area === areaName);
-            
-            if(filtered.length === 0) {
-                grid.innerHTML = `<div style="color:#888; padding:20px;">このエリアの名刺はまだありません。</div>`;
-            } else {
-                filtered.forEach(user => {
-                    grid.innerHTML += `
-                        <div class="card">
-                            <div class="thumb-box">
-                                ${user.name.charAt(0)}
-                                ${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}
-                            </div>
-                            <div>
-                                <div style="font-weight:bold;">${user.name}</div>
-                                <div style="font-size:12px; color:#666;">${user.company || ''}</div>
-                                <div class="owner-info">${user.ownerDept}の${user.registeredBy}が登録</div>
-                            </div>
-                        </div>`;
-                });
-            }
-            if(window.innerWidth <= 850) {
-                document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
-            }
+            data.filter(u => u.area === areaName).forEach(user => {
+                const c = document.createElement('div');
+                c.className = 'card';
+                c.onclick = () => { if(user.icon){ document.getElementById('imageModal').style.display='flex'; document.getElementById('modalImg').src=user.icon; }};
+                c.innerHTML = `<div><div style="font-weight:bold;">${user.name}</div><div style="font-size:12px;">${user.company}</div><div style="font-size:11px; color:#5eabd5;">👤 登録者: ${user.registeredBy}</div></div>`;
+                cGrid.appendChild(c);
+            });
         }
+        window.onload = checkLogin;
     </script>
 </body>
 </html>
