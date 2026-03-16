@@ -71,8 +71,10 @@
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; font-weight: 500; }
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
-        .delete-btn-container { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
+        /* ボタンアクションエリア */
+        .action-btn-container { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: center; gap: 40px; }
         .delete-btn { color: #ff5a5f; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
+        .edit-btn { color: #6fceca; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -137,7 +139,9 @@
                 <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
             </div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
-            <div class="delete-btn-container">
+            
+            <div class="action-btn-container">
+                <button class="edit-btn" id="editTargetBtn">名刺を編集</button>
                 <button class="delete-btn" id="deleteTargetBtn">名刺を削除</button>
             </div>
         </div>
@@ -146,7 +150,7 @@
     <div id="addModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
-            <div class="modal-header">新規名刺追加</div>
+            <div class="modal-header" id="modalTitle">新規名刺追加</div>
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none;">
                 <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
@@ -168,7 +172,7 @@
                 <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
             </div>
             <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
-            <button class="save-btn" onclick="saveNewCard()">保存する</button>
+            <button class="save-btn" onclick="saveCard()">保存する</button>
         </div>
     </div>
 
@@ -239,6 +243,8 @@
             document.getElementById('viewNote').innerText = data.note || "-";
             
             document.getElementById('deleteTargetBtn').onclick = () => deleteCard(data.id);
+            document.getElementById('editTargetBtn').onclick = () => openEditModal(data);
+            
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -253,15 +259,39 @@
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // 変数をグローバルで管理
         let currentImageDataUrl = "";
+        let editingCardId = null;
 
         function openAddModal() {
+            editingCardId = null;
+            document.getElementById('modalTitle').innerText = "新規名刺追加";
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('imageInput').value = "";
             document.getElementById('previewImg').style.display = 'none';
             document.getElementById('uploadPlaceholder').style.display = 'block';
-            currentImageDataUrl = ""; // 明示的に空にする
+            currentImageDataUrl = "";
+            document.getElementById('addModal').style.display = 'flex';
+        }
+
+        function openEditModal(data) {
+            closeModal('detailModal');
+            editingCardId = data.id;
+            document.getElementById('modalTitle').innerText = "名刺を編集";
+            document.getElementById('newName').value = data.name;
+            document.getElementById('newKana').value = data.kana || "";
+            document.getElementById('newCompany').value = data.company || "";
+            document.getElementById('newDept').value = data.dept || "";
+            document.getElementById('newTitle').value = data.title || "";
+            document.getElementById('newEmail').value = data.email || "";
+            document.getElementById('newTel').value = data.tel || "";
+            document.getElementById('newNote').value = data.note || "";
+            
+            currentImageDataUrl = data.icon;
+            const preview = document.getElementById('previewImg');
+            preview.src = data.icon;
+            preview.style.display = 'block';
+            document.getElementById('uploadPlaceholder').style.display = 'none';
+            
             document.getElementById('addModal').style.display = 'flex';
         }
 
@@ -279,25 +309,21 @@
             }
         }
 
-        function saveNewCard() {
-            const nameEl = document.getElementById('newName');
-            const nameVal = nameEl ? nameEl.value.trim() : "";
-            
-            // チェックは「名前が空かどうか」だけにする
+        function saveCard() {
+            const nameVal = document.getElementById('newName').value.trim();
             if (nameVal === "") {
                 alert("名前を入力してください");
                 return;
             }
             
-            // 画像がない場合はランダムアイコン
             let finalIcon = currentImageDataUrl;
             if (!finalIcon || finalIcon === "") {
                 const randNum = Math.floor(Math.random() * 6) + 1;
                 finalIcon = `user-${randNum}.png`;
             }
 
-            const newCard = {
-                id: Date.now(),
+            const cardInfo = {
+                id: editingCardId || Date.now(),
                 name: nameVal,
                 kana: document.getElementById('newKana').value,
                 company: document.getElementById('newCompany').value,
@@ -309,9 +335,14 @@
                 icon: finalIcon
             };
 
-            cardData.unshift(newCard);
+            if (editingCardId) {
+                const index = cardData.findIndex(c => c.id === editingCardId);
+                cardData[index] = cardInfo;
+            } else {
+                cardData.unshift(cardInfo);
+            }
+
             localStorage.setItem('businessCards', JSON.stringify(cardData));
-            
             closeModal('addModal');
             renderCards();
         }
