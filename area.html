@@ -6,47 +6,59 @@
     <title>名刺くらうど - エリア別</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; box-shadow: 4px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
-        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
-        .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
+        .logo-area img { width: 100%; transform: scale(1.1); }
+        .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.3s; }
+        .nav-item img { width: 24px; height: 24px; margin-right: 15px; opacity: 0.8; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
+        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
+        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; outline: none; }
         .main-container { flex: 1; display: flex; overflow: hidden; }
-        .area-selector { width: 320px; padding: 30px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
+        .area-selector { width: 320px; padding: 30px 20px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
         .pref-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
         .area-btn { padding: 10px; border-radius: 8px; border: 1px solid #f0f4f8; background: #fff; font-size: 13px; cursor: pointer; text-align: center; transition: 0.2s; }
         .area-btn:hover { border-color: #6fceca; color: #5eabd5; }
         .result-view { flex: 1; padding: 40px; overflow-y: auto; background: #f8fafc; }
-        .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
+        .result-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 15px; }
+        .area-icon-img { width: 32px; height: 32px; object-fit: contain; } /* 潰れ防止 */
         .card-list { display: flex; flex-direction: column; gap: 15px; max-width: 450px; }
-        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: 0.3s; }
+        .card:hover { transform: translateX(5px); border-color: #6fceca; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; background-color: #e0f4f3; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #fff; flex-shrink: 0; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div class="logo-area"><img src="logo.png" style="width:100%;"></div>
+        <div class="logo-area"><img src="logo.png"></div>
         <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
         <a href="area.html" class="nav-item active"><img src="icon-area.png"><span>エリア</span></a>
+        <div class="user-profile-area">
+            <div class="user-name" id="displayUserName">---</div>
+            <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
+        </div>
     </div>
     <div class="main-container">
         <div class="area-selector">
-            <div style="display:flex; align-items:center; gap:10px; margin-bottom:20px;">
-                <img src="icon-area.png" style="width:32px;">
+            <div style="display:flex; align-items:center; gap:15px; margin-bottom:25px;">
+                <img src="icon-area.png" class="area-icon-img">
                 <h2 style="font-size:18px; color:#5eabd5; margin:0;">エリア別</h2>
             </div>
             <div class="pref-grid" id="prefGrid"></div>
         </div>
-<div class="result-view">
-            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 15px;">
-                <img src="icon-area.png" style="width: 32px; height: 32px;">
+        <div class="result-view">
+            <div class="result-header">
+                <img src="icon-area.png" class="area-icon-img">
                 <div id="selectedAreaName" style="font-size: 20px; font-weight: bold; color: #444;">都道府県を選択してください</div>
             </div>
             <div id="cardGrid" class="card-list"></div>
         </div>
+    </div>
     <script>
+        function handleLogout() { localStorage.removeItem('currentUser'); window.location.href = 'login.html'; }
         const prefs = ["三重県", "愛知県", "岐阜県", "滋賀県", "東京都", "大阪府"];
         const pGrid = document.getElementById('prefGrid');
         prefs.forEach(p => {
@@ -65,6 +77,10 @@
                 grid.appendChild(card);
             });
         }
+        window.onload = () => {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if(user) document.getElementById('displayUserName').innerText = user.name + " (" + user.dept + ")";
+        };
     </script>
 </body>
 </html>
