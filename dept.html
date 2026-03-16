@@ -3,81 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど - 部署検索</title>
+    <title>名刺くらうど - 部署</title>
     <style>
-        /* --- 共通デザイン継承 --- */
+        /* --- 基本レイアウト（他ページと共通） --- */
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; box-shadow: 2px 0 10px rgba(0,0,0,0.05); flex-shrink: 0; }
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 30px 30px; cursor: pointer; font-size: 18px; color: rgba(255, 255, 255, 0.8); text-decoration: none; transition: 0.2s; }
+        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; transition: 0.2s; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
 
-        .main-container { flex: 1; display: flex; overflow: hidden; }
+        .main-container { flex: 1; display: flex; }
 
-        /* 左側：部署フォルダリスト */
-        .dept-selector { flex: 1; padding: 40px; overflow-y: auto; border-right: 1px solid #e0e0e0; background-color: white; }
+        /* 部署選択エリア */
+        .dept-selector { flex: 1; padding: 40px; overflow-y: auto; border-right: 1px solid #e0e0e0; background: white; }
         .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
         
-        /* フォルダデザイン */
-        .dept-folder { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            cursor: pointer; 
-            transition: 0.2s; 
-            padding: 15px;
-            border-radius: 15px;
-        }
-        .dept-folder:hover { background-color: #f0faff; transform: translateY(-5px); }
-        .dept-folder.active { background-color: #e0f4f3; border: 1px solid #6fceca; }
+        .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: 0.2s; padding: 15px; border-radius: 15px; }
+        .dept-folder:hover { background: #f0faff; transform: translateY(-3px); }
+        .dept-folder.active { background: #e0f4f3; border: 1px solid #6fceca; }
         
-        .folder-icon { 
-            width: 60px; 
-            height: 50px; 
-            margin-bottom: 10px; 
-            position: relative;
-            background: #ccc; /* fallback */
-            border-radius: 5px 15px 5px 5px;
-        }
-        /* フォルダの上のタブ部分 */
-        .folder-icon::before {
-            content: "";
-            position: absolute;
-            top: -8px;
-            left: 0;
-            width: 25px;
-            height: 10px;
-            background: inherit;
-            border-radius: 5px 5px 0 0;
-        }
+        /* フォルダのデザイン：色味を抑えたグレー系グラデーション */
+        .folder-icon { width: 60px; height: 45px; margin-bottom: 10px; position: relative; border-radius: 4px 12px 4px 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .folder-icon::before { content: ""; position: absolute; top: -6px; left: 0; width: 22px; height: 10px; background: inherit; border-radius: 4px 4px 0 0; }
+        .dept-name { font-size: 13px; font-weight: bold; color: #666; text-align: center; line-height: 1.4; }
+
+        /* 抑えたトーンのカラーバリエーション */
+        .f-grey { background: linear-gradient(135deg, #cfd8dc, #b0bec5); }
+        .f-blue-grey { background: linear-gradient(135deg, #b0c4de, #98afc7); }
+        .f-sage { background: linear-gradient(135deg, #c1d5d0, #a8bdb7); }
+        .f-sand { background: linear-gradient(135deg, #d7d3c8, #bfbaac); }
+
+        /* 右側：表示エリア */
+        .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background: #f8fafc; }
+        .result-header { font-size: 22px; font-weight: bold; color: #444; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .result-header::before { content: "📂"; font-size: 20px; }
         
-        .dept-name { font-size: 14px; font-weight: bold; color: #555; text-align: center; line-height: 1.4; }
-
-        /* 各部署の可愛い色分け */
-        .bg-mint { background-color: #a3e4db; }
-        .bg-pink { background-color: #ffc4d0; }
-        .bg-blue { background-color: #a2d2ff; }
-        .bg-orange { background-color: #ffccaf; }
-        .bg-purple { background-color: #d0bdf4; }
-        .bg-yellow { background-color: #f9f7cf; }
-
-        /* 右側：名刺表示エリア */
-        .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background-color: #f8fafc; }
-        .result-header { font-size: 22px; font-weight: bold; color: #333; margin-bottom: 25px; border-bottom: 2px solid #6fceca; padding-bottom: 10px; }
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        
-        /* 名刺カードデザイン */
-        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; cursor: pointer; transition: 0.2s; border: 1px solid #eee; }
-        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .user-thumb { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #f0faff; }
-
-        /* モーダル */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-overlay.open { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 480px; border-radius: 30px; padding: 40px; position: relative; }
-        .close-button { position: absolute; top: 20px; right: 25px; font-size: 30px; border: none; background: none; color: #ccc; cursor: pointer; }
+        .card { background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 15px; cursor: pointer; border: 1px solid #eee; transition: 0.2s; }
+        .card:hover { border-color: #6fceca; transform: translateX(5px); }
+        .user-thumb { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #f0faff; }
+        .user-name { font-weight: bold; color: #333; font-size: 17px; }
     </style>
 </head>
 <body>
@@ -90,102 +57,80 @@
 
     <div class="main-container">
         <div class="dept-selector">
-            <h2 style="color:#5eabd5; margin-bottom:30px;">部署から探す</h2>
-            <div class="dept-grid">
-                <div class="dept-folder" onclick="selectDept('総務部', this)">
-                    <div class="folder-icon bg-pink"></div><div class="dept-name">総務部</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('本社営業部', this)">
-                    <div class="folder-icon bg-blue"></div><div class="dept-name">本社営業部</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('名古屋支社', this)">
-                    <div class="folder-icon bg-mint"></div><div class="dept-name">名古屋支社</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('東京支社', this)">
-                    <div class="folder-icon bg-orange"></div><div class="dept-name">東京支社</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('大阪支社', this)">
-                    <div class="folder-icon bg-purple"></div><div class="dept-name">大阪支社</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('業務部', this)">
-                    <div class="folder-icon bg-yellow"></div><div class="dept-name">業務部</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('放送部', this)">
-                    <div class="folder-icon bg-pink"></div><div class="dept-name">放送部</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('事業部', this)">
-                    <div class="folder-icon bg-blue"></div><div class="dept-name">事業部</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('編成部', this)">
-                    <div class="folder-icon bg-mint"></div><div class="dept-name">編成部</div>
-                </div>
-                <div class="dept-folder" onclick="selectDept('制作技術部', this)">
-                    <div class="folder-icon bg-orange"></div><div class="dept-name">制作技術部</div>
-                </div>
+            <h2 style="color:#5eabd5; margin-bottom:30px; font-size: 20px;">部署から探す</h2>
+            <div class="dept-grid" id="deptGrid">
+                <script>
+                    const depts = [
+                        {n:'報道制作部', c:'f-blue-grey'}, 
+                        {n:'制作技術部', c:'f-sage'},
+                        {n:'本社営業部', c:'f-grey'}, 
+                        {n:'名古屋支社', c:'f-sand'},
+                        {n:'東京支社', c:'f-grey'}, 
+                        {n:'大阪支社', c:'f-blue-grey'}, 
+                        {n:'総務部', c:'f-sage'}, 
+                        {n:'業務部', c:'f-sand'},
+                        {n:'放送部', c:'f-grey'}, 
+                        {n:'事業部', c:'f-blue-grey'}, 
+                        {n:'編成部', c:'f-sage'}
+                    ];
+                    document.write(depts.map(d => `
+                        <div class="dept-folder" onclick="selectDept('${d.n}', this)">
+                            <div class="folder-icon ${d.c}"></div>
+                            <div class="dept-name">${d.n}</div>
+                        </div>
+                    `).join(''));
+                </script>
             </div>
         </div>
 
         <div class="result-view">
             <div class="result-header" id="selectedDeptName">部署を選択してください</div>
-            <div class="card-grid" id="cardGrid"></div>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-button" onclick="closeModal()">×</button>
-            <div id="modalContentInner"></div>
+            <div class="card-grid" id="cardGrid">
+                </div>
         </div>
     </div>
 
     <script>
-        // サンプルデータ
-        const userData = [
-            { id: 1, name: '田中 太郎', dept: '制作技術部', title: '部長', company: '三重テレビ', area: '三重県', icon: 'user-1.png' },
-            { id: 4, name: '山田 健一', dept: '総務部', title: '次長', company: '三重テレビ', area: '三重県', icon: 'user-4.png' },
-            { id: 5, name: '佐藤 恵', dept: '名古屋支社', title: '営業担当', company: '三重テレビ', area: '愛知県', icon: 'user-5.png' }
-        ];
+        // データは index.html の LocalStorage と連携
+        function getCards() {
+            const defaultData = [
+                { id: 1, name: '田中 太郎', dept: '制作技術部', icon: 'user-default.png' },
+                { id: 2, name: '佐藤 花子', dept: '総務部', icon: 'user-default.png' }
+            ];
+            return JSON.parse(localStorage.getItem('myCards')) || defaultData;
+        }
 
         function selectDept(deptName, element) {
+            // アクティブ表示の切り替え
             document.querySelectorAll('.dept-folder').forEach(f => f.classList.remove('active'));
             element.classList.add('active');
+            
+            // ヘッダー更新
             document.getElementById('selectedDeptName').textContent = deptName;
-
+            
+            // カードリストの表示
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
-            const filtered = userData.filter(u => u.dept === deptName);
-
-            if(filtered.length === 0) {
-                grid.innerHTML = "<p style='color:#999;'>該当する名刺がありません</p>";
+            
+            const allCards = getCards();
+            const filtered = allCards.filter(u => u.dept === deptName);
+            
+            if (filtered.length === 0) {
+                grid.innerHTML = `<div style="color:#bbb; padding: 20px;">この部署の名刺はまだ登録されていません。</div>`;
                 return;
             }
 
             filtered.forEach(user => {
                 const card = document.createElement('div');
                 card.className = 'card';
-                card.onclick = () => openModal(user);
-                card.innerHTML = `<img src="${user.icon}" class="user-thumb"><div><div class="card-name">${user.name}</div><div class="card-dept">${user.dept}・${user.title}</div></div>`;
+                card.innerHTML = `
+                    <img src="${user.icon}" class="user-thumb">
+                    <div class="user-name">${user.name}</div>
+                `;
+                // キーワードページの詳細と揃える場合はここをクリックイベントに追加
                 grid.appendChild(card);
             });
         }
-
-        function openModal(user) {
-            const inner = document.getElementById('modalContentInner');
-            inner.innerHTML = `
-                <div style="text-align:center; margin-bottom:20px;">
-                    <img src="${user.icon}" style="width:100px; height:100px; border-radius:50%; border:4px solid #f0faff;">
-                    <div style="font-size:24px; font-weight:bold;">${user.name}</div>
-                    <div style="color:#5eabd5;">${user.dept}・${user.title}</div>
-                </div>
-                <div style="background:#f8f9fa; padding:15px; border-radius:10px;">
-                    <p><strong>会社:</strong> ${user.company}</p>
-                    <p><strong>エリア:</strong> ${user.area}</p>
-                </div>
-            `;
-            document.getElementById('modalOverlay').classList.add('open');
-        }
-
-        function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
     </script>
 </body>
 </html>
