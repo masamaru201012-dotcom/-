@@ -6,7 +6,7 @@
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* サイドバー */
+        /* サイドバー：キーワードページと完全一致 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -16,39 +16,21 @@
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
-        /* メイン画面 */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
-        /* キーワードページと完全に合わせたヘッダー */
-        .header { 
-            height: 80px; 
-            background: white; 
-            padding: 0 40px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            border-bottom: 1px solid #eef2f6; 
-            flex-shrink: 0; 
-            box-sizing: border-box;
-        }
+        /* ヘッダー：キーワードページと完全一致 */
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .header-left { display: flex; align-items: center; min-width: 180px; }
         .header-title { font-size: 20px; font-weight: bold; color: #444; margin: 0; }
-
-        /* 検索バー周り（共通デザイン） */
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
-        .search-container::before { 
-            content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); 
-            width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; 
-            background-size: contain; opacity: 0.4; pointer-events: none; 
-        }
+        .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
-
         .header-actions { display: flex; gap: 12px; align-items: center; }
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; font-size: 14px; }
         .sort-select { padding: 10px 35px 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 15px center; font-size: 14px; color: #666; cursor: pointer; outline: none; appearance: none; }
 
-        /* 部署フォルダエリア（ここは部署ページ独自） */
-        .dept-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; align-items: start; }
+        /* 部署フォルダ固有のグリッド表示 */
+        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; align-items: start; }
         .folder-card { 
             background: white; border-radius: 20px; padding: 30px 20px; 
             display: flex; flex-direction: column; align-items: center; gap: 15px; 
@@ -59,8 +41,7 @@
         .folder-name { font-weight: bold; font-size: 16px; color: #333; }
         .folder-count { font-size: 12px; color: #888; background: #f0f4f8; padding: 4px 12px; border-radius: 10px; }
 
-        /* ログイン状態でないときは隠す */
-        #mainApp { display: none; }
+        #mainApp { display: none; width: 100%; height: 100%; }
     </style>
 </head>
 <body>
@@ -79,14 +60,12 @@
 
         <div class="main-content">
             <div class="header">
-                <div class="header-left">
-                    <h1 class="header-title">部署別フォルダ</h1>
-                </div>
+                <div class="header-left"><h1 class="header-title">部署別フォルダ</h1></div>
                 <div class="search-container">
                     <input type="text" class="search-bar" id="searchInput" placeholder="部署名を検索..." oninput="renderFolders()">
                 </div>
                 <div class="header-actions">
-                    <button class="add-button" onclick="alert('部署追加機能（未実装）')">＋ 部署追加</button>
+                    <button class="add-button" onclick="alert('部署追加機能')">＋ 部署追加</button>
                     <select class="sort-select" id="sortSelect" onchange="renderFolders()">
                         <option value="name">名前順</option>
                         <option value="count">名刺数順</option>
@@ -94,19 +73,17 @@
                 </div>
             </div>
 
-            <div class="dept-grid" id="folderGrid">
-                </div>
+            <div class="card-grid" id="folderGrid"></div>
         </div>
     </div>
 
     <script>
-        // ログインチェック（キーワードページと共通）
+        // ログインチェック
         function checkLogin() {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('mainApp').style.display = 'flex';
                 renderFolders();
             } else {
-                // ログインしていなければキーワード（ログイン画面）に戻す
                 window.location.href = 'index.html';
             }
         }
@@ -116,29 +93,26 @@
             window.location.href = 'index.html';
         }
 
-        // 名刺データ（部署カウント用）
+        // データ連携と描画
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
 
-        // 部署一覧の描画
         function renderFolders() {
             const grid = document.getElementById('folderGrid');
+            if (!grid) return;
             const term = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = "";
 
-            // 部署ごとの名刺数をカウント
             const deptCounts = {};
             cardData.forEach(card => {
                 const d = card.dept || "未分類";
                 deptCounts[d] = (deptCounts[d] || 0) + 1;
             });
 
-            // 部署リスト（検索フィルタ適用）
             const depts = Object.keys(deptCounts).filter(d => d.toLowerCase().includes(term));
 
             depts.forEach(deptName => {
                 const div = document.createElement('div');
                 div.className = 'folder-card';
-                div.onclick = () => alert(deptName + 'の名刺一覧へ（次のステップ）');
                 div.innerHTML = `
                     <img src="icon-dept.png" class="folder-icon" style="filter: brightness(0) saturate(100%) invert(84%) sepia(16%) recover(20%) hue-rotate(125deg) brightness(92%) contrast(85%);">
                     <div class="folder-name">${deptName}</div>
