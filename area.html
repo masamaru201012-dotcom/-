@@ -1,93 +1,36 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど - エリア</title>
-    <style>
-        body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; z-index: 3000; transition: 0.3s; }
-        .logo-area { padding: 0 20px 80px; text-align: center; }
-        .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
-        .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
-        .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        .nav-icon { width: 38px; height: 38px; margin-right: 18px; object-fit: contain; }
-        .main-container { flex: 1; display: flex; overflow: hidden; }
-        .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; }
-        .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
-        .mobile-logo { height: 30px; }
-        .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
-        .area-selector { flex: 1; padding: 30px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
-        .region-title { color: #5eabd5; border-left: 5px solid #6fceca; padding-left: 10px; margin: 20px 0 10px; font-weight: bold; font-size: 14px; }
-        .pref-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
-        .pref-btn { padding: 10px 5px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; text-align: center; cursor: pointer; font-size: 12px; color: #64748b; }
-        .pref-btn:hover { background: #e0f4f3; color: #5eabd5; }
-        .result-view { flex: 1; padding: 30px; overflow-y: auto; background: #f8fafc; }
-        .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 10px; }
-        .thumb-box { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #5eabd5; overflow: hidden; }
-        .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-        @media (max-width: 768px) {
-            body { flex-direction: column; }
-            .sidebar { position: fixed; left: -280px; top: 0; height: 100%; width: 280px; }
-            .sidebar.open { left: 0; }
-            .mobile-header { display: flex; position: sticky; top: 0; }
-            .main-container { flex-direction: column; height: auto; }
-            .area-selector, .result-view { flex: none; width: 100%; padding: 20px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="mobile-header">
-        <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <img src="logo.png" alt="名刺くらうど" class="mobile-logo">
+<div class="main-content">
+    <div class="filter-container" id="areaFilters">
+        <button class="filter-btn active" onclick="filterArea('すべて', this)">すべて</button>
+        <button class="filter-btn" onclick="filterArea('津', this)">津</button>
+        <button class="filter-btn" onclick="filterArea('四日市', this)">四日市</button>
+        <button class="filter-btn" onclick="filterArea('伊勢', this)">伊勢</button>
+        <button class="filter-btn" onclick="filterArea('東京', this)">東京</button>
     </div>
-    <div class="menu-overlay" id="menuOverlay" onclick="toggleMenu()"></div>
-    <div class="sidebar" id="sidebar">
-        <div class="logo-area"><img src="logo.png" alt="Logo"></div>
-        <a href="index.html" class="nav-item"><img src="icon-keyword.png" class="nav-icon"><span>キーワード</span></a>
-        <a href="dept.html" class="nav-item"><img src="icon-dept.png" class="nav-icon"><span>部署</span></a>
-        <a href="area.html" class="nav-item active"><img src="icon-area.png" class="nav-icon"><span>エリア</span></a>
-    </div>
-    <div class="main-container">
-        <div class="area-selector">
-            <h2 style="color:#5eabd5; font-size:18px;">地域から探す</h2>
-            <div id="areaGrid"></div>
-        </div>
-        <div class="result-view" id="resultArea">
-            <h3 id="selectedTitle" style="color:#5eabd5; font-size:16px;">エリアを選択してください</h3>
-            <div id="cardGrid"></div>
-        </div>
-    </div>
-    <script>
-        function toggleMenu() {
-            const s = document.getElementById('sidebar');
-            const o = document.getElementById('menuOverlay');
-            const open = s.classList.toggle('open');
-            o.style.display = open ? 'block' : 'none';
-        }
-        const regions = [
-            { r: "北海道・東北", p: ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県"] },
-            { r: "関東", p: ["茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県"] },
-            { r: "中部・東海", p: ["新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "三重県"] },
-            { r: "近畿", p: ["滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県"] },
-            { r: "中国・四国", p: ["鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県"] },
-            { r: "九州・沖縄", p: ["福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"] }
-        ];
-        const grid = document.getElementById('areaGrid');
-        regions.forEach(reg => {
-            let html = `<div class="region-title">${reg.r}</div><div class="pref-grid">`;
-            reg.p.forEach(p => { html += `<div class="pref-btn" onclick="showArea('${p}')">${p}</div>`; });
-            grid.innerHTML += html + `</div>`;
+    <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<script>
+    // userDataの読み込みは共通
+    let currentArea = 'すべて';
+
+    function filterArea(area, btn) {
+        currentArea = area;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const grid = document.getElementById('cardGrid');
+        grid.innerHTML = "";
+        // 備考欄（memo）に地名が含まれているか、または特定のエリア項目がある場合にフィルタリング
+        userData.filter(u => currentArea === 'すべて' || (u.memo && u.memo.includes(currentArea))).forEach(user => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.onclick = () => openDetail(user);
+            card.innerHTML = `<div class="thumb-box"><img src="${user.icon}"></div><div class="card-name" style="font-weight:bold; font-size:20px;">${user.name}</div>`;
+            grid.appendChild(card);
         });
-        function showArea(name) {
-            document.getElementById('selectedTitle').innerText = name;
-            const grid = document.getElementById('cardGrid');
-            grid.innerHTML = "";
-            const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            data.filter(u => u.area === name).forEach(user => {
-                grid.innerHTML += `<div class="card"><div class="thumb-box">${user.name.charAt(0)}${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}</div><div><div style="font-weight:bold;">${user.name}</div><div style="font-size:12px; color:#888;">${user.dept}</div></div></div>`;
-            });
-        }
-    </script>
-</body>
-</html>
+    }
+    // openDetailなどは共通
+</script>
