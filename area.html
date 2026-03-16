@@ -6,25 +6,27 @@
     <title>名刺くらうど - エリア</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
+        /* サイドバー共通固定設定 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
+        .logo-area img { width: 100%; height: auto; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 30px 30px; color: rgba(255, 255, 255, 0.8); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.15); border-radius: 0 30px 30px 0; margin-right: 20px; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .filter-container { padding: 30px 50px 10px; display: flex; flex-wrap: wrap; gap: 12px; overflow-y: auto; max-height: 200px; }
-        .filter-btn { padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: white; color: #666; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .filter-container { padding: 40px 50px 10px; display: flex; flex-wrap: wrap; gap: 12px; overflow-y: auto; max-height: 200px; }
+        .filter-btn { padding: 10px 24px; border-radius: 25px; border: 1px solid #ddd; background: white; color: #666; cursor: pointer; font-weight: bold; }
         .filter-btn.active { background: #5eabd5; color: white; border-color: #5eabd5; }
 
         .card-grid { padding: 20px 50px 50px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; overflow-y: auto; }
-        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; cursor: pointer; }
-        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; overflow: hidden; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+        .card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 6px 15px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 20px; border: 1px solid #f0f0f0; cursor: pointer; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #f0faff; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
 <body>
     <div class="sidebar">
-        <div class="logo-area"><img src="logo.png" style="width:100%;"></div>
+        <div class="logo-area"><img src="logo.png"></div>
         <a href="index.html" class="nav-item"><img src="icon-keyword.png" style="width:38px; margin-right:18px;"><span>キーワード</span></a>
         <a href="dept.html" class="nav-item"><img src="icon-dept.png" style="width:38px; margin-right:18px;"><span>部署</span></a>
         <a href="area.html" class="nav-item active"><img src="icon-area.png" style="width:38px; margin-right:18px;"><span>エリア</span></a>
