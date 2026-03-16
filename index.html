@@ -71,7 +71,6 @@
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; font-weight: 500; }
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
-        /* ボタンアクションエリア */
         .action-btn-container { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; display: flex; justify-content: center; gap: 40px; }
         .delete-btn { color: #ff5a5f; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
         .edit-btn { color: #6fceca; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
@@ -133,13 +132,13 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>役職</label><div class="display-value" id="viewTitle"></div></div>
-                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
+                <div class="form-group"><label>エリア</label><div class="display-value" id="viewArea"></div></div>
             </div>
             <div class="form-row">
+                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
                 <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
             </div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
-            
             <div class="action-btn-container">
                 <button class="edit-btn" id="editTargetBtn">名刺を編集</button>
                 <button class="delete-btn" id="deleteTargetBtn">名刺を削除</button>
@@ -166,9 +165,10 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
-                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
+                <div class="form-group"><label>エリア</label><input type="text" id="newArea" placeholder="例：北勢、中勢、南勢など"></div>
             </div>
             <div class="form-row">
+                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
                 <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
             </div>
             <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
@@ -204,7 +204,7 @@
         }
 
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [
-            { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
+            { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", area: "中勢", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
         ];
 
         function renderCards() {
@@ -213,7 +213,11 @@
             const term = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
-            let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
+            let filtered = cardData.filter(c => 
+                (c.name || "").toLowerCase().includes(term) || 
+                (c.company || "").toLowerCase().includes(term) ||
+                (c.area || "").toLowerCase().includes(term)
+            );
             
             filtered.sort((a, b) => {
                 if (sortBy === "new") return b.id - a.id;
@@ -226,7 +230,7 @@
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => openDetailModal(c);
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company} | ${c.area || "エリア未設定"}</div></div>`;
                 grid.appendChild(div);
             });
         }
@@ -238,13 +242,13 @@
             document.getElementById('viewCompany').innerText = data.company || "-";
             document.getElementById('viewDept').innerText = data.dept || "-";
             document.getElementById('viewTitle').innerText = data.title || "-";
+            document.getElementById('viewArea').innerText = data.area || "-";
             document.getElementById('viewEmail').innerText = data.email || "-";
             document.getElementById('viewTel').innerText = data.tel || "-";
             document.getElementById('viewNote').innerText = data.note || "-";
             
             document.getElementById('deleteTargetBtn').onclick = () => deleteCard(data.id);
             document.getElementById('editTargetBtn').onclick = () => openEditModal(data);
-            
             document.getElementById('detailModal').style.display = 'flex';
         }
 
@@ -265,7 +269,10 @@
         function openAddModal() {
             editingCardId = null;
             document.getElementById('modalTitle').innerText = "新規名刺追加";
-            ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
+            ['newName','newKana','newCompany','newDept','newTitle','newArea','newEmail','newTel','newNote'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = "";
+            });
             document.getElementById('imageInput').value = "";
             document.getElementById('previewImg').style.display = 'none';
             document.getElementById('uploadPlaceholder').style.display = 'block';
@@ -282,6 +289,7 @@
             document.getElementById('newCompany').value = data.company || "";
             document.getElementById('newDept').value = data.dept || "";
             document.getElementById('newTitle').value = data.title || "";
+            document.getElementById('newArea').value = data.area || "";
             document.getElementById('newEmail').value = data.email || "";
             document.getElementById('newTel').value = data.tel || "";
             document.getElementById('newNote').value = data.note || "";
@@ -291,7 +299,6 @@
             preview.src = data.icon;
             preview.style.display = 'block';
             document.getElementById('uploadPlaceholder').style.display = 'none';
-            
             document.getElementById('addModal').style.display = 'flex';
         }
 
@@ -311,6 +318,7 @@
 
         function saveCard() {
             const nameVal = document.getElementById('newName').value.trim();
+            // 名前が空の場合のみアラート。画像必須のエラーは完全に排除。
             if (nameVal === "") {
                 alert("名前を入力してください");
                 return;
@@ -329,6 +337,7 @@
                 company: document.getElementById('newCompany').value,
                 dept: document.getElementById('newDept').value,
                 title: document.getElementById('newTitle').value,
+                area: document.getElementById('newArea').value,
                 email: document.getElementById('newEmail').value,
                 tel: document.getElementById('newTel').value,
                 note: document.getElementById('newNote').value,
