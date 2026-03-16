@@ -6,11 +6,12 @@
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン画面：ロゴ位置のみ変更 */
+        /* ログイン画面：一瞬の表示を防ぐため初期はdisplay:none */
         #loginOverlay {
+            display: none; 
             position: fixed; inset: 0;
             background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000;
+            flex-direction: column; justify-content: center; align-items: center; z-index: 20000;
         }
         .login-logo-outside { width: 280px; margin-bottom: 30px; text-align: center; }
         .login-logo-outside img { width: 100%; transform: scale(1.1); }
@@ -31,6 +32,7 @@
             cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3);
         }
 
+        /* メインアプリ：初期はdisplay:none */
         #mainApp { display: none; width: 100%; height: 100%; }
 
         /* 以下、清水さんのオリジナルスタイルを一切変えずに維持 */
@@ -169,17 +171,10 @@
     </div>
 
     <script>
-        // ログイン処理
-        function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            if (email.includes('@')) {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                checkLogin();
-            } else { alert('メールアドレスを入力してください'); }
-        }
-
+        // ログイン処理の修正：判定後にdisplayをflexにする
         function checkLogin() {
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'flex';
                 renderCards();
@@ -189,12 +184,19 @@
             }
         }
 
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            if (email.includes('@')) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                checkLogin();
+            } else { alert('メールアドレスを入力してください'); }
+        }
+
         function doLogout() {
             sessionStorage.removeItem('isLoggedIn');
             location.reload();
         }
 
-        // 名刺データ
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [
             { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
         ];
@@ -252,8 +254,9 @@
                 const reader = new FileReader();
                 reader.onload = e => {
                     currentImageDataUrl = e.target.result;
-                    document.getElementById('previewImg').src = currentImageDataUrl;
-                    document.getElementById('previewImg').style.display = 'block';
+                    const preview = document.getElementById('previewImg');
+                    preview.src = currentImageDataUrl;
+                    preview.style.display = 'block';
                     document.getElementById('uploadPlaceholder').style.display = 'none';
                 };
                 reader.readAsDataURL(input.files[0]);
