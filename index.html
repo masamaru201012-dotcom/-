@@ -253,13 +253,15 @@
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        // 変数をグローバルで管理
         let currentImageDataUrl = "";
+
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('imageInput').value = "";
             document.getElementById('previewImg').style.display = 'none';
             document.getElementById('uploadPlaceholder').style.display = 'block';
-            currentImageDataUrl = ""; // リセット
+            currentImageDataUrl = ""; // 明示的に空にする
             document.getElementById('addModal').style.display = 'flex';
         }
 
@@ -278,20 +280,25 @@
         }
 
         function saveNewCard() {
-            const name = document.getElementById('newName').value;
-            // 名前が空の場合のみ警告
-            if (!name) { alert("名前を入力してください"); return; }
+            const nameEl = document.getElementById('newName');
+            const nameVal = nameEl ? nameEl.value.trim() : "";
             
-            // 画像がない場合は user-1 から user-6 をランダムで設定
+            // チェックは「名前が空かどうか」だけにする
+            if (nameVal === "") {
+                alert("名前を入力してください");
+                return;
+            }
+            
+            // 画像がない場合はランダムアイコン
             let finalIcon = currentImageDataUrl;
-            if (!finalIcon) {
+            if (!finalIcon || finalIcon === "") {
                 const randNum = Math.floor(Math.random() * 6) + 1;
                 finalIcon = `user-${randNum}.png`;
             }
 
-            cardData.unshift({
+            const newCard = {
                 id: Date.now(),
-                name: name,
+                name: nameVal,
                 kana: document.getElementById('newKana').value,
                 company: document.getElementById('newCompany').value,
                 dept: document.getElementById('newDept').value,
@@ -300,8 +307,11 @@
                 tel: document.getElementById('newTel').value,
                 note: document.getElementById('newNote').value,
                 icon: finalIcon
-            });
+            };
+
+            cardData.unshift(newCard);
             localStorage.setItem('businessCards', JSON.stringify(cardData));
+            
             closeModal('addModal');
             renderCards();
         }
