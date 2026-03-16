@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - キーワード検索</title>
     <style>
-        /* 1. まずページ全体を物理的に隠す（ここが最重要） */
+        /* チラつき防止 */
         html { visibility: hidden; }
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン画面：初期は非表示 */
+        /* ログイン画面 */
         #loginOverlay {
             display: none; 
             position: fixed; inset: 0;
@@ -18,27 +18,13 @@
         }
         .login-logo-outside { width: 280px; margin-bottom: 30px; text-align: center; }
         .login-logo-outside img { width: 100%; transform: scale(1.1); }
+        .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
-        .login-box {
-            background: white; padding: 35px; border-radius: 30px; 
-            width: 100%; max-width: 360px; text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-        }
-        .login-box input {
-            width: 100%; padding: 12px 15px; margin-bottom: 18px;
-            border: 1px solid #eef2f6; border-radius: 12px;
-            background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box;
-        }
-        .login-btn {
-            width: 100%; padding: 16px; border: none; border-radius: 15px;
-            background: #6fceca; color: white; font-size: 16px; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3);
-        }
-
-        /* メインアプリ：初期は非表示 */
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* 以下、清水さんのスタイルを一切変えずに維持 */
+        /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -65,9 +51,16 @@
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; }
+        /* モーダル背景：0.85から0.4へ変更（明るく透過） */
+        .modal { 
+            display: none; 
+            position: fixed; inset: 0; 
+            background: rgba(0, 0, 0, 0.4); /* ここを明るくしました */
+            z-index: 10000; 
+            justify-content: center; align-items: center; padding: 20px;
+            backdrop-filter: blur(4px); /* 背景を少しぼかして高級感を出しました */
+        }
+        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
         .modal-header { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 25px; text-align: center; }
         .img-container { width: 120px; height: 120px; border-radius: 20px; background: #f8fafc; margin: 0 auto 25px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #eef2f6; }
@@ -175,10 +168,8 @@
     </div>
 
     <script>
-        // 2. 判定が終わるまで隠し、終わったら表示する
         function checkLogin() {
             const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-            
             if (isLoggedIn) {
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'flex';
@@ -187,8 +178,6 @@
                 document.getElementById('loginOverlay').style.display = 'flex';
                 document.getElementById('mainApp').style.display = 'none';
             }
-            
-            // 判定が完了したので隠蔽を解除
             document.documentElement.style.visibility = 'visible';
         }
 
@@ -205,7 +194,6 @@
             location.reload();
         }
 
-        // --- 名刺データ・機能維持 ---
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [
             { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
         ];
@@ -292,7 +280,6 @@
             renderCards();
         }
 
-        // 初期実行
         checkLogin();
     </script>
 </body>
