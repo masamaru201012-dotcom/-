@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>名刺くらうど - 部署</title>
+    <title>名刺くらうど - 部署別ファイル</title>
     <style>
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
@@ -17,13 +17,13 @@
 
         .main-container { flex: 1; display: flex; overflow: hidden; }
 
-        /* モバイルヘッダー */
+        /* モバイル用 */
         .mobile-header { display: none; width: 100%; height: 60px; background: white; align-items: center; padding: 0 20px; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 2000; position: fixed; top: 0; left: 0; }
         .menu-btn { background: none; border: none; font-size: 28px; color: #5eabd5; cursor: pointer; padding: 0; margin-right: 15px; }
         .mobile-logo { height: 30px; }
         .menu-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2500; }
 
-        /* 部署選択エリア */
+        /* 部署フォルダエリア */
         .dept-selector { flex: 1; padding: 40px; overflow-y: auto; background: white; border-right: 1px solid #eef2f6; }
         .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 20px; }
         .dept-folder { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 15px; border-radius: 15px; transition: 0.2s; }
@@ -39,12 +39,13 @@
         .f-mint { background: linear-gradient(135deg, #abebc6, #82e0aa); }
         .f-ash { background: linear-gradient(135deg, #d5dbdb, #aeb6bf); }
 
-        /* 結果表示エリア */
+        /* 名刺リスト表示エリア */
         .result-view { flex: 1.2; padding: 40px; overflow-y: auto; background: #f8fafc; }
         .result-header { font-size: 20px; font-weight: bold; color: #444; margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid #6fceca; }
         .card { background: white; border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; border: 1px solid #eee; margin-bottom: 15px; }
         .thumb-box { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #f0faff; background-color: #e0f4f3; position: relative; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: #5eabd5; overflow: hidden; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+        .owner-tag { font-size: 11px; color: #5eabd5; background: #e0f4f3; padding: 2px 8px; border-radius: 10px; margin-top: 5px; display: inline-block; }
 
         @media (max-width: 850px) {
             body { flex-direction: column; overflow: visible; }
@@ -53,8 +54,7 @@
             .mobile-header { display: flex; }
             .main-container { flex-direction: column; height: auto; margin-top: 60px; overflow: visible; }
             .dept-selector, .result-view { flex: none; width: 100%; padding: 20px; box-sizing: border-box; }
-            .dept-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
-            .dept-folder { padding: 10px; }
+            .dept-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
         }
     </style>
 </head>
@@ -74,10 +74,10 @@
 
     <div class="main-container">
         <div class="dept-selector">
-            <h2 style="color:#5eabd5; margin-bottom:30px; font-size: 20px;">部署から探す</h2>
+            <h2 style="color:#5eabd5; margin-bottom:30px; font-size: 20px;">部署別ファイル</h2>
             <div class="dept-grid" id="deptGrid"></div>
         </div>
-        <div class="result-view">
+        <div class="result-view" id="resultView">
             <div id="selectedDeptName" class="result-header">部署を選択してください</div>
             <div id="cardGrid"></div>
         </div>
@@ -106,27 +106,38 @@
             dGrid.appendChild(folder);
         });
 
-        function selectDept(name) {
-            document.getElementById('selectedDeptName').innerText = name;
+        function selectDept(deptName) {
+            document.getElementById('selectedDeptName').innerText = deptName + "が獲得した名刺";
             const grid = document.getElementById('cardGrid');
             grid.innerHTML = "";
+            
+            // 全データ取得
             const data = JSON.parse(localStorage.getItem('myCards')) || [];
-            data.filter(u => u.dept === name).forEach(user => {
-                grid.innerHTML += `
-                    <div class="card">
-                        <div class="thumb-box">
-                            ${user.name.charAt(0)}
-                            ${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}
-                        </div>
-                        <div>
-                            <div style="font-weight:bold; font-size:17px;">${user.name}</div>
-                            <div style="font-size:12px; color:#888;">${user.title || ''}</div>
-                        </div>
-                    </div>`;
-            });
-            // スマホの場合、選択後に結果まで自動スクロール
+            
+            // ★重要：登録した人の部署（ownerDept）でフィルター
+            const filtered = data.filter(u => u.ownerDept === deptName);
+            
+            if(filtered.length === 0) {
+                grid.innerHTML = `<div style="color:#888; padding:20px;">登録された名刺はありません。</div>`;
+            } else {
+                filtered.forEach(user => {
+                    grid.innerHTML += `
+                        <div class="card">
+                            <div class="thumb-box">
+                                ${user.name.charAt(0)}
+                                ${user.icon ? `<img src="${user.icon}" onerror="this.style.display='none'">` : ''}
+                            </div>
+                            <div>
+                                <div style="font-weight:bold; font-size:17px;">${user.name}</div>
+                                <div style="font-size:12px; color:#888;">${user.company || ''} / ${user.dept || ''}</div>
+                                <div class="owner-tag">👤 登録者: ${user.registeredBy || '不明'}</div>
+                            </div>
+                        </div>`;
+                });
+            }
+
             if(window.innerWidth <= 850) {
-                document.querySelector('.result-view').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('resultView').scrollIntoView({ behavior: 'smooth' });
             }
         }
     </script>
