@@ -9,16 +9,13 @@
         html { visibility: hidden; }
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-
-        /* サイドバー：index.htmlと100%同一のCSS */
+        
+        /* サイドバー：完全同期 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
-        
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        
-        /* アイコンが潰れないための重要な設定 */
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; flex-shrink: 0; }
         
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
@@ -30,14 +27,24 @@
         .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 60px; }
         .page-title { font-size: 24px; font-weight: bold; color: #444; margin-bottom: 40px; }
 
-        /* フォルダグリッド */
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; max-width: 1100px; }
-        .folder-card { background: white; border-radius: 15px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-decoration: none; }
-        .folder-card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 25px rgba(111, 206, 202, 0.15); }
-        .folder-icon { width: 80px; height: 60px; border-radius: 4px 10px 4px 4px; margin-bottom: 20px; position: relative; background: linear-gradient(135deg, #a5d6d4 0%, #6fceca 100%); }
-        .folder-icon::before { content: ""; position: absolute; top: -8px; left: 0; width: 35px; height: 10px; background: #5eabd5; border-radius: 3px 3px 0 0; }
+        /* 部署グリッド */
+        .dept-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; }
+        .dept-card { 
+            background: white; border-radius: 20px; padding: 30px 20px; 
+            display: flex; flex-direction: column; align-items: center; 
+            border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; text-decoration: none;
+            position: relative;
+        }
+        .dept-card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        
+        .folder-icon { width: 60px; height: 60px; margin-bottom: 15px; opacity: 0.8; }
         .dept-name { font-weight: bold; color: #444; font-size: 16px; text-align: center; }
-        .card-count { font-size: 12px; color: #999; margin-top: 8px; }
+        
+        /* 件数バッジ */
+        .dept-count { 
+            margin-top: 8px; font-size: 12px; color: #6fceca; font-weight: bold;
+            padding: 2px 10px; background: #f0fdfc; border-radius: 10px;
+        }
 
         /* スマホ用下ヘッダー */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
@@ -54,6 +61,7 @@
     </style>
 </head>
 <body>
+
     <div id="mainApp">
         <div class="sidebar">
             <div class="logo-area"><img src="logo.png"></div>
@@ -69,7 +77,7 @@
 
         <div class="main-container">
             <div class="page-title">部署別</div>
-            <div class="folder-grid" id="folderGrid"></div>
+            <div id="deptContainer" class="dept-grid"></div>
         </div>
 
         <div class="mobile-nav">
@@ -80,10 +88,12 @@
     </div>
 
     <script>
+        const departments = ["制作技術部", "報道部", "営業部", "総務部", "企画部", "デジタル推進部", "役員", "その他"];
+
         function checkLogin() {
             if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('mainApp').style.display = 'flex';
-                renderFolders();
+                renderDepts();
             } else {
                 window.location.href = 'index.html';
             }
@@ -95,20 +105,41 @@
             window.location.href = 'index.html';
         }
 
-        const departments = ["総務部", "本社営業部", "東京支社", "大阪支社", "名古屋支社", "事業部", "編成部", "放送部", "業務部", "報道制作部", "制作技術部", "放送技術部"];
+        function renderDepts() {
+            const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
+            
+            // 部署ごとの件数を集計
+            const counts = {};
+            cardData.forEach(card => {
+                if (card.dept) {
+                    counts[card.dept] = (counts[card.dept] || 0) + 1;
+                }
+            });
 
-        function renderFolders() {
-            const grid = document.getElementById('folderGrid');
-            grid.innerHTML = "";
+            const container = document.getElementById('deptContainer');
+            container.innerHTML = "";
+
             departments.forEach(dept => {
+                const count = counts[dept] || 0;
+                
                 const card = document.createElement('a');
                 card.href = "#";
-                card.className = 'folder-card';
-                card.innerHTML = `<div class="folder-icon"></div><div class="dept-name">${dept}</div><div class="card-count">名刺を読み込む</div>`;
-                card.onclick = (e) => { e.preventDefault(); alert(`${dept}フォルダを開きます。`); };
-                grid.appendChild(card);
+                card.className = "dept-card";
+                card.onclick = (e) => {
+                    e.preventDefault();
+                    alert(dept + 'の名刺（' + count + '枚）を表示します');
+                };
+
+                // 「名刺を読み込む」を削除し、フォルダと件数のみの構成に
+                card.innerHTML = `
+                    <img src="icon-dept.png" class="folder-icon" style="filter: hue-rotate(150deg);">
+                    <div class="dept-name">${dept}</div>
+                    ${count > 0 ? `<div class="dept-count">${count}枚</div>` : `<div class="dept-count" style="color:#ccc; background:none;">0枚</div>`}
+                `;
+                container.appendChild(card);
             });
         }
+
         checkLogin();
     </script>
 </body>
