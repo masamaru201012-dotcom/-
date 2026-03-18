@@ -19,7 +19,7 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* サイドバー：dept.htmlと完全同期 */
+        /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -38,7 +38,6 @@
 
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         
-        /* 検索バー：虫眼鏡アイコンを復元 */
         .search-bar { 
             width: 100%; 
             padding: 12px 25px 12px 50px; 
@@ -145,11 +144,11 @@
             <div id="cardGrid" class="card-grid"></div>
         </div>
 
-        <div class="mobile-nav">
+        <nav class="mobile-nav">
             <a href="index.html" class="mobile-nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="mobile-nav-item"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="mobile-nav-item"><img src="icon-area.png"><span>エリア</span></a>
-        </div>
+        </nav>
     </div>
 
     <div id="addModal" class="modal">
@@ -167,7 +166,7 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>会社名 <span style="color:red;">*</span></label><input type="text" id="newCompany"></div>
-                <div class="form-group"><label>部署名</label><input type="text" id="newDept"></div>
+                <div class="form-group"><label>相手の部署名</label><input type="text" id="newDept"></div>
             </div>
             <div class="form-row">
                 <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
@@ -259,14 +258,18 @@
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
-            if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(a.name, 'ja'));
+            
+            if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(b.name, 'ja'));
             else if(sortBy === "desc") filtered.sort((a,b) => (b.name || "").localeCompare(a.name, 'ja'));
             else filtered.sort((a,b) => b.id - a.id);
+            
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => openDetailModal(c);
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:16px; color:#333;">${c.name}</div><div style="font-size:12px; color:#888;">${c.company}</div></div>`;
+                // 表示用アイコン： iconがなければランダム画像、それもなければuser-1
+                const displayIcon = c.icon || c.defaultIcon || 'user-1.png';
+                div.innerHTML = `<div class="thumb-box"><img src="${displayIcon}"></div><div><div style="font-weight:bold; font-size:16px; color:#333;">${c.name}</div><div style="font-size:12px; color:#888;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
@@ -276,10 +279,42 @@
             const company = document.getElementById('newCompany').value;
             const area = currentAreaType === 'in' ? document.getElementById('selectCityIn').value : document.getElementById('selectCityOut').value;
             if(!name || !company) { alert("名前と会社名を入力してください"); return; }
-            const cardInfo = { id: editingCardId || Date.now(), name, kana: document.getElementById('newKana').value, company, dept: document.getElementById('newDept').value, title: document.getElementById('newTitle').value, area: area || "-", email: document.getElementById('newEmail').value, tel: document.getElementById('newTel').value, note: document.getElementById('newNote').value, icon: currentImageDataUrl || 'user-1.png' };
-            if(editingCardId) { const idx = cardData.findIndex(c => c.id === editingCardId); cardData[idx] = cardInfo; }
-            else { cardData.unshift(cardInfo); }
-            localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('addModal'); renderCards();
+
+            let finalIcon = currentImageDataUrl;
+            let defaultIcon = "";
+
+            // 新規登録時かつ画像がアップロードされていない場合
+            if (!editingCardId && !finalIcon) {
+                const randomNum = Math.floor(Math.random() * 6) + 1;
+                defaultIcon = `user-${randomNum}.png`;
+            }
+
+            const cardInfo = { 
+                id: editingCardId || Date.now(), 
+                name, 
+                kana: document.getElementById('newKana').value, 
+                company, 
+                dept: document.getElementById('newDept').value, 
+                title: document.getElementById('newTitle').value, 
+                area: area || "-", 
+                email: document.getElementById('newEmail').value, 
+                tel: document.getElementById('newTel').value, 
+                note: document.getElementById('newNote').value, 
+                icon: finalIcon, // アップロードされた画像
+                defaultIcon: defaultIcon || (editingCardId ? cardData.find(c => c.id === editingCardId).defaultIcon : ""), // デフォルト画像
+                registeredByDept: "制作技術部" // 清水さんの部署として保存
+            };
+
+            if(editingCardId) { 
+                const idx = cardData.findIndex(c => c.id === editingCardId); 
+                cardData[idx] = cardInfo; 
+            } else { 
+                cardData.unshift(cardInfo); 
+            }
+
+            localStorage.setItem('businessCards', JSON.stringify(cardData)); 
+            closeModal('addModal'); 
+            renderCards();
         }
 
         function openAddModal() {
@@ -296,9 +331,11 @@
             document.getElementById('newTitle').value = data.title || ""; document.getElementById('newEmail').value = data.email || "";
             document.getElementById('newTel').value = data.tel || ""; document.getElementById('newNote').value = data.note || "";
             currentImageDataUrl = data.icon || "";
-            if(currentImageDataUrl && currentImageDataUrl !== 'user-1.png') {
+            if(currentImageDataUrl) {
                 document.getElementById('previewImg').src = currentImageDataUrl; document.getElementById('previewImg').style.display = 'block';
                 document.getElementById('uploadPlaceholder').style.display = 'none';
+            } else {
+                document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
             }
             if(mieCities.includes(data.area)) { switchAreaType('in'); document.getElementById('selectCityIn').value = data.area; }
             else { switchAreaType('out'); document.getElementById('selectCityOut').value = data.area; }
@@ -306,7 +343,7 @@
         }
 
         function openDetailModal(data) {
-            document.getElementById('viewImg').src = data.icon || 'user-1.png';
+            document.getElementById('viewImg').src = data.icon || data.defaultIcon || 'user-1.png';
             document.getElementById('viewName').innerText = data.name; document.getElementById('viewKana').innerText = data.kana || "-";
             document.getElementById('viewCompany').innerText = data.company; document.getElementById('viewDept').innerText = data.dept || "-";
             document.getElementById('viewTitle').innerText = data.title || "-"; document.getElementById('viewArea').innerText = data.area || "-";
