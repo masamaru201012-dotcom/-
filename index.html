@@ -25,7 +25,6 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
-        /* アカウント名を最下部に固定 */
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; }
 
@@ -33,7 +32,6 @@
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .header-left { display: flex; align-items: center; }
 
-        /* 【修正箇所】エリアアイコン：サイズを完全固定して潰れを防止 */
         .header-icon { 
             width: 24px !important; 
             height: 24px !important; 
@@ -52,14 +50,12 @@
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
         .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
-        /* カードグリッド */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル共通 */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
@@ -69,7 +65,6 @@
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
 
-        /* エリア切替ボタン */
         .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
         .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
 
@@ -77,6 +72,27 @@
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
+
+        /* スマホ用ボトムナビゲーション */
+        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 70px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 10px; font-weight: bold; }
+        .mobile-nav-item img { width: 22px; height: 22px; margin-bottom: 4px; opacity: 0.5; }
+        .mobile-nav-item.active { color: #6fceca; }
+        .mobile-nav-item.active img { opacity: 1; }
+
+        /* スマートフォン向けメディアクエリ */
+        @media screen and (max-width: 768px) {
+            .sidebar { display: none; }
+            .mobile-nav { display: flex; }
+            .main-content { padding-bottom: 70px; }
+            .header { height: auto; padding: 20px; flex-direction: column; gap: 15px; align-items: stretch; }
+            .header-left { justify-content: center; }
+            .search-container { margin: 0; max-width: none; }
+            .header-actions { justify-content: center; }
+            .card-grid { padding: 20px; grid-template-columns: 1fr; }
+            .modal-card { width: 95%; padding: 20px; }
+            .form-row { flex-direction: column; gap: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -118,19 +134,23 @@
             </div>
             <div id="cardGrid" class="card-grid"></div>
         </div>
+
+        <div class="mobile-nav">
+            <a href="index.html" class="mobile-nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
+            <a href="dept.html" class="mobile-nav-item"><img src="icon-dept.png"><span>部署</span></a>
+            <a href="area.html" class="mobile-nav-item"><img src="icon-area.png"><span>エリア</span></a>
+        </div>
     </div>
 
     <div id="addModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
             <h2 style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
-
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                 <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
-
             <div class="form-row">
                 <div class="form-group"><label>名前 <span style="color:red;">*</span></label><input type="text" id="newName"></div>
                 <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
@@ -157,7 +177,13 @@
                     </select>
                     <select id="selectCityOut" style="display: none;">
                         <option value="">都道府県を選択してください</option>
-                        <option value="愛知県">愛知県</option><option value="岐阜県">岐阜県</option><option value="滋賀県">滋賀県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option><option value="東京都">東京都</option><option value="大阪府">大阪府</option>
+                        <optgroup label="北海道・東北"><option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option></optgroup>
+                        <optgroup label="関東"><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option></optgroup>
+                        <optgroup label="中部（三重除く）"><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option></optgroup>
+                        <optgroup label="近畿"><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option></optgroup>
+                        <optgroup label="中国"><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option></optgroup>
+                        <optgroup label="四国"><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option></optgroup>
+                        <optgroup label="九州・沖縄"><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option></optgroup>
                     </select>
                 </div>
             </div>
@@ -187,10 +213,6 @@
             <div class="form-row">
                 <div class="form-group"><label>役職</label><div class="display-value" id="viewTitle"></div></div>
                 <div class="form-group"><label>エリア</label><div class="display-value" id="viewArea"></div></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
-                <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
             </div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height:80px; align-items:flex-start;" id="viewNote"></div></div>
             <div class="action-btn-container">
@@ -231,11 +253,9 @@
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
-
             if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(b.name, 'ja'));
             else if(sortBy === "desc") filtered.sort((a,b) => (b.name || "").localeCompare(a.name, 'ja'));
             else filtered.sort((a,b) => b.id - a.id);
-
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
@@ -250,31 +270,14 @@
             const company = document.getElementById('newCompany').value;
             const area = currentAreaType === 'in' ? document.getElementById('selectCityIn').value : document.getElementById('selectCityOut').value;
             if(!name || !company) { alert("名前と会社名を入力してください"); return; }
-
-            const cardInfo = {
-                id: Date.now(),
-                name: name,
-                kana: document.getElementById('newKana').value,
-                company: company,
-                dept: document.getElementById('newDept').value,
-                title: document.getElementById('newTitle').value,
-                area: area || "-",
-                email: document.getElementById('newEmail').value,
-                tel: document.getElementById('newTel').value,
-                note: document.getElementById('newNote').value,
-                icon: currentImageDataUrl || 'user-1.png'
-            };
-
-            cardData.unshift(cardInfo);
-            localStorage.setItem('businessCards', JSON.stringify(cardData));
-            closeModal('addModal'); renderCards();
+            const cardInfo = { id: Date.now(), name, kana: document.getElementById('newKana').value, company, dept: document.getElementById('newDept').value, title: document.getElementById('newTitle').value, area: area || "-", email: document.getElementById('newEmail').value, tel: document.getElementById('newTel').value, note: document.getElementById('newNote').value, icon: currentImageDataUrl || 'user-1.png' };
+            cardData.unshift(cardInfo); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('addModal'); renderCards();
         }
 
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
-            currentImageDataUrl = ""; switchAreaType('in');
-            document.getElementById('addModal').style.display = 'flex';
+            currentImageDataUrl = ""; switchAreaType('in'); document.getElementById('addModal').style.display = 'flex';
         }
 
         function openDetailModal(data) {
@@ -285,12 +288,8 @@
             document.getElementById('viewDept').innerText = data.dept || "-";
             document.getElementById('viewTitle').innerText = data.title || "-";
             document.getElementById('viewArea').innerText = data.area || "-";
-            document.getElementById('viewEmail').innerText = data.email || "-";
-            document.getElementById('viewTel').innerText = data.tel || "-";
             document.getElementById('viewNote').innerText = data.note || "-";
-            document.getElementById('deleteTargetBtn').onclick = () => {
-                if(confirm("削除しますか？")){ cardData = cardData.filter(c => c.id !== data.id); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('detailModal'); renderCards(); }
-            };
+            document.getElementById('deleteTargetBtn').onclick = () => { if(confirm("削除しますか？")){ cardData = cardData.filter(c => c.id !== data.id); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('detailModal'); renderCards(); } };
             document.getElementById('detailModal').style.display = 'flex';
         }
 
