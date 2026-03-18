@@ -3,20 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>名刺くらうど - エリア別検索</title>
+    <title>名刺くらうど - エリア別</title>
     <style>
         html { visibility: hidden; }
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-
-        /* ログイン */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
         .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); box-sizing: border-box; }
         .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; outline: none; box-sizing: border-box; font-size: 16px; }
         .login-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-weight: bold; cursor: pointer; }
-
         #mainApp { display: none; width: 100%; height: 100%; }
-
-        /* サイドバー (PC版) */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -26,31 +21,32 @@
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; color: #ffffff; }
         .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; text-decoration: underline; }
-
-        /* メイン */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
-        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; }
-
-        /* スマホ用下ナビ */
-        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
+        .scroll-area { flex: 1; padding: 40px; overflow-y: auto; }
+        .area-section { margin-bottom: 40px; }
+        .area-title { font-size: 18px; font-weight: bold; color: #444; border-left: 5px solid #5eabd5; padding-left: 15px; margin-bottom: 20px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; height: 130px; box-sizing: border-box; }
+        .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
+        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
         .mobile-nav-item.active { color: #6fceca; }
         .mobile-nav-item.active img { opacity: 1; }
-
         @media screen and (max-width: 768px) {
             .sidebar { display: none; }
             .mobile-nav { display: flex; }
-            .main-content { padding-bottom: 85px; }
-            .header { height: auto; padding: 20px; flex-direction: column; align-items: stretch; }
-            .card-grid { padding: 15px; grid-template-columns: 1fr; }
-            input, select, textarea { font-size: 16px !important; }
+            .scroll-area { padding: 20px 15px 100px; }
+            .header { padding: 0 20px; }
+            .card-grid { grid-template-columns: 1fr; }
+            input { font-size: 16px !important; }
         }
     </style>
 </head>
 <body>
-    <div id="loginOverlay"><div class="login-box"><h2 style="color:#6fceca">名刺くらうど</h2><input type="email" id="loginEmail" placeholder="メールアドレス"><button class="login-btn" onclick="handleLogin()">ログイン</button></div></div>
+    <div id="loginOverlay"><div class="login-box"><h2>名刺くらうど</h2><input type="email" id="loginEmail" placeholder="メールアドレス"><button class="login-btn" onclick="handleLogin()">ログイン</button></div></div>
     <div id="mainApp">
         <div class="sidebar">
             <div class="logo-area"><img src="logo.png"></div>
@@ -60,10 +56,8 @@
             <div class="user-profile-area"><div class="user-name">清水　茉咲 (制作技術部)</div><button class="logout-btn" onclick="handleLogout()">ログアウト</button></div>
         </div>
         <div class="main-content">
-            <div class="header"><h2 style="margin:0; font-size:18px; color:#444;">エリア別表示</h2></div>
-            <div id="cardGrid" class="card-grid">
-                <p style="color:#888;">エリア別データを読み込み中...</p>
-            </div>
+            <div class="header"><h2>エリア別表示</h2></div>
+            <div id="areaContainer" class="scroll-area"></div>
         </div>
         <nav class="mobile-nav">
             <a href="index.html" class="mobile-nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
@@ -72,10 +66,42 @@
         </nav>
     </div>
     <script>
+        const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
+        const mieCities = ["津市", "四日市市", "伊勢市", "松阪市", "桑名市", "鈴鹿市", "名張市", "尾鷲市", "亀山市", "鳥羽市", "熊野市", "いなべ市", "志摩市", "伊賀市", "桑名郡", "員弁郡", "三重郡", "多気郡", "度会郡", "北牟婁郡", "南牟婁郡"];
+
+        function renderAreaGroups() {
+            const container = document.getElementById('areaContainer');
+            container.innerHTML = "";
+            const inMie = cardData.filter(c => mieCities.includes(c.area));
+            const outMie = cardData.filter(c => c.area && !mieCities.includes(c.area) && c.area !== "-");
+
+            const renderSection = (title, cards) => {
+                if(cards.length === 0) return;
+                const section = document.createElement('div');
+                section.className = 'area-section';
+                section.innerHTML = `<div class="area-title">${title} (${cards.length})</div>`;
+                const grid = document.createElement('div');
+                grid.className = 'card-grid';
+                cards.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'card';
+                    const icon = c.icon || c.defaultIcon || 'user-1.png';
+                    div.innerHTML = `<div class="thumb-box"><img src="${icon}"></div><div><div style="font-weight:bold;">${c.name}</div><div style="font-size:12px; color:#888;">${c.company}</div><div style="font-size:11px; color:#6fceca;">${c.area}</div></div>`;
+                    grid.appendChild(div);
+                });
+                section.appendChild(grid);
+                container.appendChild(section);
+            };
+
+            renderSection("三重県内", inMie);
+            renderSection("県外", outMie);
+            if(inMie.length === 0 && outMie.length === 0) container.innerHTML = '<p style="text-align:center; color:#888; padding-top:50px;">エリア情報のある名刺がありません</p>';
+        }
+
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
         window.onload = () => {
-            if(sessionStorage.getItem('isLoggedIn')) { document.getElementById('loginOverlay').style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; }
+            if(sessionStorage.getItem('isLoggedIn')) { document.getElementById('loginOverlay').style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; renderAreaGroups(); }
             document.documentElement.style.visibility = 'visible';
         };
     </script>
