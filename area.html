@@ -10,26 +10,24 @@
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
-        /* サイドバー：キーワードページと100%同一のCSS */
+        /* サイドバー：他ページと完全同期 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
-        
-        /* アイコン修正の肝：object-fit: contain で潰れを防止 */
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; flex-shrink: 0; }
         
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
         .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; outline: none; }
 
-        /* メインコンテンツエリア */
+        /* メインコンテンツ */
         #mainApp { display: none; width: 100%; height: 100%; }
         .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 60px; }
         .page-title { font-size: 24px; font-weight: bold; color: #444; margin-bottom: 40px; }
 
-        /* 地方セクション（現在のデザインを維持） */
+        /* 地方セクション */
         .region-section { margin-bottom: 50px; }
         .region-name { font-size: 18px; font-weight: bold; color: #5eabd5; margin-bottom: 20px; border-left: 4px solid #6fceca; padding-left: 15px; }
 
@@ -37,16 +35,20 @@
         .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .area-card { 
             background: white; border-radius: 10px; padding: 18px; 
-            display: flex; justify-content: center; align-items: center; 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
             border: 1px solid #eef2f6; cursor: pointer; transition: 0.2s; text-decoration: none;
         }
         .area-card:hover { border-color: #6fceca; background-color: #f0fdfc; transform: translateY(-2px); }
+        
+        /* 数字がある場合のデザイン */
+        .area-card.has-data { border-color: #6fceca; background: #fff; box-shadow: 0 4px 12px rgba(111, 206, 202, 0.1); }
         .pref-name { font-weight: bold; color: #444; font-size: 14px; text-align: center; }
+        .count-badge { font-size: 11px; color: #6fceca; margin-top: 5px; font-weight: bold; }
         
         /* 三重県セクション */
         .mie-section { background: #fff; padding: 25px; border-radius: 20px; border: 2px solid #6fceca; margin-bottom: 50px; }
 
-        /* スマホ用下ヘッダー（レスポンシブ対応） */
+        /* スマホ用下ヘッダー */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; object-fit: contain; }
@@ -113,33 +115,66 @@
             window.location.href = 'index.html';
         }
 
+        // データを集計してHTMLを生成するメイン関数
         function renderRegions() {
+            // LocalStorageから最新データを取得
+            const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
+            
+            // エリアごとの件数を集計するオブジェクトを作成
+            const counts = {};
+            cardData.forEach(card => {
+                if (card.area) {
+                    counts[card.area] = (counts[card.area] || 0) + 1;
+                }
+            });
+
             const container = document.getElementById('regionContainer');
             container.innerHTML = "";
 
-            // 三重県
+            // --- 1. 三重県セクション ---
             const mieSection = document.createElement('div');
             mieSection.className = 'region-section mie-section';
             let mieHtml = `<div class="region-name">三重県（市町村別）</div><div class="area-grid">`;
             mieCities.forEach(city => {
-                mieHtml += `<a href="#" class="area-card" onclick="event.preventDefault(); alert('${city}の名刺を表示します')"><div class="pref-name">${city}</div></a>`;
+                const count = counts[city] || 0;
+                const activeClass = count > 0 ? 'has-data' : '';
+                const countDisplay = count > 0 ? `<div class="count-badge">${count}枚</div>` : '';
+                
+                mieHtml += `
+                    <a href="#" class="area-card ${activeClass}" onclick="event.preventDefault(); showAreaCards('${city}')">
+                        <div class="pref-name">${city}</div>
+                        ${countDisplay}
+                    </a>`;
             });
             mieHtml += `</div>`;
             mieSection.innerHTML = mieHtml;
             container.appendChild(mieSection);
 
-            // 他の地方
+            // --- 2. 他の地方セクション ---
             regionData.forEach(data => {
                 const section = document.createElement('div');
                 section.className = 'region-section';
                 let html = `<div class="region-name">${data.region}</div><div class="area-grid">`;
                 data.prefs.forEach(pref => {
-                    html += `<a href="#" class="area-card" onclick="event.preventDefault(); alert('${pref}の名刺を表示します')"><div class="pref-name">${pref}</div></a>`;
+                    const count = counts[pref] || 0;
+                    const activeClass = count > 0 ? 'has-data' : '';
+                    const countDisplay = count > 0 ? `<div class="count-badge">${count}枚</div>` : '';
+
+                    html += `
+                        <a href="#" class="area-card ${activeClass}" onclick="event.preventDefault(); showAreaCards('${pref}')">
+                            <div class="pref-name">${pref}</div>
+                            ${countDisplay}
+                        </a>`;
                 });
                 html += `</div>`;
                 section.innerHTML = html;
                 container.appendChild(section);
             });
+        }
+
+        // クリックした時のアクション（現在はアラートのみ）
+        function showAreaCards(areaName) {
+            alert(areaName + 'の名刺を表示します（現在は' + areaName + 'のフィルタ機能を準備中）');
         }
 
         checkLogin();
