@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード検索</title>
     <style>
         /* 読み込み時のチラつき防止 */
@@ -17,7 +18,7 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* サイドバー */
+        /* サイドバー（デスクトップ用左ヘッダー） */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -25,8 +26,17 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
-        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
-        .user-name { font-size: 15px; font-weight: bold; }
+        .user-profile-area { 
+            margin-top: auto; 
+            padding: 25px 30px; 
+            border-top: 1px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(0, 0, 0, 0.05); 
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .user-name { font-size: 15px; font-weight: bold; color: white; }
+        .user-dept { font-size: 12px; color: rgba(255, 255, 255, 0.8); }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
@@ -56,6 +66,7 @@
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* モーダル共通 */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
@@ -73,25 +84,32 @@
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
 
-        /* スマホ用ボトムナビゲーション */
-        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 70px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; }
-        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 10px; font-weight: bold; }
-        .mobile-nav-item img { width: 22px; height: 22px; margin-bottom: 4px; opacity: 0.5; }
+        /* 【追加】スマホ用ボトムナビゲーション（下ヘッダー） */
+        .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
+        .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
         .mobile-nav-item.active { color: #6fceca; }
-        .mobile-nav-item.active img { opacity: 1; }
+        .mobile-nav-item.active img { opacity: 1; filter: drop-shadow(0 0 2px rgba(111, 206, 202, 0.3)); }
 
-        /* スマートフォン向けメディアクエリ */
+        /* 【追加】スマホ用ユーザー表示（ヘッダーに移動） */
+        .mobile-user-info { display: none; font-size: 12px; color: #888; text-align: right; }
+
+        /* スマホ向けメディアクエリ */
         @media screen and (max-width: 768px) {
-            .sidebar { display: none; }
-            .mobile-nav { display: flex; }
-            .main-content { padding-bottom: 70px; }
-            .header { height: auto; padding: 20px; flex-direction: column; gap: 15px; align-items: stretch; }
-            .header-left { justify-content: center; }
+            .sidebar { display: none; } /* 左ヘッダー非表示 */
+            .mobile-nav { display: flex; } /* 下ヘッダー表示 */
+            .main-content { padding-bottom: 75px; }
+            .header { height: auto; padding: 15px 20px; flex-direction: column; gap: 12px; align-items: stretch; }
+            .header-left { justify-content: space-between; }
+            .mobile-user-info { display: block; } /* スマホ時のみヘッダーにアカウント名表示 */
             .search-container { margin: 0; max-width: none; }
-            .header-actions { justify-content: center; }
-            .card-grid { padding: 20px; grid-template-columns: 1fr; }
-            .modal-card { width: 95%; padding: 20px; }
-            .form-row { flex-direction: column; gap: 10px; }
+            .header-actions { justify-content: space-between; gap: 10px; }
+            .add-button { flex: 1; padding: 10px; font-size: 14px; }
+            .sort-select { flex: 1; font-size: 13px; }
+            .card-grid { padding: 15px; grid-template-columns: 1fr; gap: 15px; }
+            .card { height: 110px; padding: 15px; }
+            .modal-card { width: 92%; padding: 25px; border-radius: 20px; }
+            .form-row { flex-direction: column; gap: 12px; }
         }
     </style>
 </head>
@@ -111,17 +129,26 @@
             <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-            <div class="user-profile-area"><div class="user-name">清水　茉咲 (制作技術部)</div></div>
+            
+            <div class="user-profile-area">
+                <div class="user-name">清水　茉咲</div>
+                <div class="user-dept">制作技術部</div>
+            </div>
         </div>
 
         <div class="main-content">
             <div class="header">
                 <div class="header-left">
-                    <img src="icon-keyword.png" class="header-icon">
-                    <h2 style="margin:0; font-size:20px; color:#444;">キーワード検索</h2>
+                    <div style="display: flex; align-items: center;">
+                        <img src="icon-keyword.png" class="header-icon">
+                        <h2 style="margin:0; font-size:18px; color:#444;">キーワード検索</h2>
+                    </div>
+                    <div class="mobile-user-info">
+                        <strong>清水 茉咲</strong><br>制作技術部
+                    </div>
                 </div>
                 <div class="search-container">
-                    <input type="text" class="search-bar" id="searchInput" placeholder="検索" oninput="renderCards()">
+                    <input type="text" class="search-bar" id="searchInput" placeholder="名前・会社名で検索" oninput="renderCards()">
                 </div>
                 <div class="header-actions">
                     <button class="add-button" onclick="openAddModal()">＋ 新規追加</button>
@@ -136,16 +163,22 @@
         </div>
 
         <div class="mobile-nav">
-            <a href="index.html" class="mobile-nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
-            <a href="dept.html" class="mobile-nav-item"><img src="icon-dept.png"><span>部署</span></a>
-            <a href="area.html" class="mobile-nav-item"><img src="icon-area.png"><span>エリア</span></a>
+            <a href="index.html" class="mobile-nav-item active">
+                <img src="icon-keyword.png"><span>キーワード</span>
+            </a>
+            <a href="dept.html" class="mobile-nav-item">
+                <img src="icon-dept.png"><span>部署</span>
+            </a>
+            <a href="area.html" class="mobile-nav-item">
+                <img src="icon-area.png"><span>エリア</span>
+            </a>
         </div>
     </div>
 
     <div id="addModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
-            <h2 style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
+            <h2 style="text-align:center; margin-bottom:25px; font-size: 20px;">新規名刺追加</h2>
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                 <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
@@ -200,7 +233,7 @@
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('detailModal')">×</button>
             <div style="text-align:center; margin-bottom:20px;">
-                <img id="viewImg" src="" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #eef2f6;">
+                <img id="viewImg" src="" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid #eef2f6;">
             </div>
             <div class="form-row">
                 <div class="form-group"><label>名前</label><div class="display-value" id="viewName"></div></div>
@@ -260,7 +293,7 @@
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => openDetailModal(c);
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company}</div></div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:16px; color:#333;">${c.name}</div><div style="font-size:12px; color:#888;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
