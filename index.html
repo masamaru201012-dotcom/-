@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - キーワード検索</title>
     <style>
+        /* 読み込み時のチラつき防止 */
         html { visibility: hidden; }
+
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン */
+        /* ログイン画面 */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
         .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; outline: none; box-sizing: border-box; }
@@ -15,15 +17,15 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
         
-        /* サイドバー：他ページと配置を完全に合わせる */
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; color: white; flex-shrink: 0; }
-        .logo-area { padding: 60px 20px 80px; text-align: center; }
+        /* サイドバー：他ページと配置を完全統一 */
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
+        .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
         
-        /* アカウント名の位置ズレを修正（最下部に固定） */
+        /* アカウント名を最下部に固定 */
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
         .user-name { font-size: 15px; font-weight: bold; }
 
@@ -31,8 +33,8 @@
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .header-left { display: flex; align-items: center; }
         
-        /* エリアアイコンのサイズを縦にしっかり確保 */
-        .header-icon { width: 24px; height: 24px; object-fit: contain; margin-right: 15px; }
+        /* エリアアイコン：24pxで完全固定 */
+        .header-icon { width: 24px !important; height: 24px !important; object-fit: contain; margin-right: 15px; }
 
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
@@ -42,28 +44,31 @@
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
         .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
+        /* カードグリッド */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
+        /* モーダル共通 */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
+        
         .form-row { display: flex; gap: 20px; margin-bottom: 18px; }
         .form-group { flex: 1; text-align: left; }
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
         
+        /* エリア切替ボタン */
         .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
         .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
 
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-        .edit-btn, .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #6fceca; }
-        .delete-btn { color: #ff5a5f; }
+        .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
     </style>
 </head>
 <body>
@@ -112,8 +117,8 @@
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
             <h2 style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
             
-            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;" onclick="document.getElementById('imageInput').click()">
-                <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
+            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden;" onclick="document.getElementById('imageInput').click()">
+                <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
                 <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
@@ -135,12 +140,22 @@
                         <button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button>
                     </div>
                     <select id="selectCityIn">
-                        <option value="">未選択</option>
-                        <option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option><option value="津市">津市</option><option value="松阪市">松阪市</option><option value="伊勢市">伊勢市</option><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option><option value="尾鷲市">尾鷲市</option><option value="熊野市">熊野市</option>
+                        <option value="">市町村を選択してください</option>
+                        <optgroup label="北勢"><option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option><option value="木曽岬町">木曽岬町</option><option value="東員町">東員町</option><option value="菰野町">菰野町</option><option value="朝日町">朝日町</option><option value="川越町">川越町</option></optgroup>
+                        <optgroup label="中南勢"><option value="津市">津市</option><option value="松阪市">松阪市</option><option value="多気町">多気町</option><option value="明和町">明和町</option><option value="大台町">大台町</option></optgroup>
+                        <optgroup label="伊勢志摩"><option value="伊勢市">伊勢市</option><option value="鳥羽市">鳥羽市</option><option value="志摩市">志摩市</option><option value="玉城町">玉城町</option><option value="度会町">度会町</option><option value="大紀町">大紀町</option><option value="南伊勢町">南伊勢町</option></optgroup>
+                        <optgroup label="伊賀"><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option></optgroup>
+                        <optgroup label="東紀州"><option value="尾鷲市">尾鷲市</option><option value="熊野市">熊野市</option><option value="紀北町">紀北町</option><option value="御浜町">御浜町</option><option value="紀宝町">紀宝町</option></optgroup>
                     </select>
                     <select id="selectCityOut" style="display: none;">
-                        <option value="">未選択</option>
-                        <option value="愛知県">愛知県</option><option value="岐阜県">岐阜県</option><option value="滋賀県">滋賀県</option><option value="東京都">東京都</option><option value="大阪府">大阪府</option>
+                        <option value="">都道府県を選択してください</option>
+                        <optgroup label="北海道・東北"><option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option></optgroup>
+                        <optgroup label="関東"><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option></optgroup>
+                        <optgroup label="中部（三重除く）"><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option></optgroup>
+                        <optgroup label="近畿"><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option></optgroup>
+                        <optgroup label="中国"><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option></optgroup>
+                        <optgroup label="四国"><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option></optgroup>
+                        <optgroup label="九州・沖縄"><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option></optgroup>
                     </select>
                 </div>
             </div>
@@ -171,10 +186,6 @@
                 <div class="form-group"><label>役職</label><div class="display-value" id="viewTitle"></div></div>
                 <div class="form-group"><label>エリア</label><div class="display-value" id="viewArea"></div></div>
             </div>
-            <div class="form-row">
-                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
-                <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
-            </div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height:80px; align-items:flex-start;" id="viewNote"></div></div>
             <div class="action-btn-container">
                 <button class="delete-btn" id="deleteTargetBtn">名刺を削除</button>
@@ -187,6 +198,30 @@
         let currentAreaType = 'in';
         let currentImageDataUrl = "";
 
+        // エリア切替
+        function switchAreaType(type) {
+            currentAreaType = type;
+            document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
+            document.getElementById('btnPrefOut').classList.toggle('active', type === 'out');
+            document.getElementById('selectCityIn').style.display = type === 'in' ? 'block' : 'none';
+            document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
+        }
+
+        // 画像プレビュー
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentImageDataUrl = e.target.result;
+                    document.getElementById('previewImg').src = currentImageDataUrl;
+                    document.getElementById('previewImg').style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // カード描画
         function renderCards() {
             const grid = document.getElementById('cardGrid');
             const term = document.getElementById('searchInput').value.toLowerCase();
@@ -202,11 +237,12 @@
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => openDetailModal(c);
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company} ${c.area ? '| ' + c.area : ''}</div></div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company}</div></div>`;
                 grid.appendChild(div);
             });
         }
 
+        // 保存
         function saveCard() {
             const name = document.getElementById('newName').value;
             const company = document.getElementById('newCompany').value;
@@ -233,32 +269,13 @@
             closeModal('addModal'); renderCards();
         }
 
-        // 基本機能
-        function switchAreaType(type) {
-            currentAreaType = type;
-            document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
-            document.getElementById('btnPrefOut').classList.toggle('active', type === 'out');
-            document.getElementById('selectCityIn').style.display = type === 'in' ? 'block' : 'none';
-            document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
-        }
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    currentImageDataUrl = e.target.result;
-                    document.getElementById('previewImg').src = currentImageDataUrl;
-                    document.getElementById('previewImg').style.display = 'block';
-                    document.getElementById('uploadPlaceholder').style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
             currentImageDataUrl = ""; switchAreaType('in');
             document.getElementById('addModal').style.display = 'flex';
         }
+
         function openDetailModal(data) {
             document.getElementById('viewImg').src = data.icon || 'user-1.png';
             document.getElementById('viewName').innerText = data.name;
@@ -267,14 +284,13 @@
             document.getElementById('viewDept').innerText = data.dept || "-";
             document.getElementById('viewTitle').innerText = data.title || "-";
             document.getElementById('viewArea').innerText = data.area || "-";
-            document.getElementById('viewEmail').innerText = data.email || "-";
-            document.getElementById('viewTel').innerText = data.tel || "-";
             document.getElementById('viewNote').innerText = data.note || "-";
             document.getElementById('deleteTargetBtn').onclick = () => {
                 if(confirm("削除しますか？")){ cardData = cardData.filter(c => c.id !== data.id); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('detailModal'); renderCards(); }
             };
             document.getElementById('detailModal').style.display = 'flex';
         }
+
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         if(sessionStorage.getItem('isLoggedIn')) { 
