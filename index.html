@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>名刺くらうど - キーワード検索</title>
     <style>
-        /* 読み込み時のチラつき防止 */
+        /* 1. チラつき防止 */
         html { visibility: hidden; }
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
@@ -19,26 +19,18 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* サイドバー（他ページと共通） */
+        /* サイドバー：部署ページ(dept.html)から完全移植 */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
-
-        /* アカウントエリア（他ページと完全一致） */
-        .user-profile-area { 
-            margin-top: auto; 
-            padding: 25px 30px; 
-            border-top: 1px solid rgba(255, 255, 255, 0.2); 
-            background: rgba(0, 0, 0, 0.05); 
-        }
-        .user-info-flex { display: flex; justify-content: space-between; align-items: flex-end; }
-        .user-name { font-size: 15px; font-weight: bold; color: white; margin-bottom: 4px; }
-        .user-dept { font-size: 12px; color: rgba(255, 255, 255, 0.8); }
-        .logout-link { font-size: 12px; color: rgba(255, 255, 255, 0.6); text-decoration: underline; cursor: pointer; }
-        .logout-link:hover { color: white; }
+        
+        /* ユーザープロフ：部署ページのデザインを完全採用 */
+        .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
+        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; outline: none; }
 
         /* メインコンテンツ */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -53,51 +45,42 @@
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
         .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
-        /* グリッド */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル共通スタイル */
+        /* モーダル */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
-        
         .form-row { display: flex; gap: 20px; margin-bottom: 18px; }
         .form-group { flex: 1; text-align: left; }
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
-
         .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
         .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
-
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
 
-        /* スマホ対応用（下ヘッダー） */
+        /* スマホ用下ヘッダー */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
         .mobile-nav-item.active { color: #6fceca; }
         .mobile-nav-item.active img { opacity: 1; }
 
-        .mobile-user-info { display: none; font-size: 11px; color: #888; text-align: right; }
-
         @media screen and (max-width: 768px) {
             .sidebar { display: none; }
             .mobile-nav { display: flex; }
             .main-content { padding-bottom: 75px; }
             .header { height: auto; padding: 15px 20px; flex-direction: column; gap: 12px; align-items: stretch; }
-            .header-left { justify-content: space-between; }
-            .mobile-user-info { display: block; }
             .search-container { margin: 0; max-width: none; }
             .header-actions { justify-content: space-between; gap: 10px; }
             .card-grid { padding: 15px; grid-template-columns: 1fr; }
-            .card { height: 110px; }
         }
     </style>
 </head>
@@ -119,27 +102,16 @@
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
             
             <div class="user-profile-area">
-                <div class="user-info-flex">
-                    <div>
-                        <div class="user-name">清水　茉咲</div>
-                        <div class="user-dept">制作技術部</div>
-                    </div>
-                    <div class="logout-link" onclick="handleLogout()">ログアウト</div>
-                </div>
+                <div class="user-name">清水　茉咲 (制作技術部)</div>
+                <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
             </div>
         </div>
 
         <div class="main-content">
             <div class="header">
                 <div class="header-left">
-                    <div style="display: flex; align-items: center;">
-                        <img src="icon-keyword.png" class="header-icon">
-                        <h2 style="margin:0; font-size:18px; color:#444;">キーワード検索</h2>
-                    </div>
-                    <div class="mobile-user-info">
-                        <strong>清水 茉咲</strong> (制作技術部)<br>
-                        <span style="text-decoration:underline; color:#6fceca; cursor:pointer;" onclick="handleLogout()">ログアウト</span>
-                    </div>
+                    <img src="icon-keyword.png" class="header-icon">
+                    <h2 style="margin:0; font-size:18px; color:#444;">キーワード検索</h2>
                 </div>
                 <div class="search-container">
                     <input type="text" class="search-bar" id="searchInput" placeholder="名前・会社名で検索" oninput="renderCards()">
@@ -153,7 +125,6 @@
                     </select>
                 </div>
             </div>
-
             <div id="cardGrid" class="card-grid"></div>
         </div>
 
@@ -191,14 +162,11 @@
                     </div>
                     <select id="selectCityIn">
                         <option value="">市町村を選択</option>
-                        <optgroup label="北勢"><option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option></optgroup>
-                        <optgroup label="中南勢"><option value="津市">津市</option><option value="松阪市">松阪市</option></optgroup>
-                        <optgroup label="伊勢志摩"><option value="伊勢市">伊勢市</option><option value="鳥羽市">鳥羽市</option><option value="志摩市">志摩市</option></optgroup>
-                        <optgroup label="伊賀"><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option></optgroup>
+                        <option value="津市">津市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option>
                     </select>
                     <select id="selectCityOut" style="display: none;">
                         <option value="">都道府県を選択</option>
-                        <option value="東京都">東京都</option><option value="愛知県">愛知県</option><option value="大阪府">大阪府</option>
+                        <option value="東京都">東京都</option><option value="愛知県">愛知県</option>
                     </select>
                 </div>
             </div>
@@ -241,7 +209,6 @@
         let currentAreaType = 'in';
         let currentImageDataUrl = "";
 
-        // エリア切り替え制御
         function switchAreaType(type) {
             currentAreaType = type;
             document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
@@ -250,7 +217,6 @@
             document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
         }
 
-        // 画像プレビュー処理
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -264,18 +230,15 @@
             }
         }
 
-        // 名刺カードの描画
         function renderCards() {
             const grid = document.getElementById('cardGrid');
             const term = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
-            
             if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(b.name, 'ja'));
             else if(sortBy === "desc") filtered.sort((a,b) => (b.name || "").localeCompare(a.name, 'ja'));
             else filtered.sort((a,b) => b.id - a.id);
-
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
@@ -285,7 +248,6 @@
             });
         }
 
-        // 名刺データの保存
         function saveCard() {
             const name = document.getElementById('newName').value;
             const company = document.getElementById('newCompany').value;
@@ -295,7 +257,6 @@
             cardData.unshift(cardInfo); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('addModal'); renderCards();
         }
 
-        // モーダル制御関数
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
@@ -316,12 +277,14 @@
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-        // ログイン・ログアウト処理
+        
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
-        function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
+        
+        function handleLogout() { 
+            sessionStorage.removeItem('isLoggedIn'); 
+            location.href = 'index.html'; // 部署ページと同じ挙動
+        }
 
-        // 起動時チェック
         if(sessionStorage.getItem('isLoggedIn')) { 
             document.getElementById('loginOverlay').style.display = 'none'; 
             document.getElementById('mainApp').style.display = 'flex';
