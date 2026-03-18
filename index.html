@@ -13,12 +13,13 @@
         /* ログイン画面 */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
         .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+        .login-box h2 { color:#444; margin-bottom:25px; }
         .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; outline: none; box-sizing: border-box; }
         .login-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-weight: bold; cursor: pointer; }
 
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* サイドバー */
+        /* サイドバー（他ページと共通） */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -26,23 +27,20 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
-        /* 【他ページと完全に一致させたスタイル】 */
+        /* アカウントエリア（他ページと完全一致） */
         .user-profile-area { 
             margin-top: auto; 
             padding: 25px 30px; 
             border-top: 1px solid rgba(255, 255, 255, 0.2); 
             background: rgba(0, 0, 0, 0.05); 
         }
-        .user-info-flex { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-end; 
-        }
+        .user-info-flex { display: flex; justify-content: space-between; align-items: flex-end; }
         .user-name { font-size: 15px; font-weight: bold; color: white; margin-bottom: 4px; }
         .user-dept { font-size: 12px; color: rgba(255, 255, 255, 0.8); }
         .logout-link { font-size: 12px; color: rgba(255, 255, 255, 0.6); text-decoration: underline; cursor: pointer; }
         .logout-link:hover { color: white; }
 
+        /* メインコンテンツ */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .header-left { display: flex; align-items: center; }
@@ -55,13 +53,14 @@
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
         .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
+        /* グリッド */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル */
+        /* モーダル共通スタイル */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
@@ -79,7 +78,7 @@
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
 
-        /* スマホ用下ヘッダー */
+        /* スマホ対応用（下ヘッダー） */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
@@ -98,6 +97,7 @@
             .search-container { margin: 0; max-width: none; }
             .header-actions { justify-content: space-between; gap: 10px; }
             .card-grid { padding: 15px; grid-template-columns: 1fr; }
+            .card { height: 110px; }
         }
     </style>
 </head>
@@ -105,7 +105,7 @@
 
     <div id="loginOverlay">
         <div class="login-box">
-            <h2 style="color:#444; margin-bottom:25px;">名刺くらうど</h2>
+            <h2>名刺くらうど</h2>
             <input type="email" id="loginEmail" placeholder="メールアドレスを入力">
             <button class="login-btn" onclick="handleLogin()">ログイン</button>
         </div>
@@ -138,7 +138,7 @@
                     </div>
                     <div class="mobile-user-info">
                         <strong>清水 茉咲</strong> (制作技術部)<br>
-                        <span style="text-decoration:underline; color:#6fceca;" onclick="handleLogout()">ログアウト</span>
+                        <span style="text-decoration:underline; color:#6fceca; cursor:pointer;" onclick="handleLogout()">ログアウト</span>
                     </div>
                 </div>
                 <div class="search-container">
@@ -153,6 +153,7 @@
                     </select>
                 </div>
             </div>
+
             <div id="cardGrid" class="card-grid"></div>
         </div>
 
@@ -166,10 +167,10 @@
     <div id="addModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
-            <h2 style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
+            <h2 style="text-align:center; margin-bottom:25px; font-size: 20px;">新規名刺追加</h2>
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                <span id="uploadPlaceholder" style="color: #888;">画像を選択（任意）</span>
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
             <div class="form-row">
@@ -189,13 +190,15 @@
                         <button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button>
                     </div>
                     <select id="selectCityIn">
-                        <option value="">選択してください</option>
-                        <option value="津市">津市</option><option value="四日市市">四日市市</option><option value="伊勢市">伊勢市</option>
-                        <option value="松阪市">松阪市</option><option value="桑名市">桑名市</option><option value="鈴鹿市">鈴鹿市</option>
+                        <option value="">市町村を選択</option>
+                        <optgroup label="北勢"><option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option></optgroup>
+                        <optgroup label="中南勢"><option value="津市">津市</option><option value="松阪市">松阪市</option></optgroup>
+                        <optgroup label="伊勢志摩"><option value="伊勢市">伊勢市</option><option value="鳥羽市">鳥羽市</option><option value="志摩市">志摩市</option></optgroup>
+                        <optgroup label="伊賀"><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option></optgroup>
                     </select>
                     <select id="selectCityOut" style="display: none;">
                         <option value="">都道府県を選択</option>
-                        <option value="東京都">東京都</option><option value="大阪府">大阪府</option><option value="愛知県">愛知県</option>
+                        <option value="東京都">東京都</option><option value="愛知県">愛知県</option><option value="大阪府">大阪府</option>
                     </select>
                 </div>
             </div>
@@ -238,7 +241,7 @@
         let currentAreaType = 'in';
         let currentImageDataUrl = "";
 
-        // エリア切り替え
+        // エリア切り替え制御
         function switchAreaType(type) {
             currentAreaType = type;
             document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
@@ -247,7 +250,7 @@
             document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
         }
 
-        // 画像プレビュー
+        // 画像プレビュー処理
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -261,16 +264,18 @@
             }
         }
 
-        // カード描画
+        // 名刺カードの描画
         function renderCards() {
             const grid = document.getElementById('cardGrid');
             const term = document.getElementById('searchInput').value.toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
+            
             if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(b.name, 'ja'));
             else if(sortBy === "desc") filtered.sort((a,b) => (b.name || "").localeCompare(a.name, 'ja'));
             else filtered.sort((a,b) => b.id - a.id);
+
             filtered.forEach(c => {
                 const div = document.createElement('div');
                 div.className = 'card';
@@ -280,7 +285,7 @@
             });
         }
 
-        // 保存
+        // 名刺データの保存
         function saveCard() {
             const name = document.getElementById('newName').value;
             const company = document.getElementById('newCompany').value;
@@ -290,7 +295,7 @@
             cardData.unshift(cardInfo); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('addModal'); renderCards();
         }
 
-        // モーダル制御
+        // モーダル制御関数
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
@@ -312,10 +317,11 @@
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // ログイン・ログアウト（他ページと統一）
+        // ログイン・ログアウト処理
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
 
+        // 起動時チェック
         if(sessionStorage.getItem('isLoggedIn')) { 
             document.getElementById('loginOverlay').style.display = 'none'; 
             document.getElementById('mainApp').style.display = 'flex';
