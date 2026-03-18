@@ -18,7 +18,7 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* サイドバー（デスクトップ用左ヘッダー） */
+        /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -26,34 +26,25 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
+        /* アカウントエリア（他ページと完全統一） */
         .user-profile-area { 
             margin-top: auto; 
             padding: 25px 30px; 
             border-top: 1px solid rgba(255, 255, 255, 0.2); 
             background: rgba(0, 0, 0, 0.05); 
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
         }
-        .user-name { font-size: 15px; font-weight: bold; color: white; }
+        .user-info-flex { display: flex; justify-content: space-between; align-items: flex-end; }
+        .user-name { font-size: 15px; font-weight: bold; color: white; margin-bottom: 4px; }
         .user-dept { font-size: 12px; color: rgba(255, 255, 255, 0.8); }
+        .logout-link { font-size: 12px; color: rgba(255, 255, 255, 0.6); text-decoration: underline; cursor: pointer; }
+        .logout-link:hover { color: white; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .header-left { display: flex; align-items: center; }
-
-        .header-icon { 
-            width: 24px !important; 
-            height: 24px !important; 
-            min-width: 24px !important; 
-            min-height: 24px !important; 
-            object-fit: contain !important; 
-            flex-shrink: 0 !important; 
-            margin-right: 15px; 
-        }
+        .header-icon { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
-        .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
 
         .header-actions { display: flex; gap: 15px; align-items: center; }
@@ -66,7 +57,7 @@
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル共通 */
+        /* モーダル */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
@@ -76,40 +67,31 @@
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
 
-        .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
-        .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
-
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
 
-        /* 【追加】スマホ用ボトムナビゲーション（下ヘッダー） */
+        /* スマホ用ナビ */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
         .mobile-nav-item.active { color: #6fceca; }
-        .mobile-nav-item.active img { opacity: 1; filter: drop-shadow(0 0 2px rgba(111, 206, 202, 0.3)); }
+        .mobile-nav-item.active img { opacity: 1; }
 
-        /* 【追加】スマホ用ユーザー表示（ヘッダーに移動） */
-        .mobile-user-info { display: none; font-size: 12px; color: #888; text-align: right; }
+        .mobile-user-info { display: none; font-size: 11px; color: #888; text-align: right; }
 
-        /* スマホ向けメディアクエリ */
         @media screen and (max-width: 768px) {
-            .sidebar { display: none; } /* 左ヘッダー非表示 */
-            .mobile-nav { display: flex; } /* 下ヘッダー表示 */
+            .sidebar { display: none; }
+            .mobile-nav { display: flex; }
             .main-content { padding-bottom: 75px; }
             .header { height: auto; padding: 15px 20px; flex-direction: column; gap: 12px; align-items: stretch; }
             .header-left { justify-content: space-between; }
-            .mobile-user-info { display: block; } /* スマホ時のみヘッダーにアカウント名表示 */
+            .mobile-user-info { display: block; }
             .search-container { margin: 0; max-width: none; }
             .header-actions { justify-content: space-between; gap: 10px; }
-            .add-button { flex: 1; padding: 10px; font-size: 14px; }
-            .sort-select { flex: 1; font-size: 13px; }
-            .card-grid { padding: 15px; grid-template-columns: 1fr; gap: 15px; }
-            .card { height: 110px; padding: 15px; }
-            .modal-card { width: 92%; padding: 25px; border-radius: 20px; }
-            .form-row { flex-direction: column; gap: 12px; }
+            .card-grid { padding: 15px; grid-template-columns: 1fr; }
+            .card { height: 110px; }
         }
     </style>
 </head>
@@ -131,8 +113,13 @@
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
             
             <div class="user-profile-area">
-                <div class="user-name">清水　茉咲</div>
-                <div class="user-dept">制作技術部</div>
+                <div class="user-info-flex">
+                    <div>
+                        <div class="user-name">清水　茉咲</div>
+                        <div class="user-dept">制作技術部</div>
+                    </div>
+                    <div class="logout-link" onclick="handleLogout()">ログアウト</div>
+                </div>
             </div>
         </div>
 
@@ -144,7 +131,8 @@
                         <h2 style="margin:0; font-size:18px; color:#444;">キーワード検索</h2>
                     </div>
                     <div class="mobile-user-info">
-                        <strong>清水 茉咲</strong><br>制作技術部
+                        <strong>清水 茉咲</strong> (制作技術部)<br>
+                        <span style="text-decoration:underline; color:#6fceca;" onclick="handleLogout()">ログアウト</span>
                     </div>
                 </div>
                 <div class="search-container">
@@ -163,15 +151,9 @@
         </div>
 
         <div class="mobile-nav">
-            <a href="index.html" class="mobile-nav-item active">
-                <img src="icon-keyword.png"><span>キーワード</span>
-            </a>
-            <a href="dept.html" class="mobile-nav-item">
-                <img src="icon-dept.png"><span>部署</span>
-            </a>
-            <a href="area.html" class="mobile-nav-item">
-                <img src="icon-area.png"><span>エリア</span>
-            </a>
+            <a href="index.html" class="mobile-nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
+            <a href="dept.html" class="mobile-nav-item"><img src="icon-dept.png"><span>部署</span></a>
+            <a href="area.html" class="mobile-nav-item"><img src="icon-area.png"><span>エリア</span></a>
         </div>
     </div>
 
@@ -328,6 +310,8 @@
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
+        function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
+        
         if(sessionStorage.getItem('isLoggedIn')) { 
             document.getElementById('loginOverlay').style.display = 'none'; 
             document.getElementById('mainApp').style.display = 'flex';
