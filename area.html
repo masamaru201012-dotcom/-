@@ -27,11 +27,9 @@
         .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 60px; }
         .page-title { font-size: 24px; font-weight: bold; color: #444; margin-bottom: 40px; }
 
-        /* 地方セクション */
         .region-section { margin-bottom: 50px; }
         .region-name { font-size: 18px; font-weight: bold; color: #5eabd5; margin-bottom: 20px; border-left: 4px solid #6fceca; padding-left: 15px; }
 
-        /* エリアグリッド */
         .area-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
         .area-card { 
             background: white; border-radius: 10px; padding: 18px; 
@@ -40,12 +38,13 @@
         }
         .area-card:hover { border-color: #6fceca; background-color: #f0fdfc; transform: translateY(-2px); }
         
-        /* 数字がある場合のデザイン */
-        .area-card.has-data { border-color: #6fceca; background: #fff; box-shadow: 0 4px 12px rgba(111, 206, 202, 0.1); }
+        /* データがある時のスタイル（強調） */
+        .area-card.has-data { border: 2px solid #6fceca; background: #f0fdfc; box-shadow: 0 4px 12px rgba(111, 206, 202, 0.1); }
         .pref-name { font-weight: bold; color: #444; font-size: 14px; text-align: center; }
+        
+        /* 件数バッジ */
         .count-badge { font-size: 11px; color: #6fceca; margin-top: 5px; font-weight: bold; }
         
-        /* 三重県セクション */
         .mie-section { background: #fff; padding: 25px; border-radius: 20px; border: 2px solid #6fceca; margin-bottom: 50px; }
 
         /* スマホ用下ヘッダー */
@@ -115,55 +114,43 @@
             window.location.href = 'index.html';
         }
 
-        // データを集計してHTMLを生成するメイン関数
         function renderRegions() {
-            // LocalStorageから最新データを取得
             const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
-            
-            // エリアごとの件数を集計するオブジェクトを作成
             const counts = {};
             cardData.forEach(card => {
-                if (card.area) {
-                    counts[card.area] = (counts[card.area] || 0) + 1;
-                }
+                if (card.area) counts[card.area] = (counts[card.area] || 0) + 1;
             });
 
             const container = document.getElementById('regionContainer');
             container.innerHTML = "";
 
-            // --- 1. 三重県セクション ---
+            // 三重県セクション
             const mieSection = document.createElement('div');
             mieSection.className = 'region-section mie-section';
             let mieHtml = `<div class="region-name">三重県（市町村別）</div><div class="area-grid">`;
             mieCities.forEach(city => {
                 const count = counts[city] || 0;
-                const activeClass = count > 0 ? 'has-data' : '';
-                const countDisplay = count > 0 ? `<div class="count-badge">${count}枚</div>` : '';
-                
                 mieHtml += `
-                    <a href="#" class="area-card ${activeClass}" onclick="event.preventDefault(); showAreaCards('${city}')">
+                    <a href="#" class="area-card ${count > 0 ? 'has-data' : ''}" onclick="event.preventDefault(); alertArea('${city}', ${count})">
                         <div class="pref-name">${city}</div>
-                        ${countDisplay}
+                        ${count > 0 ? `<div class="count-badge">${count}枚</div>` : ''}
                     </a>`;
             });
             mieHtml += `</div>`;
             mieSection.innerHTML = mieHtml;
             container.appendChild(mieSection);
 
-            // --- 2. 他の地方セクション ---
+            // 他の地方
             regionData.forEach(data => {
                 const section = document.createElement('div');
                 section.className = 'region-section';
                 let html = `<div class="region-name">${data.region}</div><div class="area-grid">`;
                 data.prefs.forEach(pref => {
                     const count = counts[pref] || 0;
-                    const activeClass = count > 0 ? 'has-data' : '';
-                    const countDisplay = count > 0 ? `<div class="count-badge">${count}枚</div>` : '';
-
                     html += `
-                        <a href="#" class="area-card ${activeClass}" onclick="event.preventDefault(); showAreaCards('${pref}')">
+                        <a href="#" class="area-card ${count > 0 ? 'has-data' : ''}" onclick="event.preventDefault(); alertArea('${pref}', ${count})">
                             <div class="pref-name">${pref}</div>
-                            ${countDisplay}
+                            ${count > 0 ? `<div class="count-badge">${count}枚</div>` : ''}
                         </a>`;
                 });
                 html += `</div>`;
@@ -172,9 +159,13 @@
             });
         }
 
-        // クリックした時のアクション（現在はアラートのみ）
-        function showAreaCards(areaName) {
-            alert(areaName + 'の名刺を表示します（現在は' + areaName + 'のフィルタ機能を準備中）');
+        // ポップアップから「準備中」の文字を完全に削除
+        function alertArea(name, count) {
+            if (count > 0) {
+                alert(name + 'の名刺が ' + count + ' 枚登録されています。');
+            } else {
+                alert(name + 'の名刺はまだ登録されていません。');
+            }
         }
 
         checkLogin();
