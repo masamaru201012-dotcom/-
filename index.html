@@ -4,18 +4,27 @@
     <meta charset="UTF-8">
     <title>名刺くらうど - キーワード検索</title>
     <style>
+        /* チラつき防止 */
         html { visibility: hidden; }
+
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン画面：デザインと重なりを修正 */
-        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
+        /* ログイン画面 */
+        #loginOverlay {
+            display: none; 
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%);
+            flex-direction: column; justify-content: center; align-items: center; z-index: 20000;
+        }
+        .login-logo-outside { width: 280px; margin-bottom: 30px; text-align: center; }
+        .login-logo-outside img { width: 100%; transform: scale(1.1); }
         .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
-        .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; outline: none; box-sizing: border-box; }
-        .login-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-weight: bold; cursor: pointer; }
+        .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
+        .login-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
         #mainApp { display: none; width: 100%; height: 100%; }
-        
-        /* サイドバー：アイコン復元 */
+
+        /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -23,49 +32,58 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; }
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; }
 
-        /* ヘッダー：検索アイコン復元 */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
+        .header-left { display: flex; align-items: center; min-width: 180px; }
+        .header-title { font-size: 20px; font-weight: bold; color: #444; margin: 0; }
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
-        
         .header-actions { display: flex; gap: 12px; align-items: center; }
-        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; }
-        .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
+        .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space:nowrap; font-size: 14px; }
+        
+        /* ヘッダーアクション内のアイコンスタイル修正 */
+        .header-actions img { width: 24px; height: 24px; object-fit: contain; } /* 縦潰れ防止 */
+        
+        .sort-select { padding: 10px 35px 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>') no-repeat right 15px center; font-size: 14px; color: #666; cursor: pointer; outline: none; appearance: none; }
 
-        /* カードデザイン */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; border: 2px solid #fff; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal { 
+            display: none; 
+            position: fixed; inset: 0; 
+            background: rgba(0, 0, 0, 0.4); 
+            z-index: 10000; 
+            justify-content: center; align-items: center; padding: 20px;
+            backdrop-filter: blur(4px); 
+        }
+        .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
+        .modal-header { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 25px; text-align: center; }
+        .img-container { width: 120px; height: 120px; border-radius: 20px; background: #f8fafc; margin: 0 auto 25px; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #eef2f6; }
+        .img-container img { width: 100%; height: 100%; object-fit: cover; }
         .form-row { display: flex; gap: 20px; margin-bottom: 18px; }
         .form-group { flex: 1; text-align: left; }
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
-        
-        .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
-        .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
+        .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; font-weight: 500; }
+        .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 4px 10px rgba(111, 206, 202, 0.3); }
 
-        .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
-        .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-        .edit-btn, .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
-        .edit-btn { color: #6fceca; } .delete-btn { color: #ff5a5f; }
+        .delete-btn-container { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #f0f0f0; }
+        .delete-btn { color: #ff5a5f; background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
 
     <div id="loginOverlay">
+        <div class="login-logo-outside"><img src="logo.png"></div>
         <div class="login-box">
-            <h2 style="color:#444; margin-bottom:25px;">名刺くらうど ログイン</h2>
             <input type="email" id="loginEmail" placeholder="メールアドレスを入力">
             <button class="login-btn" onclick="handleLogin()">ログイン</button>
         </div>
@@ -77,13 +95,17 @@
             <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-            <div class="user-profile-area"><div class="user-name">清水　茉咲 (制作技術部)</div></div>
+            <div class="user-profile-area">
+                <div class="user-name">清水　茉咲 (制作技術部)</div>
+                <a href="#" onclick="doLogout()" style="color:rgba(255,255,255,0.6); font-size:12px; text-decoration:none;">ログアウト</a>
+            </div>
         </div>
 
         <div class="main-content">
             <div class="header">
+                <div class="header-left"><h1 class="header-title">キーワード検索</h1></div>
                 <div class="search-container">
-                    <input type="text" class="search-bar" id="searchInput" placeholder="検索" oninput="renderCards()">
+                    <input type="text" class="search-bar" id="searchInput" placeholder="名前や会社名で検索..." oninput="renderCards()">
                 </div>
                 <div class="header-actions">
                     <button class="add-button" onclick="openAddModal()">＋ 新規追加</button>
@@ -101,9 +123,8 @@
     <div id="detailModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('detailModal')">×</button>
-            <div style="text-align:center; margin-bottom:20px;">
-                <img id="viewImg" src="" style="width:110px; height:110px; border-radius:50%; object-fit:cover; border:3px solid #eef2f6;">
-            </div>
+            <div class="modal-header">名刺詳細</div>
+            <div class="img-container"><img id="viewImg" src=""></div>
             <div class="form-row">
                 <div class="form-group"><label>名前</label><div class="display-value" id="viewName"></div></div>
                 <div class="form-group"><label>ふりがな</label><div class="display-value" id="viewKana"></div></div>
@@ -114,16 +135,14 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>役職</label><div class="display-value" id="viewTitle"></div></div>
-                <div class="form-group"><label>エリア</label><div class="display-value" id="viewArea"></div></div>
+                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>メールアドレス</label><div class="display-value" id="viewEmail"></div></div>
                 <div class="form-group"><label>電話番号</label><div class="display-value" id="viewTel"></div></div>
             </div>
-            <div class="form-group"><label>備考</label><div class="display-value" style="min-height:80px; align-items:flex-start;" id="viewNote"></div></div>
-            <div class="action-btn-container">
-                <button class="edit-btn" id="editTargetBtn">名刺を編集</button>
-                <button class="delete-btn" id="deleteTargetBtn">名刺を削除</button>
+            <div class="form-group"><label>備考</label><div class="display-value" style="min-height: 80px; align-items: flex-start;" id="viewNote"></div></div>
+            <div class="delete-btn-container">
+                <button class="delete-btn" id="deleteTargetBtn" onclick="">名刺を削除</button>
             </div>
         </div>
     </div>
@@ -131,14 +150,12 @@
     <div id="addModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
-            <h2 id="modalTitle" style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
-            
-            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;" onclick="document.getElementById('imageInput').click()">
-                <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
-                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
+            <div class="modal-header">新規名刺追加</div>
+            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0;" onclick="document.getElementById('imageInput').click()">
+                <img id="previewImg" src="" style="display: none;">
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
-
             <div class="form-row">
                 <div class="form-group"><label>名前</label><input type="text" id="newName"></div>
                 <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
@@ -149,75 +166,106 @@
             </div>
             <div class="form-row">
                 <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
-                <div class="form-group">
-                    <label>エリア</label>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <button type="button" id="btnPrefIn" class="area-type-btn active" onclick="switchAreaType('in')">三重県内</button>
-                        <button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button>
-                    </div>
-                    <select id="selectCityIn">
-                        <option value="">市町村を選択してください</option>
-                        <optgroup label="北勢"><option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option><option value="木曽岬町">木曽岬町</option><option value="東員町">東員町</option><option value="菰野町">菰野町</option><option value="朝日町">朝日町</option><option value="川越町">川越町</option></optgroup>
-                        <optgroup label="中勢"><option value="津市">津市</option><option value="松阪市">松阪市</option><option value="多気町">多気町</option><option value="明和町">明和町</option><option value="大台町">大台町</option></optgroup>
-                        <optgroup label="南勢"><option value="伊勢市">伊勢市</option><option value="鳥羽市">鳥羽市</option><option value="志摩市">志摩市</option><option value="玉城町">玉城町</option><option value="度会町">度会町</option><option value="南伊勢町">南伊勢町</option><option value="大紀町">大紀町</option></optgroup>
-                        <optgroup label="伊賀"><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option></optgroup>
-                        <optgroup label="東紀州"><option value="尾鷲市">尾鷲市</option><option value="熊野市">熊野市</option><option value="紀北町">紀北町</option><option value="御浜町">御浜町</option><option value="紀宝町">紀宝町</option></optgroup>
-                    </select>
-                    <select id="selectCityOut" style="display: none;">
-                        <option value="">都道府県を選択してください</option>
-                        <option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
             </div>
             <div class="form-row">
-                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
                 <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
             </div>
             <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
-            <button class="save-btn" onclick="saveCard()">保存する</button>
+            <button class="save-btn" onclick="saveNewCard()">保存する</button>
         </div>
     </div>
 
     <script>
-        let cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
-        let currentAreaType = 'in';
-        let editingCardId = null;
-        let currentImageDataUrl = "";
-
-        // ログイン処理
-        function handleLogin() {
-            const email = document.getElementById('loginEmail').value;
-            if(email.includes('@')) {
-                sessionStorage.setItem('isLoggedIn', 'true');
+        function checkLogin() {
+            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'flex';
                 renderCards();
-            } else { alert("有効なメールアドレスを入力してください"); }
-        }
-
-        // ページ読み込み時のログインチェック
-        window.onload = function() {
-            if(sessionStorage.getItem('isLoggedIn')) {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'flex';
-                renderCards();
+            } else {
+                document.getElementById('loginOverlay').style.display = 'flex';
+                document.getElementById('mainApp').style.display = 'none';
             }
             document.documentElement.style.visibility = 'visible';
-        };
+        }
 
-        function switchAreaType(type) {
-            currentAreaType = type;
-            const btnIn = document.getElementById('btnPrefIn');
-            const btnOut = document.getElementById('btnPrefOut');
-            const selIn = document.getElementById('selectCityIn');
-            const selOut = document.getElementById('selectCityOut');
-            if(type === 'in') {
-                btnIn.classList.add('active'); btnOut.classList.remove('active');
-                selIn.style.display = 'block'; selOut.style.display = 'none';
-            } else {
-                btnOut.classList.add('active'); btnIn.classList.remove('active');
-                selOut.style.display = 'block'; selIn.style.display = 'none';
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            if (email.includes('@')) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                checkLogin();
+            } else { alert('メールアドレスを入力してください'); }
+        }
+
+        function doLogout() {
+            sessionStorage.removeItem('isLoggedIn');
+            location.reload();
+        }
+
+        let cardData = JSON.parse(localStorage.getItem('businessCards')) || [
+            { id: 1, name: "佐藤 健二", kana: "さとう けんじ", company: "株式会社三重デジタル", dept: "制作部", title: "プロデューサー", email: "sato@mietv.example.jp", tel: "059-000-0000", note: "昨日の会議にて", icon: "user-1.png" }
+        ];
+
+        function renderCards() {
+            const grid = document.getElementById('cardGrid');
+            if (!grid) return;
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const sortBy = document.getElementById('sortSelect').value;
+            grid.innerHTML = "";
+            let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
+            
+            filtered.sort((a, b) => {
+                if (sortBy === "new") return b.id - a.id;
+                if (sortBy === "asc") return (a.name || "").localeCompare(b.name, 'ja');
+                if (sortBy === "desc") return (b.name || "").localeCompare(a.name, 'ja');
+                return 0;
+            });
+
+            filtered.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.onclick = () => openDetailModal(c);
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888; margin-top:4px;">${c.company}</div></div>`;
+                grid.appendChild(div);
+            });
+        }
+
+        function openDetailModal(data) {
+            document.getElementById('viewImg').src = data.icon;
+            document.getElementById('viewName').innerText = data.name;
+            document.getElementById('viewKana').innerText = data.kana || "-";
+            document.getElementById('viewCompany').innerText = data.company;
+            document.getElementById('viewDept').innerText = data.dept || "-";
+            document.getElementById('viewTitle').innerText = data.title || "-";
+            document.getElementById('viewEmail').innerText = data.email || "-";
+            document.getElementById('viewTel').innerText = data.tel || "-";
+            document.getElementById('viewNote').innerText = data.note || "-";
+            
+            // 削除ボタンにIDを渡す
+            document.getElementById('deleteTargetBtn').onclick = () => deleteCard(data.id);
+            
+            document.getElementById('detailModal').style.display = 'flex';
+        }
+
+        function deleteCard(id) {
+            if (confirm("この名刺を削除してもよろしいですか？")) {
+                cardData = cardData.filter(c => c.id !== id);
+                localStorage.setItem('businessCards', JSON.stringify(cardData));
+                closeModal('detailModal');
+                renderCards();
             }
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        let currentImageDataUrl = "";
+        function openAddModal() {
+            ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
+            document.getElementById('imageInput').value = "";
+            document.getElementById('previewImg').style.display = 'none';
+            document.getElementById('uploadPlaceholder').style.display = 'block';
+            document.getElementById('addModal').style.display = 'flex';
         }
 
         function previewImage(input) {
@@ -225,115 +273,36 @@
                 const reader = new FileReader();
                 reader.onload = e => {
                     currentImageDataUrl = e.target.result;
-                    document.getElementById('previewImg').src = currentImageDataUrl;
-                    document.getElementById('previewImg').style.display = 'block';
+                    const preview = document.getElementById('previewImg');
+                    preview.src = currentImageDataUrl;
+                    preview.style.display = 'block';
                     document.getElementById('uploadPlaceholder').style.display = 'none';
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        function renderCards() {
-            const grid = document.getElementById('cardGrid');
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const sortBy = document.getElementById('sortSelect').value;
-            grid.innerHTML = "";
-            let filtered = cardData.filter(c => 
-                (c.name || "").toLowerCase().includes(term) || 
-                (c.company || "").toLowerCase().includes(term) || 
-                (c.area || "").includes(term)
-            );
-            
-            if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(b.name, 'ja'));
-            else if(sortBy === "desc") filtered.sort((a,b) => (b.name || "").localeCompare(a.name, 'ja'));
-            else filtered.sort((a,b) => b.id - a.id);
-
-            filtered.forEach(c => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.onclick = () => openDetailModal(c);
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company} | ${c.area}</div></div>`;
-                grid.appendChild(div);
-            });
-        }
-
-        function openAddModal() {
-            editingCardId = null;
-            document.getElementById('modalTitle').innerText = "新規名刺追加";
-            ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
-            document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
-            currentImageDataUrl = ""; switchAreaType('in');
-            document.getElementById('addModal').style.display = 'flex';
-        }
-
-        function openDetailModal(data) {
-            document.getElementById('viewImg').src = data.icon || 'user-1.png';
-            document.getElementById('viewName').innerText = data.name;
-            document.getElementById('viewKana').innerText = data.kana || "-";
-            document.getElementById('viewCompany').innerText = data.company || "-";
-            document.getElementById('viewDept').innerText = data.dept || "-";
-            document.getElementById('viewTitle').innerText = data.title || "-";
-            document.getElementById('viewArea').innerText = data.area || "-";
-            document.getElementById('viewEmail').innerText = data.email || "-";
-            document.getElementById('viewTel').innerText = data.tel || "-";
-            document.getElementById('viewNote').innerText = data.note || "-";
-            
-            document.getElementById('deleteTargetBtn').onclick = () => {
-                if(confirm("名刺を削除しますか？")){ cardData = cardData.filter(c => c.id !== data.id); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('detailModal'); renderCards(); }
-            };
-            document.getElementById('editTargetBtn').onclick = () => openEditModal(data);
-            document.getElementById('detailModal').style.display = 'flex';
-        }
-
-        function openEditModal(data) {
-            closeModal('detailModal'); editingCardId = data.id;
-            document.getElementById('modalTitle').innerText = "名刺を編集";
-            document.getElementById('newName').value = data.name;
-            document.getElementById('newKana').value = data.kana || "";
-            document.getElementById('newCompany').value = data.company || "";
-            document.getElementById('newDept').value = data.dept || "";
-            document.getElementById('newTitle').value = data.title || "";
-            document.getElementById('newEmail').value = data.email || "";
-            document.getElementById('newTel').value = data.tel || "";
-            document.getElementById('newNote').value = data.note || "";
-            currentImageDataUrl = data.icon || "";
-            if(currentImageDataUrl) {
-                document.getElementById('previewImg').src = currentImageDataUrl;
-                document.getElementById('previewImg').style.display = 'block';
-                document.getElementById('uploadPlaceholder').style.display = 'none';
-            }
-            document.getElementById('addModal').style.display = 'flex';
-        }
-
-        function saveCard() {
+        function saveNewCard() {
             const name = document.getElementById('newName').value;
-            const area = currentAreaType === 'in' ? document.getElementById('selectCityIn').value : document.getElementById('selectCityOut').value;
-            if(!name || !area) { alert("名前とエリアを入力してください"); return; }
-            
-            const cardInfo = {
-                id: editingCardId || Date.now(),
+            if (!name || !currentImageDataUrl) { alert("名前と画像は必須です"); return; }
+            cardData.unshift({
+                id: Date.now(),
                 name: name,
                 kana: document.getElementById('newKana').value,
                 company: document.getElementById('newCompany').value,
                 dept: document.getElementById('newDept').value,
                 title: document.getElementById('newTitle').value,
-                area: area,
                 email: document.getElementById('newEmail').value,
                 tel: document.getElementById('newTel').value,
                 note: document.getElementById('newNote').value,
-                icon: currentImageDataUrl || 'user-1.png'
-            };
-
-            if(editingCardId) {
-                const idx = cardData.findIndex(c => c.id === editingCardId);
-                cardData[idx] = cardInfo;
-            } else { cardData.unshift(cardInfo); }
-
+                icon: currentImageDataUrl
+            });
             localStorage.setItem('businessCards', JSON.stringify(cardData));
-            closeModal('addModal'); renderCards();
+            closeModal('addModal');
+            renderCards();
         }
 
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        checkLogin();
     </script>
 </body>
 </html>
