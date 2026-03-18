@@ -26,14 +26,18 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
-        /* アカウントエリア（他ページと統一） */
+        /* 【他ページと完全に一致させたスタイル】 */
         .user-profile-area { 
             margin-top: auto; 
             padding: 25px 30px; 
             border-top: 1px solid rgba(255, 255, 255, 0.2); 
             background: rgba(0, 0, 0, 0.05); 
         }
-        .user-info-flex { display: flex; justify-content: space-between; align-items: flex-end; }
+        .user-info-flex { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-end; 
+        }
         .user-name { font-size: 15px; font-weight: bold; color: white; margin-bottom: 4px; }
         .user-dept { font-size: 12px; color: rgba(255, 255, 255, 0.8); }
         .logout-link { font-size: 12px; color: rgba(255, 255, 255, 0.6); text-decoration: underline; cursor: pointer; }
@@ -234,6 +238,7 @@
         let currentAreaType = 'in';
         let currentImageDataUrl = "";
 
+        // エリア切り替え
         function switchAreaType(type) {
             currentAreaType = type;
             document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
@@ -242,6 +247,7 @@
             document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
         }
 
+        // 画像プレビュー
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -255,6 +261,7 @@
             }
         }
 
+        // カード描画
         function renderCards() {
             const grid = document.getElementById('cardGrid');
             const term = document.getElementById('searchInput').value.toLowerCase();
@@ -273,6 +280,7 @@
             });
         }
 
+        // 保存
         function saveCard() {
             const name = document.getElementById('newName').value;
             const company = document.getElementById('newCompany').value;
@@ -282,6 +290,7 @@
             cardData.unshift(cardInfo); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('addModal'); renderCards();
         }
 
+        // モーダル制御
         function openAddModal() {
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
@@ -302,6 +311,8 @@
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+
+        // ログイン・ログアウト（他ページと統一）
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
 
