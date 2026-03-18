@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>名刺くらうど - キーワード検索</title>
     <style>
-        /* 1. チラつき防止 */
+        /* 画面読み込み時のチラつき防止 */
         html { visibility: hidden; }
 
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン画面 */
+        /* --- ログイン画面 --- */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
         .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); box-sizing: border-box; }
         .login-box h2 { color:#444; margin-bottom:25px; }
@@ -19,7 +19,7 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
 
-        /* サイドバー：PC版のみ表示 */
+        /* --- サイドバー (PC版) --- */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -31,39 +31,29 @@
         .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
         .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; outline: none; }
 
-        /* メインコンテンツ */
+        /* --- メインコンテンツ --- */
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
-        .header-left { display: flex; align-items: center; }
-
-        .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         
+        .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         .search-bar { 
-            width: 100%; 
-            padding: 12px 25px 12px 50px; 
-            border-radius: 30px; 
-            border: 1px solid #e2e8f0; 
-            background-color: #f8fafc; 
-            font-size: 15px; 
-            outline: none; 
-            box-sizing: border-box; 
-            background-image: url('icon-search.png'); 
-            background-repeat: no-repeat; 
-            background-position: 20px center; 
-            background-size: 20px;
+            width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; 
+            background: #f8fafc url('icon-search.png') no-repeat 20px center / 20px; 
+            font-size: 15px; outline: none; box-sizing: border-box; 
         }
 
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space: nowrap; }
-        .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
+        .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; }
 
+        /* 名刺カード表示エリア */
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
         .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; cursor: pointer; height: 130px; box-sizing: border-box; transition: 0.3s; }
         .card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル */
+        /* --- モーダル (追加・詳細) --- */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; box-sizing: border-box; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
@@ -75,32 +65,31 @@
 
         .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
         .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
-
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
+
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
-        
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 30px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .edit-btn { background: #f8fafc; border: 1px solid #eef2f6; padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; color: #666; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
 
-        /* スマホ用下ナビ（全ページ共通デザイン） */
+        /* --- スマホ専用：下ナビゲーション --- */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; object-fit: contain; }
         .mobile-nav-item.active { color: #6fceca; }
         .mobile-nav-item.active img { opacity: 1; }
 
-        /* スマホ版レスポンシブ修正 */
+        /* --- スマホ版レスポンシブ (max-width: 768px) --- */
         @media screen and (max-width: 768px) {
             .sidebar { display: none; }
             .mobile-nav { display: flex; }
-            .main-content { padding-bottom: 85px; } /* 下ナビに被らない余白 */
+            .main-content { padding-bottom: 85px; }
             .header { height: auto; padding: 20px; flex-direction: column; gap: 15px; align-items: stretch; }
             .search-container { margin: 0; max-width: none; }
             .header-actions { justify-content: space-between; gap: 10px; }
             .card-grid { padding: 15px; grid-template-columns: 1fr; }
             
-            /* 入力時に画面が勝手にズームしないよう、スマホではフォントを16pxにする */
+            /* スマホで入力時に勝手に拡大されないよう、フォントサイズを16px以上に固定 */
             .form-group input, .form-group select, .form-group textarea, .search-bar, .login-box input { font-size: 16px !important; }
             
             .modal-card { width: 95%; padding: 25px 20px; }
@@ -124,7 +113,6 @@
             <a href="index.html" class="nav-item active"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="nav-item"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-            
             <div class="user-profile-area">
                 <div class="user-name">清水　茉咲 (制作技術部)</div>
                 <button class="logout-btn" onclick="handleLogout()">ログアウト</button>
@@ -133,9 +121,7 @@
 
         <div class="main-content">
             <div class="header">
-                <div class="header-left">
-                    <h2 style="margin:0; font-size:18px; color:#444;">キーワード検索</h2>
-                </div>
+                <h2 style="margin:0; font-size:18px; color:#444;">キーワード検索</h2>
                 <div class="search-container">
                     <input type="text" class="search-bar" id="searchInput" placeholder="名前・会社名で検索" oninput="renderCards()">
                 </div>
@@ -144,7 +130,6 @@
                     <select class="sort-select" id="sortSelect" onchange="renderCards()">
                         <option value="new">最新順</option>
                         <option value="asc">五十音順</option>
-                        <option value="desc">五十音順（逆）</option>
                     </select>
                 </div>
             </div>
@@ -192,7 +177,7 @@
                 <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
             </div>
             <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
-            <button class="save-btn" id="saveActionBtn" onclick="saveCard()">保存する</button>
+            <button class="save-btn" onclick="saveCard()">保存する</button>
         </div>
     </div>
 
@@ -223,6 +208,7 @@
     </div>
 
     <script>
+        // PC版と共通の「businessCards」という名前のLocalStorageを使用します
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
         let currentAreaType = 'in';
         let currentImageDataUrl = "";
@@ -259,15 +245,16 @@
             }
         }
 
+        // 描画ロジック：PC版のデータも読み込んで表示
         function renderCards() {
             const grid = document.getElementById('cardGrid');
-            const term = document.getElementById('searchInput').value.toLowerCase();
+            const term = (document.getElementById('searchInput').value || "").toLowerCase();
             const sortBy = document.getElementById('sortSelect').value;
             grid.innerHTML = "";
+            
             let filtered = cardData.filter(c => (c.name || "").toLowerCase().includes(term) || (c.company || "").toLowerCase().includes(term));
             
             if(sortBy === "asc") filtered.sort((a,b) => (a.name || "").localeCompare(b.name, 'ja'));
-            else if(sortBy === "desc") filtered.sort((a,b) => (b.name || "").localeCompare(a.name, 'ja'));
             else filtered.sort((a,b) => b.id - a.id);
             
             filtered.forEach(c => {
@@ -288,7 +275,6 @@
 
             let finalIcon = currentImageDataUrl;
             let defaultIcon = "";
-
             if (!editingCardId && !finalIcon) {
                 const randomNum = Math.floor(Math.random() * 6) + 1;
                 defaultIcon = `user-${randomNum}.png`;
@@ -296,15 +282,11 @@
 
             const cardInfo = { 
                 id: editingCardId || Date.now(), 
-                name, 
-                kana: document.getElementById('newKana').value, 
-                company, 
-                dept: document.getElementById('newDept').value, 
+                name, kana: document.getElementById('newKana').value, 
+                company, dept: document.getElementById('newDept').value, 
                 title: document.getElementById('newTitle').value, 
-                area: area || "-", 
-                email: document.getElementById('newEmail').value, 
-                tel: document.getElementById('newTel').value, 
-                note: document.getElementById('newNote').value, 
+                area: area || "-", email: document.getElementById('newEmail').value, 
+                tel: document.getElementById('newTel').value, note: document.getElementById('newNote').value, 
                 icon: finalIcon,
                 defaultIcon: defaultIcon || (editingCardId ? cardData.find(c => c.id === editingCardId).defaultIcon : ""),
                 registeredByDept: "制作技術部"
@@ -362,13 +344,15 @@
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
 
-        initSelectBoxes();
-        if(sessionStorage.getItem('isLoggedIn')) { 
-            document.getElementById('loginOverlay').style.display = 'none'; 
-            document.getElementById('mainApp').style.display = 'flex';
-            renderCards();
-        }
-        document.documentElement.style.visibility = 'visible';
+        window.onload = () => {
+            initSelectBoxes();
+            if(sessionStorage.getItem('isLoggedIn')) { 
+                document.getElementById('loginOverlay').style.display = 'none'; 
+                document.getElementById('mainApp').style.display = 'flex';
+                renderCards(); 
+            }
+            document.documentElement.style.visibility = 'visible';
+        };
     </script>
 </body>
 </html>
