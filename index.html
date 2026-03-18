@@ -26,7 +26,7 @@
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
 
-        /* アカウントエリア（他ページと完全統一） */
+        /* アカウントエリア（他ページと統一） */
         .user-profile-area { 
             margin-top: auto; 
             padding: 25px 30px; 
@@ -67,12 +67,15 @@
         .form-group label { display: block; font-size: 12px; color: #6fceca; margin-bottom: 8px; font-weight: bold; }
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px 15px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; font-size: 14px; outline: none; box-sizing: border-box; }
 
+        .area-type-btn { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid #eef2f6; background: #fff; cursor: pointer; font-size: 13px; color: #888; }
+        .area-type-btn.active { background: #6fceca; color: white; border-color: #6fceca; font-weight: bold; }
+
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
         .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #ff5a5f; }
 
-        /* スマホ用ナビ */
+        /* スマホ用下ヘッダー */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; box-sizing: border-box; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
@@ -91,7 +94,6 @@
             .search-container { margin: 0; max-width: none; }
             .header-actions { justify-content: space-between; gap: 10px; }
             .card-grid { padding: 15px; grid-template-columns: 1fr; }
-            .card { height: 110px; }
         }
     </style>
 </head>
@@ -160,10 +162,10 @@
     <div id="addModal" class="modal">
         <div class="modal-card">
             <button class="close-modal" onclick="closeModal('addModal')">×</button>
-            <h2 style="text-align:center; margin-bottom:25px; font-size: 20px;">新規名刺追加</h2>
+            <h2 style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
             <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; overflow: hidden;" onclick="document.getElementById('imageInput').click()">
                 <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover;">
-                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
+                <span id="uploadPlaceholder" style="color: #888;">画像を選択（任意）</span>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
             <div class="form-row">
@@ -177,28 +179,19 @@
             <div class="form-row">
                 <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
                 <div class="form-group">
-                    <label>エリア（任意）</label>
+                    <label>エリア</label>
                     <div style="display: flex; gap: 10px; margin-bottom: 10px;">
                         <button type="button" id="btnPrefIn" class="area-type-btn active" onclick="switchAreaType('in')">三重県内</button>
                         <button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button>
                     </div>
                     <select id="selectCityIn">
-                        <option value="">市町村を選択してください</option>
-                        <optgroup label="北勢"><option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option><option value="木曽岬町">木曽岬町</option><option value="東員町">東員町</option><option value="菰野町">菰野町</option><option value="朝日町">朝日町</option><option value="川越町">川越町</option></optgroup>
-                        <optgroup label="中南勢"><option value="津市">津市</option><option value="松阪市">松阪市</option><option value="多気町">多気町</option><option value="明和町">明和町</option><option value="大台町">大台町</option></optgroup>
-                        <optgroup label="伊勢志摩"><option value="伊勢市">伊勢市</option><option value="鳥羽市">鳥羽市</option><option value="志摩市">志摩市</option><option value="玉城町">玉城町</option><option value="度会町">度会町</option><option value="大紀町">大紀町</option><option value="南伊勢町">南伊勢町</option></optgroup>
-                        <optgroup label="伊賀"><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option></optgroup>
-                        <optgroup label="東紀州"><option value="尾鷲市">尾鷲市</option><option value="熊野市">熊野市</option><option value="紀北町">紀北町</option><option value="御浜町">御浜町</option><option value="紀宝町">紀宝町</option></optgroup>
+                        <option value="">選択してください</option>
+                        <option value="津市">津市</option><option value="四日市市">四日市市</option><option value="伊勢市">伊勢市</option>
+                        <option value="松阪市">松阪市</option><option value="桑名市">桑名市</option><option value="鈴鹿市">鈴鹿市</option>
                     </select>
                     <select id="selectCityOut" style="display: none;">
-                        <option value="">都道府県を選択してください</option>
-                        <optgroup label="北海道・東北"><option value="北海道">北海道</option><option value="青森県">青森県</option><option value="岩手県">岩手県</option><option value="宮城県">宮城県</option><option value="秋田県">秋田県</option><option value="山形県">山形県</option><option value="福島県">福島県</option></optgroup>
-                        <optgroup label="関東"><option value="茨城県">茨城県</option><option value="栃木県">栃木県</option><option value="群馬県">群馬県</option><option value="埼玉県">埼玉県</option><option value="千葉県">千葉県</option><option value="東京都">東京都</option><option value="神奈川県">神奈川県</option></optgroup>
-                        <optgroup label="中部（三重除く）"><option value="新潟県">新潟県</option><option value="富山県">富山県</option><option value="石川県">石川県</option><option value="福井県">福井県</option><option value="山梨県">山梨県</option><option value="長野県">長野県</option><option value="岐阜県">岐阜県</option><option value="静岡県">静岡県</option><option value="愛知県">愛知県</option></optgroup>
-                        <optgroup label="近畿"><option value="滋賀県">滋賀県</option><option value="京都府">京都府</option><option value="大阪府">大阪府</option><option value="兵庫県">兵庫県</option><option value="奈良県">奈良県</option><option value="和歌山県">和歌山県</option></optgroup>
-                        <optgroup label="中国"><option value="鳥取県">鳥取県</option><option value="島根県">島根県</option><option value="岡山県">岡山県</option><option value="広島県">広島県</option><option value="山口県">山口県</option></optgroup>
-                        <optgroup label="四国"><option value="徳島県">徳島県</option><option value="香川県">香川県</option><option value="愛媛県">愛媛県</option><option value="高知県">高知県</option></optgroup>
-                        <optgroup label="九州・沖縄"><option value="福岡県">福岡県</option><option value="佐賀県">佐賀県</option><option value="長崎県">長崎県</option><option value="熊本県">熊本県</option><option value="大分県">大分県</option><option value="宮崎県">宮崎県</option><option value="鹿児島県">鹿児島県</option><option value="沖縄県">沖縄県</option></optgroup>
+                        <option value="">都道府県を選択</option>
+                        <option value="東京都">東京都</option><option value="大阪府">大阪府</option><option value="愛知県">愛知県</option>
                     </select>
                 </div>
             </div>
@@ -311,7 +304,7 @@
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
-        
+
         if(sessionStorage.getItem('isLoggedIn')) { 
             document.getElementById('loginOverlay').style.display = 'none'; 
             document.getElementById('mainApp').style.display = 'flex';
