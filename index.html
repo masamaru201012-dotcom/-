@@ -7,7 +7,7 @@
         html { visibility: hidden; }
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
 
-        /* ログイン画面 */
+        /* ログイン */
         #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
         .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
         .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; outline: none; box-sizing: border-box; }
@@ -15,28 +15,31 @@
 
         #mainApp { display: none; width: 100%; height: 100%; }
         
-        /* サイドバー */
-        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
-        .logo-area { padding: 0 20px 80px; text-align: center; }
+        /* サイドバー：他ページと配置を完全に合わせる */
+        .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; color: white; flex-shrink: 0; }
+        .logo-area { padding: 60px 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
+        
+        /* アカウント名の位置ズレを修正（最下部に固定） */
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
+        .user-name { font-size: 15px; font-weight: bold; }
 
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
+        .header-left { display: flex; align-items: center; }
         
+        /* エリアアイコンのサイズを縦にしっかり確保 */
+        .header-icon { width: 24px; height: 24px; object-fit: contain; margin-right: 15px; }
+
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
         .search-container::before { content: ""; position: absolute; left: 20px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; background: url('icon-search.png') no-repeat center; background-size: contain; opacity: 0.4; pointer-events: none; }
         .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background-color: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
         
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; }
-        
-        /* エリアアイコンの潰れを完全に修正 */
-        .header-icon { width: 24px; height: auto; min-height: 24px; object-fit: contain; }
-
         .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; outline: none; }
 
         .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; align-items: start; }
@@ -45,7 +48,6 @@
         .thumb-box { width: 80px; height: 80px; min-width: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; display: flex; justify-content: center; align-items: center; }
         .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* モーダル */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-card { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 20px; right: 25px; font-size: 28px; color: #bbb; cursor: pointer; border: none; background: none; }
@@ -60,8 +62,8 @@
         .save-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
         .display-value { width: 100%; padding: 10px 0; border-bottom: 1px solid #f0f0f0; font-size: 15px; color: #333; min-height: 35px; display: flex; align-items: center; }
         .action-btn-container { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 40px; border-top: 1px solid #f0f0f0; padding-top: 20px; }
-        .edit-btn, .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; }
-        .edit-btn { color: #6fceca; } .delete-btn { color: #ff5a5f; }
+        .edit-btn, .delete-btn { background: none; border: none; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: underline; color: #6fceca; }
+        .delete-btn { color: #ff5a5f; }
     </style>
 </head>
 <body>
@@ -86,7 +88,7 @@
         <div class="main-content">
             <div class="header">
                 <div class="header-left">
-                    <img src="icon-area.png" class="header-icon" style="margin-right: 15px;">
+                    <img src="icon-area.png" class="header-icon">
                     <h2 style="margin:0; font-size:20px; color:#444;">キーワード検索</h2>
                 </div>
                 <div class="search-container">
@@ -102,6 +104,52 @@
                 </div>
             </div>
             <div id="cardGrid" class="card-grid"></div>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-card">
+            <button class="close-modal" onclick="closeModal('addModal')">×</button>
+            <h2 style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
+            
+            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;" onclick="document.getElementById('imageInput').click()">
+                <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
+                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
+
+            <div class="form-row">
+                <div class="form-group"><label>名前 <span style="color:red;">*</span></label><input type="text" id="newName"></div>
+                <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>会社名 <span style="color:red;">*</span></label><input type="text" id="newCompany"></div>
+                <div class="form-group"><label>部署名</label><input type="text" id="newDept"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
+                <div class="form-group">
+                    <label>エリア（任意）</label>
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <button type="button" id="btnPrefIn" class="area-type-btn active" onclick="switchAreaType('in')">三重県内</button>
+                        <button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button>
+                    </div>
+                    <select id="selectCityIn">
+                        <option value="">未選択</option>
+                        <option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option><option value="津市">津市</option><option value="松阪市">松阪市</option><option value="伊勢市">伊勢市</option><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option><option value="尾鷲市">尾鷲市</option><option value="熊野市">熊野市</option>
+                    </select>
+                    <select id="selectCityOut" style="display: none;">
+                        <option value="">未選択</option>
+                        <option value="愛知県">愛知県</option><option value="岐阜県">岐阜県</option><option value="滋賀県">滋賀県</option><option value="東京都">東京都</option><option value="大阪府">大阪府</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
+                <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
+            </div>
+            <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
+            <button class="save-btn" onclick="saveCard()">保存する</button>
         </div>
     </div>
 
@@ -129,91 +177,15 @@
             </div>
             <div class="form-group"><label>備考</label><div class="display-value" style="min-height:80px; align-items:flex-start;" id="viewNote"></div></div>
             <div class="action-btn-container">
-                <button class="edit-btn" id="editTargetBtn">名刺を編集</button>
                 <button class="delete-btn" id="deleteTargetBtn">名刺を削除</button>
             </div>
-        </div>
-    </div>
-
-    <div id="addModal" class="modal">
-        <div class="modal-card">
-            <button class="close-modal" onclick="closeModal('addModal')">×</button>
-            <h2 id="modalTitle" style="text-align:center; margin-bottom:25px;">新規名刺追加</h2>
-            
-            <div class="img-container" style="cursor: pointer; border: 2px dashed #e2e8f0; border-radius: 20px; height: 100px; display: flex; justify-content: center; align-items: center; margin-bottom: 20px;" onclick="document.getElementById('imageInput').click()">
-                <img id="previewImg" src="" style="display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 20px;">
-                <span id="uploadPlaceholder" style="color: #888; font-size: 13px;">画像を選択（任意）</span>
-            </div>
-            <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
-
-            <div class="form-row">
-                <div class="form-group"><label>名前 <span style="color:red;">*</span></label><input type="text" id="newName"></div>
-                <div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>会社名</label><input type="text" id="newCompany"></div>
-                <div class="form-group"><label>部署名</label><input type="text" id="newDept"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>役職</label><input type="text" id="newTitle"></div>
-                <div class="form-group">
-                    <label>エリア <span style="color:red;">*</span></label>
-                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                        <button type="button" id="btnPrefIn" class="area-type-btn active" onclick="switchAreaType('in')">三重県内</button>
-                        <button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button>
-                    </div>
-                    <select id="selectCityIn">
-                        <option value="">市町村を選択してください</option>
-                        <option value="いなべ市">いなべ市</option><option value="桑名市">桑名市</option><option value="四日市市">四日市市</option><option value="鈴鹿市">鈴鹿市</option><option value="亀山市">亀山市</option><option value="津市">津市</option><option value="松阪市">松阪市</option><option value="伊勢市">伊勢市</option><option value="伊賀市">伊賀市</option><option value="名張市">名張市</option><option value="尾鷲市">尾鷲市</option><option value="熊野市">熊野市</option>
-                    </select>
-                    <select id="selectCityOut" style="display: none;">
-                        <option value="">都道府県を選択してください</option>
-                        <option value="愛知県">愛知県</option><option value="岐阜県">岐阜県</option><option value="東京都">東京都</option><option value="大阪府">大阪府</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div>
-                <div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div>
-            </div>
-            <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
-            <button class="save-btn" onclick="saveCard()">保存する</button>
         </div>
     </div>
 
     <script>
         let cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
         let currentAreaType = 'in';
-        let editingCardId = null;
         let currentImageDataUrl = "";
-
-        function switchAreaType(type) {
-            currentAreaType = type;
-            const btnIn = document.getElementById('btnPrefIn');
-            const btnOut = document.getElementById('btnPrefOut');
-            const selIn = document.getElementById('selectCityIn');
-            const selOut = document.getElementById('selectCityOut');
-            if(type === 'in') {
-                btnIn.classList.add('active'); btnOut.classList.remove('active');
-                selIn.style.display = 'block'; selOut.style.display = 'none';
-            } else {
-                btnOut.classList.add('active'); btnIn.classList.remove('active');
-                selOut.style.display = 'block'; selIn.style.display = 'none';
-            }
-        }
-
-        function previewImage(input) {
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = e => {
-                    currentImageDataUrl = e.target.result;
-                    document.getElementById('previewImg').src = currentImageDataUrl;
-                    document.getElementById('previewImg').style.display = 'block';
-                    document.getElementById('uploadPlaceholder').style.display = 'none';
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
 
         function renderCards() {
             const grid = document.getElementById('cardGrid');
@@ -230,25 +202,68 @@
                 const div = document.createElement('div');
                 div.className = 'card';
                 div.onclick = () => openDetailModal(c);
-                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company} | ${c.area}</div></div>`;
+                div.innerHTML = `<div class="thumb-box"><img src="${c.icon || 'user-1.png'}"></div><div><div style="font-weight:bold; font-size:18px; color:#333;">${c.name}</div><div style="font-size:13px; color:#888;">${c.company} ${c.area ? '| ' + c.area : ''}</div></div>`;
                 grid.appendChild(div);
             });
         }
 
+        function saveCard() {
+            const name = document.getElementById('newName').value;
+            const company = document.getElementById('newCompany').value;
+            const area = currentAreaType === 'in' ? document.getElementById('selectCityIn').value : document.getElementById('selectCityOut').value;
+            
+            if(!name || !company) { alert("名前と会社名を入力してください"); return; }
+            
+            const cardInfo = {
+                id: Date.now(),
+                name: name,
+                kana: document.getElementById('newKana').value,
+                company: company,
+                dept: document.getElementById('newDept').value,
+                title: document.getElementById('newTitle').value,
+                area: area || "-",
+                email: document.getElementById('newEmail').value,
+                tel: document.getElementById('newTel').value,
+                note: document.getElementById('newNote').value,
+                icon: currentImageDataUrl || 'user-1.png'
+            };
+
+            cardData.unshift(cardInfo);
+            localStorage.setItem('businessCards', JSON.stringify(cardData));
+            closeModal('addModal'); renderCards();
+        }
+
+        // 基本機能
+        function switchAreaType(type) {
+            currentAreaType = type;
+            document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
+            document.getElementById('btnPrefOut').classList.toggle('active', type === 'out');
+            document.getElementById('selectCityIn').style.display = type === 'in' ? 'block' : 'none';
+            document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
+        }
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    currentImageDataUrl = e.target.result;
+                    document.getElementById('previewImg').src = currentImageDataUrl;
+                    document.getElementById('previewImg').style.display = 'block';
+                    document.getElementById('uploadPlaceholder').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
         function openAddModal() {
-            editingCardId = null;
-            document.getElementById('modalTitle').innerText = "新規名刺追加";
-            ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote'].forEach(id => document.getElementById(id).value = "");
+            ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block';
             currentImageDataUrl = ""; switchAreaType('in');
             document.getElementById('addModal').style.display = 'flex';
         }
-
         function openDetailModal(data) {
             document.getElementById('viewImg').src = data.icon || 'user-1.png';
             document.getElementById('viewName').innerText = data.name;
             document.getElementById('viewKana').innerText = data.kana || "-";
-            document.getElementById('viewCompany').innerText = data.company || "-";
+            document.getElementById('viewCompany').innerText = data.company;
             document.getElementById('viewDept').innerText = data.dept || "-";
             document.getElementById('viewTitle').innerText = data.title || "-";
             document.getElementById('viewArea').innerText = data.area || "-";
@@ -260,35 +275,6 @@
             };
             document.getElementById('detailModal').style.display = 'flex';
         }
-
-        function saveCard() {
-            const name = document.getElementById('newName').value;
-            const area = currentAreaType === 'in' ? document.getElementById('selectCityIn').value : document.getElementById('selectCityOut').value;
-            if(!name || !area) { alert("名前とエリアを選択してください"); return; }
-            
-            const cardInfo = {
-                id: editingCardId || Date.now(),
-                name: name,
-                kana: document.getElementById('newKana').value,
-                company: document.getElementById('newCompany').value,
-                dept: document.getElementById('newDept').value,
-                title: document.getElementById('newTitle').value,
-                area: area,
-                email: document.getElementById('newEmail').value,
-                tel: document.getElementById('newTel').value,
-                note: document.getElementById('newNote').value,
-                icon: currentImageDataUrl || 'user-1.png' // 画像がない場合はデフォルトを設定
-            };
-
-            if(editingCardId) {
-                const idx = cardData.findIndex(c => c.id === editingCardId);
-                cardData[idx] = cardInfo;
-            } else { cardData.unshift(cardInfo); }
-
-            localStorage.setItem('businessCards', JSON.stringify(cardData));
-            closeModal('addModal'); renderCards();
-        }
-
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         if(sessionStorage.getItem('isLoggedIn')) { 
