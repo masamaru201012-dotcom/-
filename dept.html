@@ -7,6 +7,7 @@
         html { visibility: hidden; }
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
         
+        /* サイドバー */
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
@@ -31,10 +32,13 @@
         .dept-name { font-weight: bold; color: #444; font-size: 16px; text-align: center; }
         .card-count { font-size: 12px; color: #999; margin-top: 8px; }
 
+        /* リスト表示セクション */
         .result-section { display: none; margin-top: 50px; padding: 40px; background: white; border-radius: 20px; border: 1px solid #eef2f6; }
         .card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .biz-card { padding: 20px; border: 1px solid #6fceca; border-radius: 12px; background: #fcfdfe; }
+        .biz-card { padding: 25px; border: 1px solid #6fceca; border-radius: 12px; background: #fcfdfe; position: relative; }
+        .biz-card::after { content: "登録者所属"; position: absolute; top: 10px; right: 15px; font-size: 10px; color: #6fceca; font-weight: bold; }
 
+        /* スマホ用下ナビ */
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
         .mobile-nav-item img { width: 22px; height: 22px; margin-bottom: 4px; opacity: 0.4; }
@@ -56,47 +60,90 @@
                 <button class="logout-btn" onclick="doLogout()">ログアウト</button>
             </div>
         </div>
+
         <div class="main-container">
             <div class="page-title">部署別</div>
             <div class="folder-grid" id="folderGrid"></div>
+            
             <div id="resultSection" class="result-section">
                 <div id="resultTitle" style="font-size:20px; font-weight:bold; margin-bottom:20px; color:#5eabd5;"></div>
                 <div id="cardList" class="card-list"></div>
             </div>
         </div>
+
         <nav class="mobile-nav">
             <a href="index.html" class="mobile-nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="mobile-nav-item active"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="mobile-nav-item"><img src="icon-area.png"><span>エリア</span></a>
         </nav>
     </div>
+
     <script>
+        // 部署リスト（登録者の所属部署一覧）
         const departments = ["総務部", "本社営業部", "東京支社", "大阪支社", "名古屋支社", "事業部", "編成部", "放送部", "業務部", "報道制作部", "制作技術部", "放送技術部"];
+        
+        // 現在のログインユーザーの所属（清水さんは制作技術部）
+        const currentUserDept = "制作技術部";
+
         function renderFolders() {
             const grid = document.getElementById('folderGrid');
             grid.innerHTML = "";
             const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
+            
+            // 【重要】名刺の「相手の部署」ではなく、「登録者の部署」で集計
+            // 清水さんが登録したものはすべて registeredByDept: "制作技術部" として扱う
             const counts = {};
-            cardData.forEach(card => { if (card.dept) counts[card.dept] = (counts[card.dept] || 0) + 1; });
+            cardData.forEach(card => {
+                // 登録時の部署情報がデータにない場合は、現在の清水さんの所属としてカウント
+                const deptKey = card.registeredByDept || currentUserDept;
+                counts[deptKey] = (counts[deptKey] || 0) + 1;
+            });
+
             departments.forEach(dept => {
                 const count = counts[dept] || 0;
                 const card = document.createElement('div');
                 card.className = 'folder-card';
                 card.innerHTML = `<div class="folder-icon"></div><div class="dept-name">${dept}</div><div class="card-count">${count}枚</div>`;
+                
                 card.onclick = () => showCards(dept);
                 grid.appendChild(card);
             });
         }
-        function showCards(dept) {
+
+        function showCards(deptName) {
             const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
-            const filtered = cardData.filter(c => c.dept === dept);
+            
+            // その部署の人が登録した名刺を抽出
+            const filtered = cardData.filter(c => (c.registeredByDept || currentUserDept) === deptName);
+            
             const section = document.getElementById('resultSection');
             section.style.display = "block";
-            document.getElementById('resultTitle').innerText = `${dept} の名刺 (${filtered.length}枚)`;
-            document.getElementById('cardList').innerHTML = filtered.length ? filtered.map(c => `<div class="biz-card"><div style="font-size:16px; font-weight:bold;">${c.name}</div><div style="font-size:12px; color:#666;">${c.company}<br>${c.post}</div></div>`).join('') : '<p style="color:#999;">名刺はありません。</p>';
+            document.getElementById('resultTitle').innerText = `${deptName} の登録名刺 (${filtered.length}枚)`;
+            
+            document.getElementById('cardList').innerHTML = filtered.length ? filtered.map(c => `
+                <div class="biz-card">
+                    <div style="font-size:18px; font-weight:bold; color:#333;">${c.name}</div>
+                    <div style="font-size:13px; color:#666; margin-top:8px;">
+                        ${c.company}<br>
+                        <span style="color:#888;">相手の部署：</span>${c.dept || '不明'}<br>
+                        <span style="color:#888;">役職：</span>${c.post || '---'}
+                    </div>
+                </div>
+            `).join('') : `<p style="color:#999;">${deptName}のメンバーが登録した名刺はありません。</p>`;
+            
             section.scrollIntoView({ behavior: 'smooth' });
         }
-        function checkLogin() { if (sessionStorage.getItem('isLoggedIn') === 'true') { document.getElementById('mainApp').style.display = 'flex'; renderFolders(); } else { window.location.href = 'index.html'; } document.documentElement.style.visibility = 'visible'; }
+
+        function checkLogin() { 
+            if (sessionStorage.getItem('isLoggedIn') === 'true') { 
+                document.getElementById('mainApp').style.display = 'flex'; 
+                renderFolders(); 
+            } else { 
+                window.location.href = 'index.html'; 
+            } 
+            document.documentElement.style.visibility = 'visible'; 
+        }
+        
         function doLogout() { sessionStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
         checkLogin();
     </script>
