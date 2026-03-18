@@ -2,150 +2,75 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>名刺くらうど - 部署別</title>
     <style>
         html { visibility: hidden; }
         body { margin: 0; font-family: "Helvetica Neue", Arial, sans-serif; display: flex; height: 100vh; background-color: #f5f7f9; overflow: hidden; }
-        
-        /* サイドバー */
+        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 20000; }
+        .login-box { background: white; padding: 35px; border-radius: 30px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .login-box input { width: 100%; padding: 12px 15px; margin-bottom: 18px; border: 1px solid #eef2f6; border-radius: 12px; background: #f8fafc; outline: none; box-sizing: border-box; font-size: 16px; }
+        .login-btn { width: 100%; padding: 16px; border: none; border-radius: 15px; background: #6fceca; color: white; font-weight: bold; cursor: pointer; }
+        #mainApp { display: none; width: 100%; height: 100%; }
         .sidebar { width: 280px; background: linear-gradient(180deg, #6fceca 0%, #5eabd5 100%); display: flex; flex-direction: column; padding: 60px 0 0 0; color: white; flex-shrink: 0; }
         .logo-area { padding: 0 20px 80px; text-align: center; }
         .logo-area img { width: 100%; transform: scale(1.1); }
         .nav-item { display: flex; align-items: center; padding: 20px 30px; color: rgba(255, 255, 255, 0.7); text-decoration: none; font-size: 18px; }
         .nav-item.active { color: #ffffff; font-weight: bold; background: rgba(255, 255, 255, 0.2); border-radius: 0 30px 30px 0; margin-right: 20px; }
         .nav-item img { width: 24px; height: 24px; margin-right: 15px; object-fit: contain; }
-
         .user-profile-area { margin-top: auto; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.05); }
-        .user-name { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #ffffff; }
-        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; outline: none; }
-
-        #mainApp { display: none; width: 100%; height: 100%; }
-        .main-container { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 60px; padding-bottom: 150px; }
-        .page-title { font-size: 24px; font-weight: bold; color: #444; margin-bottom: 40px; }
-
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 30px; max-width: 1100px; }
-        .folder-card { background: white; border-radius: 15px; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; border: 1px solid #eef2f6; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); text-decoration: none; }
-        .folder-card:hover { transform: translateY(-5px); border-color: #6fceca; box-shadow: 0 10px 25px rgba(111, 206, 202, 0.15); }
-        
-        .folder-icon { width: 80px; height: 60px; border-radius: 4px 10px 4px 4px; margin-bottom: 20px; position: relative; background: linear-gradient(135deg, #a5d6d4 0%, #6fceca 100%); }
-        .folder-icon::before { content: ""; position: absolute; top: -8px; left: 0; width: 35px; height: 10px; background: #5eabd5; border-radius: 3px 3px 0 0; }
-        .dept-name { font-weight: bold; color: #444; font-size: 16px; text-align: center; }
-        .card-count { font-size: 12px; color: #999; margin-top: 8px; }
-
-        /* リスト表示セクション */
-        .result-section { display: none; margin-top: 50px; padding: 40px; background: white; border-radius: 20px; border: 1px solid #eef2f6; }
-        .card-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .biz-card { padding: 25px; border: 1px solid #6fceca; border-radius: 12px; background: #fcfdfe; position: relative; }
-        .biz-card::after { content: "登録者所属"; position: absolute; top: 10px; right: 15px; font-size: 10px; color: #6fceca; font-weight: bold; }
-
-        /* スマホ用下ナビ */
+        .user-name { font-size: 15px; font-weight: bold; color: #ffffff; }
+        .logout-btn { font-size: 12px; color: rgba(255, 255, 255, 0.6); cursor: pointer; background: none; border: none; text-decoration: underline; }
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
+        .card-grid { flex: 1; padding: 40px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); grid-auto-rows: 130px; gap: 25px; }
+        .card { background: white; border-radius: 20px; padding: 25px; display: flex; align-items: center; gap: 20px; border: 1px solid #eef2f6; height: 130px; box-sizing: border-box; }
+        .thumb-box { width: 80px; height: 80px; border-radius: 50%; overflow: hidden; background: #e0f4f3; }
+        .thumb-box img { width: 100%; height: 100%; object-fit: cover; }
         .mobile-nav { display: none; position: fixed; bottom: 0; width: 100%; height: 75px; background: white; border-top: 1px solid #eef2f6; justify-content: space-around; align-items: center; z-index: 1000; padding-bottom: env(safe-area-inset-bottom); }
         .mobile-nav-item { display: flex; flex-direction: column; align-items: center; color: #888; text-decoration: none; font-size: 11px; font-weight: bold; flex: 1; }
-        .mobile-nav-item img { width: 22px; height: 22px; margin-bottom: 4px; opacity: 0.4; }
+        .mobile-nav-item img { width: 24px; height: 24px; margin-bottom: 4px; opacity: 0.4; }
         .mobile-nav-item.active { color: #6fceca; }
         .mobile-nav-item.active img { opacity: 1; }
-
-        @media screen and (max-width: 768px) { .sidebar { display: none; } .mobile-nav { display: flex; } .main-container { padding: 30px 20px 100px; } }
+        @media screen and (max-width: 768px) {
+            .sidebar { display: none; }
+            .mobile-nav { display: flex; }
+            .main-content { padding-bottom: 85px; }
+            .header { height: auto; padding: 20px; flex-direction: column; align-items: stretch; }
+            .card-grid { padding: 15px; grid-template-columns: 1fr; }
+            input, select, textarea { font-size: 16px !important; }
+        }
     </style>
 </head>
 <body>
+    <div id="loginOverlay"><div class="login-box"><h2>名刺くらうど</h2><input type="email" id="loginEmail" placeholder="メールアドレス"><button class="login-btn" onclick="handleLogin()">ログイン</button></div></div>
     <div id="mainApp">
         <div class="sidebar">
             <div class="logo-area"><img src="logo.png"></div>
             <a href="index.html" class="nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="nav-item active"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="nav-item"><img src="icon-area.png"><span>エリア</span></a>
-            <div class="user-profile-area">
-                <div class="user-name">清水　茉咲 (制作技術部)</div>
-                <button class="logout-btn" onclick="doLogout()">ログアウト</button>
+            <div class="user-profile-area"><div class="user-name">清水　茉咲 (制作技術部)</div><button class="logout-btn" onclick="handleLogout()">ログアウト</button></div>
+        </div>
+        <div class="main-content">
+            <div class="header"><h2>部署別表示</h2></div>
+            <div id="cardGrid" class="card-grid">
+                <p style="padding: 20px; color: #888;">部署別データ準備中...</p>
             </div>
         </div>
-
-        <div class="main-container">
-            <div class="page-title">部署別</div>
-            <div class="folder-grid" id="folderGrid"></div>
-            
-            <div id="resultSection" class="result-section">
-                <div id="resultTitle" style="font-size:20px; font-weight:bold; margin-bottom:20px; color:#5eabd5;"></div>
-                <div id="cardList" class="card-list"></div>
-            </div>
-        </div>
-
         <nav class="mobile-nav">
             <a href="index.html" class="mobile-nav-item"><img src="icon-keyword.png"><span>キーワード</span></a>
             <a href="dept.html" class="mobile-nav-item active"><img src="icon-dept.png"><span>部署</span></a>
             <a href="area.html" class="mobile-nav-item"><img src="icon-area.png"><span>エリア</span></a>
         </nav>
     </div>
-
     <script>
-        // 部署リスト（登録者の所属部署一覧）
-        const departments = ["総務部", "本社営業部", "東京支社", "大阪支社", "名古屋支社", "事業部", "編成部", "放送部", "業務部", "報道制作部", "制作技術部", "放送技術部"];
-        
-        // 現在のログインユーザーの所属（清水さんは制作技術部）
-        const currentUserDept = "制作技術部";
-
-        function renderFolders() {
-            const grid = document.getElementById('folderGrid');
-            grid.innerHTML = "";
-            const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
-            
-            // 【重要】名刺の「相手の部署」ではなく、「登録者の部署」で集計
-            // 清水さんが登録したものはすべて registeredByDept: "制作技術部" として扱う
-            const counts = {};
-            cardData.forEach(card => {
-                // 登録時の部署情報がデータにない場合は、現在の清水さんの所属としてカウント
-                const deptKey = card.registeredByDept || currentUserDept;
-                counts[deptKey] = (counts[deptKey] || 0) + 1;
-            });
-
-            departments.forEach(dept => {
-                const count = counts[dept] || 0;
-                const card = document.createElement('div');
-                card.className = 'folder-card';
-                card.innerHTML = `<div class="folder-icon"></div><div class="dept-name">${dept}</div><div class="card-count">${count}枚</div>`;
-                
-                card.onclick = () => showCards(dept);
-                grid.appendChild(card);
-            });
-        }
-
-        function showCards(deptName) {
-            const cardData = JSON.parse(localStorage.getItem('businessCards')) || [];
-            
-            // その部署の人が登録した名刺を抽出
-            const filtered = cardData.filter(c => (c.registeredByDept || currentUserDept) === deptName);
-            
-            const section = document.getElementById('resultSection');
-            section.style.display = "block";
-            document.getElementById('resultTitle').innerText = `${deptName} の登録名刺 (${filtered.length}枚)`;
-            
-            document.getElementById('cardList').innerHTML = filtered.length ? filtered.map(c => `
-                <div class="biz-card">
-                    <div style="font-size:18px; font-weight:bold; color:#333;">${c.name}</div>
-                    <div style="font-size:13px; color:#666; margin-top:8px;">
-                        ${c.company}<br>
-                        <span style="color:#888;">相手の部署：</span>${c.dept || '不明'}<br>
-                        <span style="color:#888;">役職：</span>${c.post || '---'}
-                    </div>
-                </div>
-            `).join('') : `<p style="color:#999;">${deptName}のメンバーが登録した名刺はありません。</p>`;
-            
-            section.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function checkLogin() { 
-            if (sessionStorage.getItem('isLoggedIn') === 'true') { 
-                document.getElementById('mainApp').style.display = 'flex'; 
-                renderFolders(); 
-            } else { 
-                window.location.href = 'index.html'; 
-            } 
-            document.documentElement.style.visibility = 'visible'; 
-        }
-        
-        function doLogout() { sessionStorage.removeItem('isLoggedIn'); window.location.href = 'index.html'; }
-        checkLogin();
+        function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
+        function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
+        window.onload = () => {
+            if(sessionStorage.getItem('isLoggedIn')) { document.getElementById('loginOverlay').style.display = 'none'; document.getElementById('mainApp').style.display = 'flex'; }
+            document.documentElement.style.visibility = 'visible';
+        };
     </script>
 </body>
 </html>
