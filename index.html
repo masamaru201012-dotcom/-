@@ -26,7 +26,7 @@
         .main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         .header { height: 80px; background: white; padding: 0 40px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #eef2f6; flex-shrink: 0; box-sizing: border-box; }
         .search-container { position: relative; flex: 1; max-width: 450px; margin: 0 30px; display: flex; align-items: center; }
-        .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background: #f8fafc url('icon-search.png') no-repeat 20px center / 20px; font-size: 15px; outline: none; box-sizing: border-box; }
+        .search-bar { width: 100%; padding: 12px 25px 12px 50px; border-radius: 30px; border: 1px solid #e2e8f0; background: #f8fafc; font-size: 15px; outline: none; box-sizing: border-box; }
         .header-actions { display: flex; gap: 15px; align-items: center; }
         .add-button { background:#6fceca; color:white; border:none; padding:12px 24px; border-radius:30px; font-weight:bold; cursor:pointer; white-space: nowrap; }
         .sort-select { padding: 10px 15px; border-radius: 30px; border: 1px solid #e2e8f0; background: white; font-size: 14px; color: #666; cursor: pointer; }
@@ -103,7 +103,7 @@
             <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="previewImage(this)">
             <div class="form-row"><div class="form-group"><label>名前 <span style="color:red;">*</span></label><input type="text" id="newName"></div><div class="form-group"><label>ふりがな</label><input type="text" id="newKana"></div></div>
             <div class="form-row"><div class="form-group"><label>会社名 <span style="color:red;">*</span></label><input type="text" id="newCompany"></div><div class="form-group"><label>相手の部署名</label><input type="text" id="newDept"></div></div>
-            <div class="form-row"><div class="form-group"><label>役職</label><input type="text" id="newTitle"></div><div class="form-group"><label>エリア</label><div style="display: flex; gap: 10px; margin-bottom: 10px;"><button type="button" id="btnPrefIn" class="area-type-btn active" onclick="switchAreaType('in')">三重県内</button><button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button></div><select id="selectCityIn"><option value="">市町村を選択</option></select><select id="selectCityOut" style="display: none;"><option value="">都道府県を選択</option></select></div></div>
+            <div class="form-row"><div class="form-group"><label>役職</label><input type="text" id="newTitle"></div><div class="form-group"><label>エリア</label><div style="display: flex; gap: 10px; margin-bottom: 10px;"><button type="button" id="btnPrefIn" class="area-type-btn active" onclick="switchAreaType('in')">三重県内</button><button type="button" id="btnPrefOut" class="area-type-btn" onclick="switchAreaType('out')">県外</button></div><select id="selectCityIn"></select><select id="selectCityOut" style="display: none;"></select></div></div>
             <div class="form-row"><div class="form-group"><label>メールアドレス</label><input type="text" id="newEmail"></div><div class="form-group"><label>電話番号</label><input type="text" id="newTel"></div></div>
             <div class="form-group"><label>備考</label><textarea id="newNote" rows="3"></textarea></div>
             <button class="save-btn" onclick="saveCard()">保存する</button>
@@ -117,15 +117,12 @@
         let editingCardId = null;
         const mieCities = ["津市", "四日市市", "伊勢市", "松阪市", "桑名市", "鈴鹿市", "名張市", "尾鷲市", "亀山市", "鳥羽市", "熊野市", "いなべ市", "志摩市", "伊賀市", "桑名郡", "員弁郡", "三重郡", "多気郡", "度会郡", "北牟婁郡", "南牟婁郡"];
         const otherPrefs = ["北海道", "青森県", "岩手県", "宮城県", "秋田県", "山形県", "福島県", "茨城県", "栃木県", "群馬県", "埼玉県", "千葉県", "東京都", "神奈川県", "新潟県", "富山県", "石川県", "福井県", "山梨県", "長野県", "岐阜県", "静岡県", "愛知県", "滋賀県", "京都府", "大阪府", "兵庫県", "奈良県", "和歌山県", "鳥取県", "島根県", "岡山県", "広島県", "山口県", "徳島県", "香川県", "愛媛県", "高知県", "福岡県", "佐賀県", "長崎県", "熊本県", "大分県", "宮崎県", "鹿児島県", "沖縄県"];
-
         function initSelectBoxes() {
             const inSelect = document.getElementById('selectCityIn');
             mieCities.forEach(city => { const opt = document.createElement('option'); opt.value = city; opt.textContent = city; inSelect.appendChild(opt); });
             const outSelect = document.getElementById('selectCityOut');
             otherPrefs.forEach(pref => { const opt = document.createElement('option'); opt.value = pref; opt.textContent = pref; outSelect.appendChild(opt); });
         }
-
-        // OCR実行関数
         async function performOCR(dataUrl) {
             const ph = document.getElementById('uploadPlaceholder');
             ph.innerText = "文字を解析中...";
@@ -142,7 +139,6 @@
                 ph.innerText = "解析完了！";
             } catch (e) { ph.innerText = "解析失敗しました"; }
         }
-
         function previewImage(input) {
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
@@ -151,12 +147,11 @@
                     document.getElementById('previewImg').src = currentImageDataUrl;
                     document.getElementById('previewImg').style.display = 'block';
                     document.getElementById('uploadPlaceholder').style.display = 'none';
-                    performOCR(currentImageDataUrl); // 解析開始
+                    performOCR(currentImageDataUrl);
                 };
                 reader.readAsDataURL(input.files[0]);
             }
         }
-
         function switchAreaType(type) {
             currentAreaType = type;
             document.getElementById('btnPrefIn').classList.toggle('active', type === 'in');
@@ -164,7 +159,6 @@
             document.getElementById('selectCityIn').style.display = type === 'in' ? 'block' : 'none';
             document.getElementById('selectCityOut').style.display = type === 'out' ? 'block' : 'none';
         }
-
         function renderCards() {
             const grid = document.getElementById('cardGrid');
             const term = (document.getElementById('searchInput').value || "").toLowerCase();
@@ -182,7 +176,6 @@
                 grid.appendChild(div);
             });
         }
-
         function saveCard() {
             const name = document.getElementById('newName').value;
             const company = document.getElementById('newCompany').value;
@@ -192,14 +185,12 @@
             if(editingCardId) { const idx = cardData.findIndex(c => c.id === editingCardId); cardData[idx] = cardInfo; } else { cardData.unshift(cardInfo); }
             localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('addModal'); renderCards();
         }
-
         function openAddModal() {
             editingCardId = null; document.getElementById('modalTitle').innerText = "新規名刺追加";
             ['newName','newKana','newCompany','newDept','newTitle','newEmail','newTel','newNote','selectCityIn','selectCityOut'].forEach(id => document.getElementById(id).value = "");
             document.getElementById('previewImg').style.display = 'none'; document.getElementById('uploadPlaceholder').style.display = 'block'; document.getElementById('uploadPlaceholder').innerText = "画像を撮る・選択";
             currentImageDataUrl = ""; switchAreaType('in'); document.getElementById('addModal').style.display = 'flex';
         }
-
         function openDetailModal(data) {
             document.getElementById('viewImg').src = data.icon || data.defaultIcon || 'user-1.png';
             document.getElementById('viewName').innerText = data.name; document.getElementById('viewKana').innerText = data.kana || "-";
@@ -220,7 +211,6 @@
             document.getElementById('deleteTargetBtn').onclick = () => { if(confirm("削除しますか？")){ cardData = cardData.filter(c => c.id !== data.id); localStorage.setItem('businessCards', JSON.stringify(cardData)); closeModal('detailModal'); renderCards(); } };
             document.getElementById('detailModal').style.display = 'flex';
         }
-
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
         function handleLogin() { sessionStorage.setItem('isLoggedIn', 'true'); location.reload(); }
         function handleLogout() { sessionStorage.removeItem('isLoggedIn'); location.href = 'index.html'; }
